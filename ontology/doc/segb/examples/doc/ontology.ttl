@@ -144,8 +144,8 @@
 <http://www.gsi.upm.es/ontologies/amor/experiments/ns#isRelatedWithExperiment> rdf:type owl:AnnotationProperty .
 
 
-###  http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente
-<http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente> rdf:type owl:AnnotationProperty .
+###  http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence
+<http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence> rdf:type owl:AnnotationProperty .
 
 
 ###  http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotion
@@ -589,7 +589,7 @@ rdfs:description rdf:type owl:AnnotationProperty .
 ###  http://www.gsi.upm.es/ontologies/segb/examples#emotion1
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion1> rdf:type owl:NamedIndividual ,
                                                                    <http://www.gsi.upm.es/ontologies/onyx/ns#Emotion> ;
-                                                          <http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente> "0.86"^^xsd:float ;
+                                                          <http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence> "0.86"^^xsd:float ;
                                                           <http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotionCategory> <http://www.gsi.upm.es/ontologies/onyx/vocabularies/emotionml/ns#big6_fear> ;
                                                           <http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotionIntensity> "0.3"^^xsd:float .
 
@@ -597,7 +597,7 @@ rdfs:description rdf:type owl:AnnotationProperty .
 ###  http://www.gsi.upm.es/ontologies/segb/examples#emotion2
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion2> rdf:type owl:NamedIndividual ,
                                                                    <http://www.gsi.upm.es/ontologies/onyx/ns#Emotion> ;
-                                                          <http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente> "0.93"^^xsd:float ;
+                                                          <http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence> "0.93"^^xsd:float ;
                                                           <http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotionCategory> <http://www.gsi.upm.es/ontologies/onyx/vocabularies/emotionml/ns#big6_sadness> ;
                                                           <http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotionIntensity> "0.4"^^xsd:float .
 

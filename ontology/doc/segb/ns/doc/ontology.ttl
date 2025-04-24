@@ -134,6 +134,19 @@
                    rdfs:label "triggered by entity"@en .
 
 
+###  http://www.gsi.upm.es/ontologies/segb/ns#usedDataset
+:usedDataset rdf:type owl:ObjectProperty ;
+             rdfs:subPropertyOf <http://www.w3.org/ns/prov#used> ;
+             rdfs:domain <http://www.w3.org/ns/prov#Activity> ;
+             rdfs:range [ rdf:type owl:Class ;
+                          owl:unionOf ( <http://schema.org/Dataset>
+                                        <http://www.w3.org/ns/mls#Dataset>
+                                      )
+                        ] ;
+             rdfs:comment "This property relates an activity with the Dataset or the Corpus used to carry out the analysis." ;
+             rdfs:label "used dataset"@en .
+
+
 ###  http://www.gsi.upm.es/ontologies/segb/ns#usedMLModel
 :usedMLModel rdf:type owl:ObjectProperty ;
              rdfs:subPropertyOf <http://www.w3.org/ns/prov#used> ;
@@ -143,6 +156,21 @@
              rdfs:label "used machine learning model"@en .
 
 
+###  http://www.gsi.upm.es/ontologies/segb/ns#usedSoftware
+:usedSoftware rdf:type owl:ObjectProperty ;
+              rdfs:subPropertyOf <http://www.w3.org/ns/prov#used> ;
+              rdfs:domain <http://www.w3.org/ns/prov#Activity> ;
+              rdfs:range [ rdf:type owl:Class ;
+                           owl:unionOf ( <http://schema.org/SoftwareApplication>
+                                         <http://usefulinc.com/ns/doap#Project>
+                                         <http://usefulinc.com/ns/doap#Version>
+                                         <http://www.w3.org/ns/mls#Software>
+                                       )
+                         ] ;
+              rdfs:comment "Represents the fact that an activity has used a Software to produce the result."@en ;
+              rdfs:label "used software"@en .
+
+
 ###  http://www.gsi.upm.es/ontologies/segb/ns#wasPerformedBy
 :wasPerformedBy rdf:type owl:ObjectProperty ;
                 rdfs:subPropertyOf <http://www.w3.org/ns/prov#wasAssociatedWith> ;
@@ -150,6 +178,15 @@
                 rdfs:range <http://www.w3.org/ns/prov#Agent> ;
                 rdfs:comment "Represents the relation between a logged activity and the agent that performed it."@en ;
                 rdfs:label "was performed by"@en .
+
+
+###  http://www.gsi.upm.es/ontologies/segb/ns#wasRequestedBy
+:wasRequestedBy rdf:type owl:ObjectProperty ;
+                rdfs:subPropertyOf <http://www.w3.org/ns/prov#wasAssociatedWith> ;
+                rdfs:domain :LoggedActivity ;
+                rdfs:range <http://www.w3.org/ns/prov#Agent> ;
+                rdfs:comment "Represents the relation between a logged activity and the agent that requested it."@en ;
+                rdfs:label "requested by"@en .
 
 
 ###  http://www.w3.org/ns/prov#generated
@@ -180,8 +217,24 @@
 <http://kb.openrobots.org#RobotResponses> rdf:type owl:Class .
 
 
+###  http://schema.org/Dataset
+<http://schema.org/Dataset> rdf:type owl:Class .
+
+
+###  http://schema.org/SoftwareApplication
+<http://schema.org/SoftwareApplication> rdf:type owl:Class .
+
+
 ###  http://sw.opencyc.org/concept/Action
 <http://sw.opencyc.org/concept/Action> rdf:type owl:Class .
+
+
+###  http://usefulinc.com/ns/doap#Project
+<http://usefulinc.com/ns/doap#Project> rdf:type owl:Class .
+
+
+###  http://usefulinc.com/ns/doap#Version
+<http://usefulinc.com/ns/doap#Version> rdf:type owl:Class .
 
 
 ###  http://www.gsi.upm.es/ontologies/segb/ns#LoggedActivity
@@ -221,12 +274,20 @@
          rdfs:label "Trigger"@en .
 
 
+###  http://www.w3.org/ns/mls#Dataset
+<http://www.w3.org/ns/mls#Dataset> rdf:type owl:Class .
+
+
 ###  http://www.w3.org/ns/mls#Model
 <http://www.w3.org/ns/mls#Model> rdf:type owl:Class .
 
 
 ###  http://www.w3.org/ns/mls#Run
 <http://www.w3.org/ns/mls#Run> rdf:type owl:Class .
+
+
+###  http://www.w3.org/ns/mls#Software
+<http://www.w3.org/ns/mls#Software> rdf:type owl:Class .
 
 
 ###  http://www.w3.org/ns/prov#Activity

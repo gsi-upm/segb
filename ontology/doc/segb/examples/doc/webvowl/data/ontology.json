@@ -203,17 +203,17 @@
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#informationRetrievalAction1",
       "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
       "annotations" : {
-        "isRelatedWithExperiment" : [ {
-          "identifier" : "isRelatedWithExperiment",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
-          "type" : "iri"
-        } ],
         "endPoint" : [ {
           "identifier" : "endPoint",
           "language" : "undefined",
           "value" : "http://example.org/news_search/api",
           "type" : "label"
+        } ],
+        "isRelatedWithExperiment" : [ {
+          "identifier" : "isRelatedWithExperiment",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
+          "type" : "iri"
         } ],
         "endedAtTime" : [ {
           "identifier" : "endedAtTime",
@@ -227,19 +227,24 @@
           "value" : "2024-11-16T12:27:16",
           "type" : "label"
         } ],
-        "query" : [ {
-          "identifier" : "query",
-          "language" : "en",
-          "value" : "climate change",
-          "type" : "label"
-        } ],
         "wasPerformedBy" : [ {
           "identifier" : "wasPerformedBy",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
           "type" : "iri"
         } ],
+        "query" : [ {
+          "identifier" : "query",
+          "language" : "en",
+          "value" : "climate change",
+          "type" : "label"
+        } ],
         "producedEntityResult" : [ {
+          "identifier" : "producedEntityResult",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
+          "type" : "iri"
+        }, {
           "identifier" : "producedEntityResult",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news1",
@@ -248,11 +253,6 @@
           "identifier" : "producedEntityResult",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
-          "type" : "iri"
-        }, {
-          "identifier" : "producedEntityResult",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
           "type" : "iri"
         } ],
         "triggeredByActivity" : [ {
@@ -657,46 +657,6 @@
     "attributes" : [ "external" ],
     "id" : "7"
   }, {
-    "iri" : "http://www.gsi.upm.es/ontologies/amor/ns#EmotionAnnotation",
-    "baseIri" : "http://www.gsi.upm.es/ontologies/amor/ns",
-    "instances" : 0,
-    "label" : {
-      "IRI-based" : "EmotionAnnotation"
-    },
-    "individuals" : [ {
-      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionset1",
-      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
-      "annotations" : {
-        "hasTarget" : [ {
-          "identifier" : "hasTarget",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#maria",
-          "type" : "iri"
-        }, {
-          "identifier" : "hasTarget",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#msg1",
-          "type" : "iri"
-        } ],
-        "hasEmotion" : [ {
-          "identifier" : "hasEmotion",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotion1",
-          "type" : "iri"
-        }, {
-          "identifier" : "hasEmotion",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotion2",
-          "type" : "iri"
-        } ]
-      },
-      "labels" : {
-        "IRI-based" : "emotionset1"
-      }
-    } ],
-    "attributes" : [ "external" ],
-    "id" : "8"
-  }, {
     "iri" : "http://kb.openrobots.org#Robot",
     "baseIri" : "http://kb.openrobots.org",
     "instances" : 0,
@@ -731,6 +691,46 @@
       }
     } ],
     "attributes" : [ "external" ],
+    "id" : "8"
+  }, {
+    "iri" : "http://www.gsi.upm.es/ontologies/amor/ns#EmotionAnnotation",
+    "baseIri" : "http://www.gsi.upm.es/ontologies/amor/ns",
+    "instances" : 0,
+    "label" : {
+      "IRI-based" : "EmotionAnnotation"
+    },
+    "individuals" : [ {
+      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionset1",
+      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
+      "annotations" : {
+        "hasTarget" : [ {
+          "identifier" : "hasTarget",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#maria",
+          "type" : "iri"
+        }, {
+          "identifier" : "hasTarget",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#msg1",
+          "type" : "iri"
+        } ],
+        "hasEmotion" : [ {
+          "identifier" : "hasEmotion",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotion2",
+          "type" : "iri"
+        }, {
+          "identifier" : "hasEmotion",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotion1",
+          "type" : "iri"
+        } ]
+      },
+      "labels" : {
+        "IRI-based" : "emotionset1"
+      }
+    } ],
+    "attributes" : [ "external" ],
     "id" : "9"
   }, {
     "iri" : "http://xmlns.com/foaf/0.1/Organization",
@@ -745,13 +745,13 @@
       "annotations" : {
         "name" : [ {
           "identifier" : "name",
-          "language" : "es",
-          "value" : "Universidad Politécnica de Madrid",
+          "language" : "en",
+          "value" : "Technical University of Madrid",
           "type" : "label"
         }, {
           "identifier" : "name",
-          "language" : "en",
-          "value" : "Technical University of Madrid",
+          "language" : "es",
+          "value" : "Universidad Politécnica de Madrid",
           "type" : "label"
         } ],
         "url" : [ {
@@ -796,16 +796,16 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionset1",
           "type" : "iri"
         } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:18",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:16",
+          "type" : "label"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:18",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -926,6 +926,23 @@
     "attributes" : [ "external" ],
     "id" : "13"
   }, {
+    "iri" : "http://www.w3.org/ns/mls#EvaluationMeasure",
+    "baseIri" : "http://www.w3.org/ns/mls",
+    "instances" : 0,
+    "label" : {
+      "IRI-based" : "EvaluationMeasure"
+    },
+    "individuals" : [ {
+      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#accuracy",
+      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
+      "labels" : {
+        "IRI-based" : "accuracy",
+        "en" : "Accuracy"
+      }
+    } ],
+    "attributes" : [ "external" ],
+    "id" : "14"
+  }, {
     "iri" : "http://kb.openrobots.org#SelectedOptionEvent",
     "baseIri" : "http://kb.openrobots.org",
     "instances" : 0,
@@ -942,16 +959,16 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
           "type" : "iri"
         } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:28",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:27",
+          "type" : "label"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:28",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -981,23 +998,6 @@
       },
       "labels" : {
         "IRI-based" : "selection1"
-      }
-    } ],
-    "attributes" : [ "external" ],
-    "id" : "14"
-  }, {
-    "iri" : "http://www.w3.org/ns/mls#EvaluationMeasure",
-    "baseIri" : "http://www.w3.org/ns/mls",
-    "instances" : 0,
-    "label" : {
-      "IRI-based" : "EvaluationMeasure"
-    },
-    "individuals" : [ {
-      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#accuracy",
-      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
-      "labels" : {
-        "IRI-based" : "accuracy",
-        "en" : "Accuracy"
       }
     } ],
     "attributes" : [ "external" ],
@@ -1100,6 +1100,31 @@
       "IRI-based" : "Organization"
     },
     "individuals" : [ {
+      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#upm",
+      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
+      "annotations" : {
+        "name" : [ {
+          "identifier" : "name",
+          "language" : "en",
+          "value" : "Technical University of Madrid",
+          "type" : "label"
+        }, {
+          "identifier" : "name",
+          "language" : "es",
+          "value" : "Universidad Politécnica de Madrid",
+          "type" : "label"
+        } ],
+        "url" : [ {
+          "identifier" : "url",
+          "language" : "undefined",
+          "value" : "https://www.upm.es",
+          "type" : "iri"
+        } ]
+      },
+      "labels" : {
+        "IRI-based" : "upm"
+      }
+    }, {
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#publisher1",
       "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
       "annotations" : {
@@ -1118,31 +1143,6 @@
       },
       "labels" : {
         "IRI-based" : "publisher1"
-      }
-    }, {
-      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#upm",
-      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
-      "annotations" : {
-        "name" : [ {
-          "identifier" : "name",
-          "language" : "es",
-          "value" : "Universidad Politécnica de Madrid",
-          "type" : "label"
-        }, {
-          "identifier" : "name",
-          "language" : "en",
-          "value" : "Technical University of Madrid",
-          "type" : "label"
-        } ],
-        "url" : [ {
-          "identifier" : "url",
-          "language" : "undefined",
-          "value" : "https://www.upm.es",
-          "type" : "iri"
-        } ]
-      },
-      "labels" : {
-        "IRI-based" : "upm"
       }
     } ],
     "attributes" : [ "external" ],
@@ -1202,17 +1202,17 @@
         "triggeredByActivity" : [ {
           "identifier" : "triggeredByActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionDetectionAction1",
-          "type" : "iri"
-        }, {
-          "identifier" : "triggeredByActivity",
-          "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#decisionMakingAction1",
           "type" : "iri"
         }, {
           "identifier" : "triggeredByActivity",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#listeningEvent1",
+          "type" : "iri"
+        }, {
+          "identifier" : "triggeredByActivity",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionDetectionAction1",
           "type" : "iri"
         } ]
       },
@@ -1321,17 +1321,17 @@
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#informationRetrievalAction1",
       "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
       "annotations" : {
-        "isRelatedWithExperiment" : [ {
-          "identifier" : "isRelatedWithExperiment",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
-          "type" : "iri"
-        } ],
         "endPoint" : [ {
           "identifier" : "endPoint",
           "language" : "undefined",
           "value" : "http://example.org/news_search/api",
           "type" : "label"
+        } ],
+        "isRelatedWithExperiment" : [ {
+          "identifier" : "isRelatedWithExperiment",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
+          "type" : "iri"
         } ],
         "endedAtTime" : [ {
           "identifier" : "endedAtTime",
@@ -1345,19 +1345,24 @@
           "value" : "2024-11-16T12:27:16",
           "type" : "label"
         } ],
-        "query" : [ {
-          "identifier" : "query",
-          "language" : "en",
-          "value" : "climate change",
-          "type" : "label"
-        } ],
         "wasPerformedBy" : [ {
           "identifier" : "wasPerformedBy",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
           "type" : "iri"
         } ],
+        "query" : [ {
+          "identifier" : "query",
+          "language" : "en",
+          "value" : "climate change",
+          "type" : "label"
+        } ],
         "producedEntityResult" : [ {
+          "identifier" : "producedEntityResult",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
+          "type" : "iri"
+        }, {
           "identifier" : "producedEntityResult",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news1",
@@ -1366,11 +1371,6 @@
           "identifier" : "producedEntityResult",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
-          "type" : "iri"
-        }, {
-          "identifier" : "producedEntityResult",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
           "type" : "iri"
         } ],
         "triggeredByActivity" : [ {
@@ -1399,28 +1399,28 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#msg2",
           "type" : "iri"
         } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:26",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:24",
           "type" : "label"
         } ],
-        "usedMLModel" : [ {
-          "identifier" : "usedMLModel",
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ttsModel1",
-          "type" : "iri"
+          "value" : "2024-11-16T12:27:26",
+          "type" : "label"
         } ],
         "wasPerformedBy" : [ {
           "identifier" : "wasPerformedBy",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
+          "type" : "iri"
+        } ],
+        "usedMLModel" : [ {
+          "identifier" : "usedMLModel",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ttsModel1",
           "type" : "iri"
         } ],
         "hasSpeaker" : [ {
@@ -1458,12 +1458,12 @@
         "hasContent" : [ {
           "identifier" : "hasContent",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
           "type" : "iri"
         }, {
           "identifier" : "hasContent",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
           "type" : "iri"
         }, {
           "identifier" : "hasContent",
@@ -1492,7 +1492,7 @@
         "used" : [ {
           "identifier" : "used",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
           "type" : "iri"
         }, {
           "identifier" : "used",
@@ -1502,7 +1502,7 @@
         }, {
           "identifier" : "used",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news1",
           "type" : "iri"
         } ],
         "triggeredByActivity" : [ {
@@ -1581,16 +1581,16 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionset1",
           "type" : "iri"
         } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:18",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:16",
+          "type" : "label"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:18",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -1643,27 +1643,27 @@
           "value" : "2024-11-16T12:27:26",
           "type" : "label"
         } ],
-        "usedMLModel" : [ {
-          "identifier" : "usedMLModel",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#decisionMakingModel1",
-          "type" : "iri"
-        } ],
         "wasPerformedBy" : [ {
           "identifier" : "wasPerformedBy",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
           "type" : "iri"
         } ],
+        "usedMLModel" : [ {
+          "identifier" : "usedMLModel",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#decisionMakingModel1",
+          "type" : "iri"
+        } ],
         "producedActivityResult" : [ {
           "identifier" : "producedActivityResult",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#movement1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#gesture1",
           "type" : "iri"
         }, {
           "identifier" : "producedActivityResult",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#gesture1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#movement1",
           "type" : "iri"
         } ],
         "triggeredByActivity" : [ {
@@ -1686,16 +1686,16 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
           "type" : "iri"
         } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:28",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:27",
+          "type" : "label"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:28",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -1730,16 +1730,16 @@
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#run1",
       "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
       "annotations" : {
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2023-09-15T11:27:24",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2023-09-15T10:17:25",
+          "type" : "label"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2023-09-15T11:27:24",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -1771,12 +1771,6 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#cnn_tensorflow293",
           "type" : "iri"
         } ],
-        "producedResult" : [ {
-          "identifier" : "producedResult",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionDetectionModel1",
-          "type" : "iri"
-        } ],
         "hasInput" : [ {
           "identifier" : "hasInput",
           "language" : "undefined",
@@ -1786,6 +1780,12 @@
           "identifier" : "hasInput",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#num_epochs",
+          "type" : "iri"
+        } ],
+        "producedResult" : [ {
+          "identifier" : "producedResult",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionDetectionModel1",
           "type" : "iri"
         } ]
       },
@@ -1804,12 +1804,12 @@
         }, {
           "identifier" : "intermediateActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#informationRetrievalAction1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#responseGenerationAction1",
           "type" : "iri"
         }, {
           "identifier" : "intermediateActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#responseGenerationAction1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#informationRetrievalAction1",
           "type" : "iri"
         } ],
         "isRelatedWithExperiment" : [ {
@@ -1818,16 +1818,16 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
           "type" : "iri"
         } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:24",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:15",
+          "type" : "label"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:24",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -1850,23 +1850,23 @@
         }, {
           "identifier" : "producedActivityResult",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#speech1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionExpression1",
           "type" : "iri"
         }, {
           "identifier" : "producedActivityResult",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionExpression1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#speech1",
           "type" : "iri"
         } ],
         "triggeredByActivity" : [ {
           "identifier" : "triggeredByActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#listeningEvent1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#detectedHumanEvent1",
           "type" : "iri"
         }, {
           "identifier" : "triggeredByActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#detectedHumanEvent1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#listeningEvent1",
           "type" : "iri"
         } ]
       },
@@ -1904,12 +1904,12 @@
         "used" : [ {
           "identifier" : "used",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
           "type" : "iri"
         }, {
           "identifier" : "used",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
           "type" : "iri"
         }, {
           "identifier" : "used",
@@ -1937,6 +1937,62 @@
       },
       "labels" : {
         "IRI-based" : "responseGenerationAction1"
+      }
+    }, {
+      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#listeningEvent1",
+      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
+      "annotations" : {
+        "isRelatedWithExperiment" : [ {
+          "identifier" : "isRelatedWithExperiment",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
+          "type" : "iri"
+        } ],
+        "hasMessage" : [ {
+          "identifier" : "hasMessage",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#msg1",
+          "type" : "iri"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:15",
+          "type" : "label"
+        } ],
+        "startedAtTime" : [ {
+          "identifier" : "startedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:12",
+          "type" : "label"
+        } ],
+        "wasPerformedBy" : [ {
+          "identifier" : "wasPerformedBy",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
+          "type" : "iri"
+        } ],
+        "usedMLModel" : [ {
+          "identifier" : "usedMLModel",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#asrModel1",
+          "type" : "iri"
+        } ],
+        "hasSpeaker" : [ {
+          "identifier" : "hasSpeaker",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#maria",
+          "type" : "iri"
+        } ],
+        "hasListener" : [ {
+          "identifier" : "hasListener",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
+          "type" : "iri"
+        } ]
+      },
+      "labels" : {
+        "IRI-based" : "listeningEvent1"
       }
     }, {
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionExpression1",
@@ -1986,11 +2042,6 @@
         "triggeredByActivity" : [ {
           "identifier" : "triggeredByActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionDetectionAction1",
-          "type" : "iri"
-        }, {
-          "identifier" : "triggeredByActivity",
-          "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#decisionMakingAction1",
           "type" : "iri"
         }, {
@@ -1998,66 +2049,15 @@
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#listeningEvent1",
           "type" : "iri"
+        }, {
+          "identifier" : "triggeredByActivity",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionDetectionAction1",
+          "type" : "iri"
         } ]
       },
       "labels" : {
         "IRI-based" : "emotionExpression1"
-      }
-    }, {
-      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#listeningEvent1",
-      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
-      "annotations" : {
-        "isRelatedWithExperiment" : [ {
-          "identifier" : "isRelatedWithExperiment",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
-          "type" : "iri"
-        } ],
-        "hasMessage" : [ {
-          "identifier" : "hasMessage",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#msg1",
-          "type" : "iri"
-        } ],
-        "startedAtTime" : [ {
-          "identifier" : "startedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:12",
-          "type" : "label"
-        } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:15",
-          "type" : "label"
-        } ],
-        "wasPerformedBy" : [ {
-          "identifier" : "wasPerformedBy",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
-          "type" : "iri"
-        } ],
-        "usedMLModel" : [ {
-          "identifier" : "usedMLModel",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#asrModel1",
-          "type" : "iri"
-        } ],
-        "hasSpeaker" : [ {
-          "identifier" : "hasSpeaker",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#maria",
-          "type" : "iri"
-        } ],
-        "hasListener" : [ {
-          "identifier" : "hasListener",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
-          "type" : "iri"
-        } ]
-      },
-      "labels" : {
-        "IRI-based" : "listeningEvent1"
       }
     } ],
     "attributes" : [ "external" ],
@@ -2410,12 +2410,12 @@
         "used" : [ {
           "identifier" : "used",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
           "type" : "iri"
         }, {
           "identifier" : "used",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
           "type" : "iri"
         }, {
           "identifier" : "used",
@@ -2630,16 +2630,16 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#msg1",
           "type" : "iri"
         } ],
-        "startedAtTime" : [ {
-          "identifier" : "startedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:12",
-          "type" : "label"
-        } ],
         "endedAtTime" : [ {
           "identifier" : "endedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:15",
+          "type" : "label"
+        } ],
+        "startedAtTime" : [ {
+          "identifier" : "startedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:12",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -2702,16 +2702,16 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionset1",
           "type" : "iri"
         } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:18",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:16",
+          "type" : "label"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:18",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -2774,27 +2774,27 @@
           "value" : "2024-11-16T12:27:26",
           "type" : "label"
         } ],
-        "usedMLModel" : [ {
-          "identifier" : "usedMLModel",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#decisionMakingModel1",
-          "type" : "iri"
-        } ],
         "wasPerformedBy" : [ {
           "identifier" : "wasPerformedBy",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
           "type" : "iri"
         } ],
+        "usedMLModel" : [ {
+          "identifier" : "usedMLModel",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#decisionMakingModel1",
+          "type" : "iri"
+        } ],
         "producedActivityResult" : [ {
           "identifier" : "producedActivityResult",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#movement1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#gesture1",
           "type" : "iri"
         }, {
           "identifier" : "producedActivityResult",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#gesture1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#movement1",
           "type" : "iri"
         } ],
         "triggeredByActivity" : [ {
@@ -2819,12 +2819,12 @@
         }, {
           "identifier" : "intermediateActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#informationRetrievalAction1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#responseGenerationAction1",
           "type" : "iri"
         }, {
           "identifier" : "intermediateActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#responseGenerationAction1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#informationRetrievalAction1",
           "type" : "iri"
         } ],
         "isRelatedWithExperiment" : [ {
@@ -2833,16 +2833,16 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#experiment1",
           "type" : "iri"
         } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:24",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:15",
+          "type" : "label"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2024-11-16T12:27:24",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -2865,23 +2865,23 @@
         }, {
           "identifier" : "producedActivityResult",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#speech1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionExpression1",
           "type" : "iri"
         }, {
           "identifier" : "producedActivityResult",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionExpression1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#speech1",
           "type" : "iri"
         } ],
         "triggeredByActivity" : [ {
           "identifier" : "triggeredByActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#listeningEvent1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#detectedHumanEvent1",
           "type" : "iri"
         }, {
           "identifier" : "triggeredByActivity",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#detectedHumanEvent1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#listeningEvent1",
           "type" : "iri"
         } ]
       },
@@ -2911,12 +2911,12 @@
         "hasContent" : [ {
           "identifier" : "hasContent",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
           "type" : "iri"
         }, {
           "identifier" : "hasContent",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news2",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
           "type" : "iri"
         }, {
           "identifier" : "hasContent",
@@ -2945,7 +2945,7 @@
         "used" : [ {
           "identifier" : "used",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news1",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
           "type" : "iri"
         }, {
           "identifier" : "used",
@@ -2955,7 +2955,7 @@
         }, {
           "identifier" : "used",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news3",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#news1",
           "type" : "iri"
         } ],
         "triggeredByActivity" : [ {
@@ -3121,8 +3121,8 @@
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#emotion1",
       "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
       "annotations" : {
-        "algorithmConfidente" : [ {
-          "identifier" : "algorithmConfidente",
+        "algorithmConfidence" : [ {
+          "identifier" : "algorithmConfidence",
           "language" : "undefined",
           "value" : "0.86",
           "type" : "label"
@@ -3147,8 +3147,8 @@
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#emotion2",
       "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
       "annotations" : {
-        "algorithmConfidente" : [ {
-          "identifier" : "algorithmConfidente",
+        "algorithmConfidence" : [ {
+          "identifier" : "algorithmConfidence",
           "language" : "undefined",
           "value" : "0.93",
           "type" : "label"
@@ -3195,28 +3195,28 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#msg2",
           "type" : "iri"
         } ],
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2024-11-16T12:27:26",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2024-11-16T12:27:24",
           "type" : "label"
         } ],
-        "usedMLModel" : [ {
-          "identifier" : "usedMLModel",
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
           "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ttsModel1",
-          "type" : "iri"
+          "value" : "2024-11-16T12:27:26",
+          "type" : "label"
         } ],
         "wasPerformedBy" : [ {
           "identifier" : "wasPerformedBy",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ari1",
+          "type" : "iri"
+        } ],
+        "usedMLModel" : [ {
+          "identifier" : "usedMLModel",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#ttsModel1",
           "type" : "iri"
         } ],
         "hasSpeaker" : [ {
@@ -3282,12 +3282,6 @@
       "IRI-based" : "Model"
     },
     "individuals" : [ {
-      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#decisionMakingModel1",
-      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
-      "labels" : {
-        "IRI-based" : "decisionMakingModel1"
-      }
-    }, {
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionDetectionModel1",
       "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
       "annotations" : {
@@ -3306,6 +3300,12 @@
       },
       "labels" : {
         "IRI-based" : "emotionDetectionModel1"
+      }
+    }, {
+      "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#decisionMakingModel1",
+      "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
+      "labels" : {
+        "IRI-based" : "decisionMakingModel1"
       }
     }, {
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#llmModel1",
@@ -3345,13 +3345,13 @@
       "annotations" : {
         "name" : [ {
           "identifier" : "name",
-          "language" : "es",
-          "value" : "Universidad Politécnica de Madrid",
+          "language" : "en",
+          "value" : "Technical University of Madrid",
           "type" : "label"
         }, {
           "identifier" : "name",
-          "language" : "en",
-          "value" : "Technical University of Madrid",
+          "language" : "es",
+          "value" : "Universidad Politécnica de Madrid",
           "type" : "label"
         } ],
         "url" : [ {
@@ -3378,16 +3378,16 @@
       "iri" : "http://www.gsi.upm.es/ontologies/segb/examples#run1",
       "baseIri" : "http://www.gsi.upm.es/ontologies/segb/examples",
       "annotations" : {
-        "endedAtTime" : [ {
-          "identifier" : "endedAtTime",
-          "language" : "undefined",
-          "value" : "2023-09-15T11:27:24",
-          "type" : "label"
-        } ],
         "startedAtTime" : [ {
           "identifier" : "startedAtTime",
           "language" : "undefined",
           "value" : "2023-09-15T10:17:25",
+          "type" : "label"
+        } ],
+        "endedAtTime" : [ {
+          "identifier" : "endedAtTime",
+          "language" : "undefined",
+          "value" : "2023-09-15T11:27:24",
           "type" : "label"
         } ],
         "wasPerformedBy" : [ {
@@ -3419,12 +3419,6 @@
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#cnn_tensorflow293",
           "type" : "iri"
         } ],
-        "producedResult" : [ {
-          "identifier" : "producedResult",
-          "language" : "undefined",
-          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionDetectionModel1",
-          "type" : "iri"
-        } ],
         "hasInput" : [ {
           "identifier" : "hasInput",
           "language" : "undefined",
@@ -3434,6 +3428,12 @@
           "identifier" : "hasInput",
           "language" : "undefined",
           "value" : "http://www.gsi.upm.es/ontologies/segb/examples#num_epochs",
+          "type" : "iri"
+        } ],
+        "producedResult" : [ {
+          "identifier" : "producedResult",
+          "language" : "undefined",
+          "value" : "http://www.gsi.upm.es/ontologies/segb/examples#emotionDetectionModel1",
           "type" : "iri"
         } ]
       },

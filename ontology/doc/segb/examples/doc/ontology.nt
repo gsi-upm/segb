@@ -107,8 +107,8 @@ _:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/20
 # http://www.gsi.upm.es/ontologies/amor/experiments/ns#isRelatedWithExperiment
 <http://www.gsi.upm.es/ontologies/amor/experiments/ns#isRelatedWithExperiment> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
 # 
-# http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente
-<http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
+# http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence
+<http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
 # 
 # http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotion
 <http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotion> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> .
@@ -474,14 +474,14 @@ _:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/20
 # http://www.gsi.upm.es/ontologies/segb/examples#emotion1
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> .
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.gsi.upm.es/ontologies/onyx/ns#Emotion> .
-<http://www.gsi.upm.es/ontologies/segb/examples#emotion1> <http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente> "0.86"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://www.gsi.upm.es/ontologies/segb/examples#emotion1> <http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence> "0.86"^^<http://www.w3.org/2001/XMLSchema#float> .
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion1> <http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotionCategory> <http://www.gsi.upm.es/ontologies/onyx/vocabularies/emotionml/ns#big6_fear> .
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion1> <http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotionIntensity> "0.3"^^<http://www.w3.org/2001/XMLSchema#float> .
 # 
 # http://www.gsi.upm.es/ontologies/segb/examples#emotion2
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual> .
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.gsi.upm.es/ontologies/onyx/ns#Emotion> .
-<http://www.gsi.upm.es/ontologies/segb/examples#emotion2> <http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente> "0.93"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://www.gsi.upm.es/ontologies/segb/examples#emotion2> <http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence> "0.93"^^<http://www.w3.org/2001/XMLSchema#float> .
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion2> <http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotionCategory> <http://www.gsi.upm.es/ontologies/onyx/vocabularies/emotionml/ns#big6_sadness> .
 <http://www.gsi.upm.es/ontologies/segb/examples#emotion2> <http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotionIntensity> "0.4"^^<http://www.w3.org/2001/XMLSchema#float> .
 # 

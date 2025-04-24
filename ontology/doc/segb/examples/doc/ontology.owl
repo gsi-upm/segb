@@ -262,10 +262,10 @@
     
 
 
-    <!-- http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente -->
+    <!-- http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence -->
 
 
-    <AnnotationProperty rdf:about="http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente"/>
+    <AnnotationProperty rdf:about="http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence"/>
     
 
 
@@ -1022,7 +1022,7 @@
 
     <NamedIndividual rdf:about="http://www.gsi.upm.es/ontologies/segb/examples#emotion1">
         <rdf:type rdf:resource="http://www.gsi.upm.es/ontologies/onyx/ns#Emotion"/>
-        <ns:algorithmConfidente rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.86</ns:algorithmConfidente>
+        <ns:algorithmConfidence rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.86</ns:algorithmConfidence>
         <ns:hasEmotionCategory rdf:resource="http://www.gsi.upm.es/ontologies/onyx/vocabularies/emotionml/ns#big6_fear"/>
         <ns:hasEmotionIntensity rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.3</ns:hasEmotionIntensity>
     </NamedIndividual>
@@ -1034,7 +1034,7 @@
 
     <NamedIndividual rdf:about="http://www.gsi.upm.es/ontologies/segb/examples#emotion2">
         <rdf:type rdf:resource="http://www.gsi.upm.es/ontologies/onyx/ns#Emotion"/>
-        <ns:algorithmConfidente rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.93</ns:algorithmConfidente>
+        <ns:algorithmConfidence rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.93</ns:algorithmConfidence>
         <ns:hasEmotionCategory rdf:resource="http://www.gsi.upm.es/ontologies/onyx/vocabularies/emotionml/ns#big6_sadness"/>
         <ns:hasEmotionIntensity rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.4</ns:hasEmotionIntensity>
     </NamedIndividual>

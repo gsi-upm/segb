@@ -185,7 +185,7 @@
   "@id" : "http://www.gsi.upm.es/ontologies/onyx/ns#EmotionAnalysis",
   "@type" : [ "http://www.w3.org/2002/07/owl#Class" ]
 }, {
-  "@id" : "http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente",
+  "@id" : "http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence",
   "@type" : [ "http://www.w3.org/2002/07/owl#AnnotationProperty" ]
 }, {
   "@id" : "http://www.gsi.upm.es/ontologies/onyx/ns#hasEmotion",
@@ -419,7 +419,7 @@
 }, {
   "@id" : "http://www.gsi.upm.es/ontologies/segb/examples#emotion1",
   "@type" : [ "http://www.w3.org/2002/07/owl#NamedIndividual" ],
-  "http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente" : [ {
+  "http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence" : [ {
     "@type" : "http://www.w3.org/2001/XMLSchema#float",
     "@value" : "0.86"
   } ],
@@ -436,7 +436,7 @@
 }, {
   "@id" : "http://www.gsi.upm.es/ontologies/segb/examples#emotion2",
   "@type" : [ "http://www.w3.org/2002/07/owl#NamedIndividual" ],
-  "http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidente" : [ {
+  "http://www.gsi.upm.es/ontologies/onyx/ns#algorithmConfidence" : [ {
     "@type" : "http://www.w3.org/2001/XMLSchema#float",
     "@value" : "0.93"
   } ],

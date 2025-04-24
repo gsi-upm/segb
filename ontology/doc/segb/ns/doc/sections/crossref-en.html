@@ -30,7 +30,7 @@ This section provides details for each class and property defined by Semantic Et
     is in domain of
    </dt>
    <dd>
-    <a href="#intermediateActivity" title="http://www.gsi.upm.es/ontologies/segb/ns#intermediateActivity">intermediate activity</a> <sup class="type-op" title="object property">op</sup>, <a href="#producedActivityResult" title="http://www.gsi.upm.es/ontologies/segb/ns#producedActivityResult">produced activity result</a> <sup class="type-op" title="object property">op</sup>, <a href="#producedEntityResult" title="http://www.gsi.upm.es/ontologies/segb/ns#producedEntityResult">produced entity result</a> <sup class="type-op" title="object property">op</sup>, <a href="#producedResult" title="http://www.gsi.upm.es/ontologies/segb/ns#producedResult">produced result</a> <sup class="type-op" title="object property">op</sup>, <a href="#triggeredBy" title="http://www.gsi.upm.es/ontologies/segb/ns#triggeredBy">triggered by</a> <sup class="type-op" title="object property">op</sup>, <a href="#triggeredByActivity" title="http://www.gsi.upm.es/ontologies/segb/ns#triggeredByActivity">triggered by activity</a> <sup class="type-op" title="object property">op</sup>, <a href="#triggeredByEntity" title="http://www.gsi.upm.es/ontologies/segb/ns#triggeredByEntity">triggered by entity</a> <sup class="type-op" title="object property">op</sup>, <a href="#wasPerformedBy" title="http://www.gsi.upm.es/ontologies/segb/ns#wasPerformedBy">was performed by</a> <sup class="type-op" title="object property">op</sup>
+    <a href="#intermediateActivity" title="http://www.gsi.upm.es/ontologies/segb/ns#intermediateActivity">intermediate activity</a> <sup class="type-op" title="object property">op</sup>, <a href="#producedActivityResult" title="http://www.gsi.upm.es/ontologies/segb/ns#producedActivityResult">produced activity result</a> <sup class="type-op" title="object property">op</sup>, <a href="#producedEntityResult" title="http://www.gsi.upm.es/ontologies/segb/ns#producedEntityResult">produced entity result</a> <sup class="type-op" title="object property">op</sup>, <a href="#producedResult" title="http://www.gsi.upm.es/ontologies/segb/ns#producedResult">produced result</a> <sup class="type-op" title="object property">op</sup>, <a href="#wasRequestedBy" title="http://www.gsi.upm.es/ontologies/segb/ns#wasRequestedBy">requested by</a> <sup class="type-op" title="object property">op</sup>, <a href="#triggeredBy" title="http://www.gsi.upm.es/ontologies/segb/ns#triggeredBy">triggered by</a> <sup class="type-op" title="object property">op</sup>, <a href="#triggeredByActivity" title="http://www.gsi.upm.es/ontologies/segb/ns#triggeredByActivity">triggered by activity</a> <sup class="type-op" title="object property">op</sup>, <a href="#triggeredByEntity" title="http://www.gsi.upm.es/ontologies/segb/ns#triggeredByEntity">triggered by entity</a> <sup class="type-op" title="object property">op</sup>, <a href="#wasPerformedBy" title="http://www.gsi.upm.es/ontologies/segb/ns#wasPerformedBy">was performed by</a> <sup class="type-op" title="object property">op</sup>
    </dd>
    <dt>
     is in range of
@@ -95,10 +95,13 @@ This section provides details for each class and property defined by Semantic Et
   <li><a href="#producedActivityResult" title="http://www.gsi.upm.es/ontologies/segb/ns#producedActivityResult">produced activity result</a></li>
   <li><a href="#producedEntityResult" title="http://www.gsi.upm.es/ontologies/segb/ns#producedEntityResult">produced entity result</a></li>
   <li><a href="#producedResult" title="http://www.gsi.upm.es/ontologies/segb/ns#producedResult">produced result</a></li>
+  <li><a href="#wasRequestedBy" title="http://www.gsi.upm.es/ontologies/segb/ns#wasRequestedBy">requested by</a></li>
   <li><a href="#triggeredBy" title="http://www.gsi.upm.es/ontologies/segb/ns#triggeredBy">triggered by</a></li>
   <li><a href="#triggeredByActivity" title="http://www.gsi.upm.es/ontologies/segb/ns#triggeredByActivity">triggered by activity</a></li>
   <li><a href="#triggeredByEntity" title="http://www.gsi.upm.es/ontologies/segb/ns#triggeredByEntity">triggered by entity</a></li>
+  <li><a href="#usedDataset" title="http://www.gsi.upm.es/ontologies/segb/ns#usedDataset">used dataset</a></li>
   <li><a href="#usedMLModel" title="http://www.gsi.upm.es/ontologies/segb/ns#usedMLModel">used machine learning model</a></li>
+  <li><a href="#usedSoftware" title="http://www.gsi.upm.es/ontologies/segb/ns#usedSoftware">used software</a></li>
   <li><a href="#wasPerformedBy" title="http://www.gsi.upm.es/ontologies/segb/ns#wasPerformedBy">was performed by</a></li>
  </ul>
  <div class="entity" id="intermediateActivity">
@@ -217,6 +220,35 @@ This section provides details for each class and property defined by Semantic Et
    </dl>
   </div>
  </div>
+ <div class="entity" id="wasRequestedBy">
+  <h3>requested by<sup class="type-op" title="object property">op</sup> <span class="backlink"> back to <a href="#toc">ToC</a> or <a href="#objectproperties">Object Property ToC</a> </span></h3>
+  <p><strong>IRI:</strong> http://www.gsi.upm.es/ontologies/segb/ns#wasRequestedBy</p>
+  <div class="comment">
+   <span class="markdown">Represents the relation between a logged activity and the agent that requested it.</span>
+  </div>
+  <div class="description">
+   <dl>
+    <dt>
+     has super-properties
+    </dt>
+    <dd>
+     <a href="http://www.w3.org/ns/prov#wasAssociatedWith" target="_blank" title="http://www.w3.org/ns/prov#wasAssociatedWith">was Associated With</a> <sup class="type-op" title="object property">op</sup>
+    </dd>
+    <dt>
+     has domain
+    </dt>
+    <dd>
+     <a href="#LoggedActivity" title="http://www.gsi.upm.es/ontologies/segb/ns#LoggedActivity">Logged Activity</a> <sup class="type-c" title="class">c</sup>
+    </dd>
+    <dt>
+     has range
+    </dt>
+    <dd>
+     <a href="http://www.w3.org/ns/prov#Agent" target="_blank" title="http://www.w3.org/ns/prov#Agent">Agent</a> <sup class="type-c" title="class">c</sup>
+    </dd>
+   </dl>
+  </div>
+ </div>
  <div class="entity" id="triggeredBy">
   <h3>triggered by<sup class="type-op" title="object property">op</sup> <span class="backlink"> back to <a href="#toc">ToC</a> or <a href="#objectproperties">Object Property ToC</a> </span></h3>
   <p><strong>IRI:</strong> http://www.gsi.upm.es/ontologies/segb/ns#triggeredBy</p>
@@ -310,6 +342,35 @@ This section provides details for each class and property defined by Semantic Et
    </dl>
   </div>
  </div>
+ <div class="entity" id="usedDataset">
+  <h3>used dataset<sup class="type-op" title="object property">op</sup> <span class="backlink"> back to <a href="#toc">ToC</a> or <a href="#objectproperties">Object Property ToC</a> </span></h3>
+  <p><strong>IRI:</strong> http://www.gsi.upm.es/ontologies/segb/ns#usedDataset</p>
+  <div class="comment">
+   <span class="markdown">This property relates an activity with the Dataset or the Corpus used to carry out the analysis.</span>
+  </div>
+  <div class="description">
+   <dl>
+    <dt>
+     has super-properties
+    </dt>
+    <dd>
+     <a href="http://www.w3.org/ns/prov#used" target="_blank" title="http://www.w3.org/ns/prov#used">used</a> <sup class="type-op" title="object property">op</sup>
+    </dd>
+    <dt>
+     has domain
+    </dt>
+    <dd>
+     <a href="http://www.w3.org/ns/prov#Activity" target="_blank" title="http://www.w3.org/ns/prov#Activity">Activity</a> <sup class="type-c" title="class">c</sup>
+    </dd>
+    <dt>
+     has range
+    </dt>
+    <dd>
+     <a href="http://schema.org/Dataset" target="_blank" title="http://schema.org/Dataset">Dataset</a> <sup class="type-c" title="class">c</sup> <span class="logic">or</span> <a href="http://www.w3.org/ns/mls#Dataset" target="_blank" title="http://www.w3.org/ns/mls#Dataset">Dataset</a> <sup class="type-c" title="class">c</sup>
+    </dd>
+   </dl>
+  </div>
+ </div>
  <div class="entity" id="usedMLModel">
   <h3>used machine learning model<sup class="type-op" title="object property">op</sup> <span class="backlink"> back to <a href="#toc">ToC</a> or <a href="#objectproperties">Object Property ToC</a> </span></h3>
   <p><strong>IRI:</strong> http://www.gsi.upm.es/ontologies/segb/ns#usedMLModel</p>
@@ -335,6 +396,35 @@ This section provides details for each class and property defined by Semantic Et
     </dt>
     <dd>
      <a href="http://www.w3.org/ns/mls#Model" target="_blank" title="http://www.w3.org/ns/mls#Model">Model</a> <sup class="type-c" title="class">c</sup>
+    </dd>
+   </dl>
+  </div>
+ </div>
+ <div class="entity" id="usedSoftware">
+  <h3>used software<sup class="type-op" title="object property">op</sup> <span class="backlink"> back to <a href="#toc">ToC</a> or <a href="#objectproperties">Object Property ToC</a> </span></h3>
+  <p><strong>IRI:</strong> http://www.gsi.upm.es/ontologies/segb/ns#usedSoftware</p>
+  <div class="comment">
+   <span class="markdown">Represents the fact that an activity has used a Software to produce the result.</span>
+  </div>
+  <div class="description">
+   <dl>
+    <dt>
+     has super-properties
+    </dt>
+    <dd>
+     <a href="http://www.w3.org/ns/prov#used" target="_blank" title="http://www.w3.org/ns/prov#used">used</a> <sup class="type-op" title="object property">op</sup>
+    </dd>
+    <dt>
+     has domain
+    </dt>
+    <dd>
+     <a href="http://www.w3.org/ns/prov#Activity" target="_blank" title="http://www.w3.org/ns/prov#Activity">Activity</a> <sup class="type-c" title="class">c</sup>
+    </dd>
+    <dt>
+     has range
+    </dt>
+    <dd>
+     <a href="http://schema.org/SoftwareApplication" target="_blank" title="http://schema.org/SoftwareApplication">Software Application</a> <sup class="type-c" title="class">c</sup> <span class="logic">or</span> <a href="http://usefulinc.com/ns/doap#Project" target="_blank" title="http://usefulinc.com/ns/doap#Project">Project</a> <sup class="type-c" title="class">c</sup> <span class="logic">or</span> <a href="http://usefulinc.com/ns/doap#Version" target="_blank" title="http://usefulinc.com/ns/doap#Version">Version</a> <sup class="type-c" title="class">c</sup> <span class="logic">or</span> <a href="http://www.w3.org/ns/mls#Software" target="_blank" title="http://www.w3.org/ns/mls#Software">Software</a> <sup class="type-c" title="class">c</sup>
     </dd>
    </dl>
   </div>

@@ -2,7 +2,7 @@
   "_comment" : "Created with OWL2VOWL (version 0.3.5), http://vowl.visualdataweb.org",
   "header" : {
     "languages" : [ "en", "undefined" ],
-    "baseIris" : [ "http://sw.opencyc.org/concept", "http://www.w3.org/1999/02/22-rdf-syntax-ns", "http://kb.openrobots.org", "http://www.w3.org/ns/mls", "http://www.w3.org/2000/01/rdf-schema", "http://www.w3.org/ns/prov", "http://www.w3.org/2001/XMLSchema", "http://www.gsi.upm.es/ontologies/segb/ns" ],
+    "baseIris" : [ "http://sw.opencyc.org/concept", "http://www.w3.org/1999/02/22-rdf-syntax-ns", "http://schema.org", "http://kb.openrobots.org", "http://usefulinc.com/ns/doap", "http://www.w3.org/ns/mls", "http://www.w3.org/2000/01/rdf-schema", "http://www.w3.org/ns/prov", "http://www.w3.org/2001/XMLSchema", "http://www.gsi.upm.es/ontologies/segb/ns" ],
     "title" : {
       "en" : "Semantic Ethical Glass Box (SEGB) Ontology"
     },
@@ -37,16 +37,16 @@
         "value" : "http://www.gsi.upm.es",
         "type" : "iri"
       } ],
-      "preferredNamespaceUri" : [ {
-        "identifier" : "preferredNamespaceUri",
-        "language" : "undefined",
-        "value" : "http://www.gsi.upm.es/ontologies/segb/ns#",
-        "type" : "label"
-      } ],
       "versionInfo" : [ {
         "identifier" : "versionInfo",
         "language" : "undefined",
         "value" : "1.0.0",
+        "type" : "label"
+      } ],
+      "preferredNamespaceUri" : [ {
+        "identifier" : "preferredNamespaceUri",
+        "language" : "undefined",
+        "value" : "http://www.gsi.upm.es/ontologies/segb/ns#",
         "type" : "label"
       } ],
       "title" : [ {
@@ -59,44 +59,47 @@
   },
   "namespace" : [ ],
   "class" : [ {
-    "id" : "10",
+    "id" : "8",
     "type" : "owl:Class"
   }, {
     "id" : "12",
     "type" : "owl:Class"
   }, {
+    "id" : "13",
+    "type" : "owl:Class"
+  }, {
     "id" : "2",
     "type" : "owl:intersectionOf"
   }, {
-    "id" : "18",
-    "type" : "owl:intersectionOf"
-  }, {
-    "id" : "15",
-    "type" : "owl:Thing"
-  }, {
-    "id" : "11",
-    "type" : "owl:unionOf"
+    "id" : "21",
+    "type" : "owl:Class"
   }, {
     "id" : "22",
-    "type" : "owl:Class"
+    "type" : "owl:intersectionOf"
   }, {
-    "id" : "19",
-    "type" : "owl:Class"
+    "id" : "24",
+    "type" : "owl:unionOf"
+  }, {
+    "id" : "27",
+    "type" : "owl:unionOf"
+  }, {
+    "id" : "16",
+    "type" : "owl:Thing"
   }, {
     "id" : "9",
+    "type" : "owl:unionOf"
+  }, {
+    "id" : "32",
+    "type" : "owl:Class"
+  }, {
+    "id" : "23",
+    "type" : "owl:Class"
+  }, {
+    "id" : "11",
     "type" : "owl:intersectionOf"
   }, {
     "id" : "5",
     "type" : "owl:intersectionOf"
-  }, {
-    "id" : "1",
-    "type" : "owl:unionOf"
-  }, {
-    "id" : "13",
-    "type" : "owl:unionOf"
-  }, {
-    "id" : "28",
-    "type" : "owl:Class"
   }, {
     "id" : "26",
     "type" : "owl:Class"
@@ -104,7 +107,28 @@
     "id" : "29",
     "type" : "owl:Class"
   }, {
-    "id" : "27",
+    "id" : "1",
+    "type" : "owl:unionOf"
+  }, {
+    "id" : "14",
+    "type" : "owl:unionOf"
+  }, {
+    "id" : "25",
+    "type" : "owl:Class"
+  }, {
+    "id" : "39",
+    "type" : "owl:Class"
+  }, {
+    "id" : "38",
+    "type" : "owl:Class"
+  }, {
+    "id" : "28",
+    "type" : "owl:Class"
+  }, {
+    "id" : "40",
+    "type" : "owl:Class"
+  }, {
+    "id" : "35",
     "type" : "owl:Class"
   } ],
   "classAttribute" : [ {
@@ -114,9 +138,9 @@
     "label" : {
       "IRI-based" : "Activity"
     },
-    "subClasses" : [ "11", "1" ],
+    "subClasses" : [ "9", "1" ],
     "attributes" : [ "external" ],
-    "id" : "10"
+    "id" : "8"
   }, {
     "iri" : "http://kb.openrobots.org#RobotResponses",
     "baseIri" : "http://kb.openrobots.org",
@@ -127,19 +151,47 @@
     "attributes" : [ "external" ],
     "id" : "12"
   }, {
+    "iri" : "http://usefulinc.com/ns/doap#Version",
+    "baseIri" : "http://usefulinc.com/ns/doap",
     "instances" : 0,
-    "intersection" : [ "13", "10" ],
+    "label" : {
+      "IRI-based" : "Version"
+    },
+    "attributes" : [ "external" ],
+    "id" : "13"
+  }, {
+    "instances" : 0,
+    "intersection" : [ "14", "8" ],
     "attributes" : [ "intersection", "anonymous" ],
     "id" : "2"
   }, {
+    "iri" : "http://www.w3.org/ns/mls#Software",
+    "baseIri" : "http://www.w3.org/ns/mls",
     "instances" : 0,
-    "intersection" : [ "13", "19" ],
+    "label" : {
+      "IRI-based" : "Software"
+    },
+    "attributes" : [ "external" ],
+    "id" : "21"
+  }, {
+    "instances" : 0,
+    "intersection" : [ "14", "23" ],
     "attributes" : [ "intersection", "anonymous" ],
-    "id" : "18"
+    "id" : "22"
+  }, {
+    "instances" : 0,
+    "union" : [ "25", "26" ],
+    "attributes" : [ "anonymous", "union" ],
+    "id" : "24"
+  }, {
+    "instances" : 0,
+    "union" : [ "28", "13", "29", "21" ],
+    "attributes" : [ "anonymous", "union" ],
+    "id" : "27"
   }, {
     "iri" : "http://www.w3.org/2002/07/owl#Thing",
     "baseIri" : "http://owl2vowl.de",
-    "id" : "15",
+    "id" : "16",
     "label" : {
       "undefined" : "Thing"
     }
@@ -151,13 +203,13 @@
       "IRI-based" : "Result",
       "en" : "Result"
     },
-    "union" : [ "10", "19" ],
+    "union" : [ "8", "23" ],
     "comment" : {
       "en" : "Represents the result of an activity."
     },
     "attributes" : [ "union" ],
-    "id" : "11",
-    "superClasses" : [ "10" ]
+    "id" : "9",
+    "superClasses" : [ "8" ]
   }, {
     "iri" : "http://sw.opencyc.org/concept/Action",
     "baseIri" : "http://sw.opencyc.org/concept",
@@ -166,7 +218,7 @@
       "IRI-based" : "Action"
     },
     "attributes" : [ "external" ],
-    "id" : "22"
+    "id" : "32"
   }, {
     "iri" : "http://www.w3.org/ns/prov#Entity",
     "baseIri" : "http://www.w3.org/ns/prov",
@@ -175,17 +227,35 @@
       "IRI-based" : "Entity"
     },
     "attributes" : [ "external" ],
-    "id" : "19"
+    "id" : "23"
   }, {
     "instances" : 0,
-    "intersection" : [ "11", "10" ],
+    "intersection" : [ "9", "8" ],
     "attributes" : [ "intersection", "anonymous" ],
-    "id" : "9"
+    "id" : "11"
   }, {
     "instances" : 0,
-    "intersection" : [ "11", "19" ],
+    "intersection" : [ "9", "23" ],
     "attributes" : [ "intersection", "anonymous" ],
     "id" : "5"
+  }, {
+    "iri" : "http://www.w3.org/ns/mls#Dataset",
+    "baseIri" : "http://www.w3.org/ns/mls",
+    "instances" : 0,
+    "label" : {
+      "IRI-based" : "Dataset"
+    },
+    "attributes" : [ "external" ],
+    "id" : "26"
+  }, {
+    "iri" : "http://usefulinc.com/ns/doap#Project",
+    "baseIri" : "http://usefulinc.com/ns/doap",
+    "instances" : 0,
+    "label" : {
+      "IRI-based" : "Project"
+    },
+    "attributes" : [ "external" ],
+    "id" : "29"
   }, {
     "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#LoggedActivity",
     "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
@@ -194,13 +264,13 @@
       "IRI-based" : "LoggedActivity",
       "en" : "Logged Activity"
     },
-    "union" : [ "22", "28", "12", "29" ],
+    "union" : [ "32", "39", "12", "40" ],
     "comment" : {
       "en" : "Represents an activity that is recorded/logged in the SEGB."
     },
     "attributes" : [ "union" ],
     "id" : "1",
-    "superClasses" : [ "10" ]
+    "superClasses" : [ "8" ]
   }, {
     "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#Trigger",
     "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
@@ -209,12 +279,21 @@
       "IRI-based" : "Trigger",
       "en" : "Trigger"
     },
-    "union" : [ "10", "19" ],
+    "union" : [ "8", "23" ],
     "comment" : {
       "en" : "Represents an event that caused/triggered an activity."
     },
     "attributes" : [ "union" ],
-    "id" : "13"
+    "id" : "14"
+  }, {
+    "iri" : "http://schema.org/Dataset",
+    "baseIri" : "http://schema.org",
+    "instances" : 0,
+    "label" : {
+      "IRI-based" : "Dataset"
+    },
+    "attributes" : [ "external" ],
+    "id" : "25"
   }, {
     "iri" : "http://kb.openrobots.org#Intent",
     "baseIri" : "http://kb.openrobots.org",
@@ -223,7 +302,7 @@
       "IRI-based" : "Intent"
     },
     "attributes" : [ "external" ],
-    "id" : "28"
+    "id" : "39"
   }, {
     "iri" : "http://www.w3.org/ns/mls#Model",
     "baseIri" : "http://www.w3.org/ns/mls",
@@ -232,7 +311,16 @@
       "IRI-based" : "Model"
     },
     "attributes" : [ "external" ],
-    "id" : "26"
+    "id" : "38"
+  }, {
+    "iri" : "http://schema.org/SoftwareApplication",
+    "baseIri" : "http://schema.org",
+    "instances" : 0,
+    "label" : {
+      "IRI-based" : "SoftwareApplication"
+    },
+    "attributes" : [ "external" ],
+    "id" : "28"
   }, {
     "iri" : "http://www.w3.org/ns/mls#Run",
     "baseIri" : "http://www.w3.org/ns/mls",
@@ -241,7 +329,7 @@
       "IRI-based" : "Run"
     },
     "attributes" : [ "external" ],
-    "id" : "29"
+    "id" : "40"
   }, {
     "iri" : "http://www.w3.org/ns/prov#Agent",
     "baseIri" : "http://www.w3.org/ns/prov",
@@ -250,7 +338,7 @@
       "IRI-based" : "Agent"
     },
     "attributes" : [ "external" ],
-    "id" : "27"
+    "id" : "35"
   } ],
   "property" : [ {
     "id" : "0",
@@ -259,43 +347,52 @@
     "id" : "4",
     "type" : "owl:objectProperty"
   }, {
-    "id" : "8",
+    "id" : "10",
     "type" : "owl:objectProperty"
   }, {
-    "id" : "14",
-    "type" : "owl:objectProperty"
-  }, {
-    "id" : "16",
-    "type" : "owl:objectProperty"
-  }, {
-    "id" : "20",
-    "type" : "rdfs:SubClassOf"
-  }, {
-    "id" : "21",
-    "type" : "rdfs:SubClassOf"
-  }, {
-    "id" : "23",
-    "type" : "owl:objectProperty"
-  }, {
-    "id" : "7",
-    "type" : "owl:objectProperty"
-  }, {
-    "id" : "24",
-    "type" : "owl:objectProperty"
-  }, {
-    "id" : "3",
+    "id" : "15",
     "type" : "owl:objectProperty"
   }, {
     "id" : "17",
     "type" : "owl:objectProperty"
   }, {
-    "id" : "25",
+    "id" : "20",
+    "type" : "owl:objectProperty"
+  }, {
+    "id" : "30",
+    "type" : "rdfs:SubClassOf"
+  }, {
+    "id" : "31",
+    "type" : "rdfs:SubClassOf"
+  }, {
+    "id" : "33",
+    "type" : "owl:objectProperty"
+  }, {
+    "id" : "34",
+    "type" : "owl:objectProperty"
+  }, {
+    "id" : "7",
+    "type" : "owl:objectProperty"
+  }, {
+    "id" : "36",
+    "type" : "owl:objectProperty"
+  }, {
+    "id" : "3",
+    "type" : "owl:objectProperty"
+  }, {
+    "id" : "18",
+    "type" : "owl:objectProperty"
+  }, {
+    "id" : "37",
     "type" : "owl:objectProperty"
   }, {
     "id" : "6",
     "type" : "owl:objectProperty"
   }, {
-    "id" : "30",
+    "id" : "19",
+    "type" : "owl:objectProperty"
+  }, {
+    "id" : "41",
     "type" : "owl:objectProperty"
   } ],
   "propertyAttribute" : [ {
@@ -331,7 +428,7 @@
   }, {
     "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#producedActivityResult",
     "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
-    "range" : "9",
+    "range" : "11",
     "label" : {
       "IRI-based" : "producedActivityResult",
       "en" : "produced activity result"
@@ -342,43 +439,58 @@
       "en" : "Represents the relation between a result and an activity which produced it, where the result is an activity."
     },
     "attributes" : [ "object" ],
-    "id" : "8"
+    "id" : "10"
   }, {
     "iri" : "http://www.w3.org/ns/prov#wasInfluencedBy",
     "baseIri" : "http://www.w3.org/ns/prov",
-    "range" : "15",
+    "range" : "16",
     "label" : {
       "IRI-based" : "wasInfluencedBy"
     },
-    "domain" : "15",
+    "domain" : "16",
     "subproperty" : [ "7", "3" ],
     "attributes" : [ "object", "external" ],
-    "id" : "14"
+    "id" : "15"
   }, {
     "iri" : "http://www.w3.org/ns/prov#used",
     "baseIri" : "http://www.w3.org/ns/prov",
-    "range" : "15",
+    "range" : "16",
     "label" : {
       "IRI-based" : "used"
     },
-    "domain" : "15",
-    "subproperty" : [ "17" ],
+    "domain" : "16",
+    "subproperty" : [ "18", "19", "20" ],
     "attributes" : [ "object", "external" ],
-    "id" : "16"
+    "id" : "17"
   }, {
-    "range" : "10",
-    "domain" : "11",
-    "attributes" : [ "object", "anonymous" ],
+    "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#usedDataset",
+    "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
+    "range" : "24",
+    "label" : {
+      "IRI-based" : "usedDataset",
+      "en" : "used dataset"
+    },
+    "superproperty" : [ "17" ],
+    "domain" : "8",
+    "comment" : {
+      "undefined" : "This property relates an activity with the Dataset or the Corpus used to carry out the analysis."
+    },
+    "attributes" : [ "object" ],
     "id" : "20"
   }, {
-    "range" : "10",
+    "range" : "8",
+    "domain" : "9",
+    "attributes" : [ "object", "anonymous" ],
+    "id" : "30"
+  }, {
+    "range" : "8",
     "domain" : "1",
     "attributes" : [ "object", "anonymous" ],
-    "id" : "21"
+    "id" : "31"
   }, {
     "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#triggeredByEntity",
     "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
-    "range" : "18",
+    "range" : "22",
     "label" : {
       "IRI-based" : "triggeredByEntity",
       "en" : "triggered by entity"
@@ -389,18 +501,33 @@
       "en" : "Represents the relation between an activity and the event which triggered it, where the event is an entity."
     },
     "attributes" : [ "object" ],
-    "id" : "23"
+    "id" : "33"
+  }, {
+    "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#wasRequestedBy",
+    "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
+    "range" : "35",
+    "label" : {
+      "IRI-based" : "wasRequestedBy",
+      "en" : "requested by"
+    },
+    "superproperty" : [ "36" ],
+    "domain" : "1",
+    "comment" : {
+      "en" : "Represents the relation between a logged activity and the agent that requested it."
+    },
+    "attributes" : [ "object" ],
+    "id" : "34"
   }, {
     "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#producedResult",
     "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
-    "range" : "11",
+    "range" : "9",
     "label" : {
       "IRI-based" : "producedResult",
       "en" : "produced result"
     },
-    "superproperty" : [ "14" ],
+    "superproperty" : [ "15" ],
     "domain" : "1",
-    "subproperty" : [ "4", "8" ],
+    "subproperty" : [ "4", "10" ],
     "comment" : {
       "en" : "Represents the relation between a result and an activity which produced it."
     },
@@ -409,25 +536,25 @@
   }, {
     "iri" : "http://www.w3.org/ns/prov#wasAssociatedWith",
     "baseIri" : "http://www.w3.org/ns/prov",
-    "range" : "15",
+    "range" : "16",
     "label" : {
       "IRI-based" : "wasAssociatedWith"
     },
-    "domain" : "15",
-    "subproperty" : [ "25" ],
+    "domain" : "16",
+    "subproperty" : [ "34", "37" ],
     "attributes" : [ "object", "external" ],
-    "id" : "24"
+    "id" : "36"
   }, {
     "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#triggeredBy",
     "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
-    "range" : "13",
+    "range" : "14",
     "label" : {
       "IRI-based" : "triggeredBy",
       "en" : "triggered by"
     },
-    "superproperty" : [ "14" ],
+    "superproperty" : [ "15" ],
     "domain" : "1",
-    "subproperty" : [ "0", "23" ],
+    "subproperty" : [ "0", "33" ],
     "comment" : {
       "en" : "Represents the relation between an activity and the event which triggered it."
     },
@@ -436,44 +563,59 @@
   }, {
     "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#usedMLModel",
     "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
-    "range" : "26",
+    "range" : "38",
     "label" : {
       "IRI-based" : "usedMLModel",
       "en" : "used machine learning model"
     },
-    "superproperty" : [ "16" ],
-    "domain" : "10",
+    "superproperty" : [ "17" ],
+    "domain" : "8",
     "comment" : {
       "en" : "Represents the fact that an activity has used a Machine Learning Model to produce the result."
     },
     "attributes" : [ "object" ],
-    "id" : "17"
+    "id" : "18"
   }, {
     "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#wasPerformedBy",
     "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
-    "range" : "27",
+    "range" : "35",
     "label" : {
       "IRI-based" : "wasPerformedBy",
       "en" : "was performed by"
     },
-    "superproperty" : [ "24" ],
+    "superproperty" : [ "36" ],
     "domain" : "1",
     "comment" : {
       "en" : "Represents the relation between a logged activity and the agent that performed it."
     },
     "attributes" : [ "object" ],
-    "id" : "25"
+    "id" : "37"
   }, {
     "iri" : "http://www.w3.org/ns/prov#generated",
     "baseIri" : "http://www.w3.org/ns/prov",
-    "range" : "15",
+    "range" : "16",
     "label" : {
       "IRI-based" : "generated"
     },
-    "domain" : "15",
+    "domain" : "16",
     "subproperty" : [ "4" ],
     "attributes" : [ "object", "external" ],
     "id" : "6"
+  }, {
+    "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#usedSoftware",
+    "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
+    "range" : "27",
+    "label" : {
+      "IRI-based" : "usedSoftware",
+      "en" : "used software"
+    },
+    "superproperty" : [ "17" ],
+    "domain" : "8",
+    "comment" : {
+      "en" : "Represents the fact that an activity has used a Software to produce the result."
+    },
+    "attributes" : [ "object" ],
+    "id" : "19"
   }, {
     "iri" : "http://www.gsi.upm.es/ontologies/segb/ns#intermediateActivity",
     "baseIri" : "http://www.gsi.upm.es/ontologies/segb/ns",
@@ -495,6 +637,6 @@
       "en" : "Represents the relation between a logged activity and another activity that is an intermediate step towards the final result."
     },
     "attributes" : [ "object" ],
-    "id" : "30"
+    "id" : "41"
   } ]
 }

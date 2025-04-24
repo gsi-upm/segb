@@ -2,11 +2,13 @@
 @prefix amor: <http://www.gsi.upm.es/ontologies/amor/ns#> .
 @prefix concept: <http://sw.opencyc.org/concept/> .
 @prefix dc: <http://purl.org/dc/terms/> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
 @prefix mls: <http://www.w3.org/ns/mls#> .
 @prefix oro: <http://kb.openrobots.org#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -150,3 +152,41 @@
     rdfs:range mls:Model ;
     rdfs:label "used machine learning model"@en ;
     rdfs:comment "Represents the fact that an activity has used a Machine Learning Model to produce the result."@en .
+
+:usedDataset
+  a owl:ObjectProperty ;
+  rdfs:subPropertyOf prov:used ;
+  rdfs:label "used dataset"@en ;
+  rdfs:domain prov:Activity ;
+  rdfs:range [
+        a owl:Class ;
+        owl:unionOf (
+            mls:Dataset
+            schema:Dataset
+        )
+    ] ;
+  rdfs:comment "This property relates an activity with the Dataset or the Corpus used to carry out the analysis." .
+:usedSoftware
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:used ;
+    owl:equivalentProperty amor:usedSoftware ;
+    rdfs:domain prov:Activity ;
+    rdfs:range [
+        a owl:Class ;
+        owl:unionOf (
+            schema:SoftwareApplication
+            mls:Software
+            doap:Project
+            doap:Version
+        )
+    ] ;
+    rdfs:label "used software"@en ;
+    rdfs:comment "Represents the fact that an activity has used a Software to produce the result."@en .
+
+:wasRequestedBy
+    a owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:wasAssociatedWith ;
+    rdfs:domain :LoggedActivity ;
+    rdfs:range prov:Agent ;
+    rdfs:label "requested by"@en ;
+    rdfs:comment "Represents the relation between a logged activity and the agent that requested it."@en .
