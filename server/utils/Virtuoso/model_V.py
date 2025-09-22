@@ -131,58 +131,85 @@ def get_ttls() -> str:
 def run_custom_query(query: str) -> str:
     logger.info(f"Executing custom SPARQL query: {query}")
 
+    # Block unsafe queries
     forbidden_keywords = ["INSERT", "DELETE", "LOAD", "CLEAR", "DROP", "CREATE", "COPY", "MOVE", "ADD"]
     pattern = r"(?i)^\s*(" + "|".join(forbidden_keywords) + r")\b"
     if re.search(pattern, query):
         logger.warning("Blocked unsafe SPARQL query attempt.")
         raise Exception("Only read-only SPARQL queries are allowed.")
 
-    # if query is a CONSTRUCT, return ttl
     is_construct = bool(re.match(r"(?i)^\s*CONSTRUCT\b", query.strip()))
-    headers = {"Accept": "text/turtle" if is_construct else "application/sparql-results+json"} # else is SELECT 
+    accept_header = "text/turtle" if is_construct else "application/sparql-results+json"
+
     response = requests.get(
         VIRTUOSO_SPARQL_ENDPOINT,
-        params={"query": query, "format": "text/turtle" if is_construct else "application/sparql-results+json"},
+        params={"query": query, "format": accept_header},
         auth=HTTPDigestAuth(VIRTUOSO_USER, VIRTUOSO_PASSWORD),
-        headers=headers
+        headers={"Accept": accept_header}
     )
 
     if response.status_code != 200:
         logger.error(f"SPARQL query failed: {response.text}")
         raise Exception(f"Virtuoso error: {response.text}")
-    
-    if is_construct:
-        return response.text  # already in Turtle
-    
-    # if SELECT, return table (JSON, because TTL is not posible)
-    data = response.json()
-    # bindings are dictionaries with all the groups of variables (rows)
-    results= data.get("results", {}).get("bindings", [])
-    # varriables are inside bindings (name, age...)
-    variables = data.get("head", {}).get("vars", [])
 
     g = Graph()
 
-    EX = Namespace("http://example.org/") # ttl predicates are not in the graph, so we need to create a namespace for them
-    g.bind("nocolision", EX) 
+    def parse_term(value):
+        if value["type"] == "uri":
+            return URIRef(value["value"])
+        elif value["type"] == "literal":
+            return Literal(value["value"], lang=value.get("xml:lang"), datatype=value.get("datatype"))
+        elif value["type"] == "bnode":
+            return BNode(value["value"])
+        else:
+            return Literal(value["value"])
 
-    for i, row in enumerate(results):
-        result_node = BNode ()
-        g.add((result_node, RDF.type, EX.Result))
-        for var in variables:
-            if var in row:
-                value = row[var]
-                if value["type"] == "uri":
-                    obj = URIRef(value["value"])
-                elif value["type"] == "literal":
-                    obj = Literal(value["value"], lang=value.get("xml:lang"), datatype=value.get("datatype"))
-                elif value["type"] == "bnode":
-                    obj = BNode(value["value"])
-                else:
-                    obj = Literal(value["value"])
-                g.add((result_node, EX[var], obj))
+    if is_construct:
+        g.parse(data=response.text, format="turtle")
+    else:
+        data = response.json()
+        results = data.get("results", {}).get("bindings", [])
+        variables = data.get("head", {}).get("vars", [])
 
-    return g.serialize(format="turtle")
+        for row in results:
+            if all(v in row for v in ["s", "p", "o"]):
+                s = parse_term(row["s"])
+                p = parse_term(row["p"])
+                o = parse_term(row["o"])
+                g.add((s, p, o))
+            else:
+                EX = Namespace("http://example.org/")
+                g.bind("nocolision", EX)
+                result_node = BNode()
+                g.add((result_node, RDF.type, EX.Result))
+                for var in variables:
+                    if var in row:
+                        obj = parse_term(row[var])
+                        g.add((result_node, EX[var], obj))
+
+    # Bind user-defined prefixes
+    try:
+        for prefix, uri in load_prefixes().items():
+            logger.debug(f"Binding prefix: {prefix} -> {uri}")
+            g.bind(prefix, Namespace(uri))
+    except Exception as e:
+        logger.warning(f"Could not load or bind prefixes: {e}")
+
+    try:
+        rd = g.serialize(format="turtle", encoding="utf-8").decode()
+    except Exception as e:
+        logger.error(f"Serialization failed: {e}")
+        raise
+
+    try:
+        rd = clean_prefixes_with_numbers(rd)
+    except Exception as e:
+        logger.warning(f"Could not clean prefixes: {e}")
+
+    return rd
+
+
+
 
 def delete_all_triples():
     sparql = f"""

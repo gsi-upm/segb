@@ -23,7 +23,7 @@ st.markdown("""
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-image: url('https://media.licdn.com/dms/image/v2/D4D12AQEzvH1u10mIvA/article-cover_image-shrink_720_1280/B4DZXwm2mkHwAM-/0/1743498480248?e=1752105600&v=beta&t=snPe1N3Kzfn12K3C8AyS4upxdA4TJ0Va7Ovad7I_Bco');
+        background-image: url('https://img.pikbest.com/backgrounds/20190131/technology-blue-line-dot-matrix-banner-background_1859516.jpg!bwr800');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;

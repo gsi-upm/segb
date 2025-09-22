@@ -1,82 +1,84 @@
-[
-  {
-    "question": "Which is the message that contains \"como defiende marlaska lograr una migración legal y segura\"?",
-    "expected_answer": "The message's execution is message_xy75i."
-  },
-  {
-    "question": "What is the text of message_qjgqs?",
-    "expected_answer": "`message_qjgqs`'s `text` is \"es una pirueta política\"."
-  },
-  {
-    "question": "To which experiment is action_io2ja related?",
-    "expected_answer": "Action_io2ja's related experiment is experiment1-gloria1422."
-  },
-  {
-    "question": "Who is the speaker in SpeechAction action_buo7h?",
-    "expected_answer": "The speaker's name is ari41."
-  },
-  {
-    "question": "Who is the listener in action_io2ja?",
-    "expected_answer": "The listener's property is human1."
-  },
-  {
-    "question": "What message is associated with action_03gro?",
-    "expected_answer": "The message associated with `action_03gro` is `message_zss1y`."
-  },
-  {
-    "question": "Which action involves the message_bxgau?",
-    "expected_answer": "The action involving `message_bxgau` is `action_an8u0`."
-  },
-  {
-    "question": "Who is the listener in action_an8u0?",
-    "expected_answer": "Ari41's role in action_an8u0 is as the listener."
-  },
-  {
-    "question": "What is the text of message_03mk7?",
-    "expected_answer": "The text of message_03mk7 is \"El fragmento que has proporcionado está sacado de una sección sobre los desacuerdos políticos en el Congreso español. En concreto, se menciona un conflicto relacionado con las enmiendas del proyecto de ley de desperdicio alimentario, específicamente aquellas referidas al IVA (impuesto sobre el valor añadido) de alimentos básicos. A continuación, te detallo lo relevante: Papel del PP: El Partido Popular (PP) ha estado criticando un acuerdo previo alcanzado por la Mesa del Congreso, donde varias enmiendas propuestas para modificar el IVA aplicado a los alimentos básicos fueron vetadas inicialmente debido a su impacto presupuestario. Estas enmiendas habían sido incorporadas al proyecto de ley tras ser aprobadas en el Senado. Situación del conflicto: La Mesa de la Cámara alta, en mayoría popular, decidió levantar el veto impuesto anteriormente al levantamiento por parte del Gobierno sobre estas enmiendas. Esta acción ha sido criticada por el PP como un intento de Pedro Sánchez (líder del PSOE) de gobernar evitando la cooperación necesaria con las Cortes Generales. Reacción del PP: El partido ha solicitado repetidamente a la Mesa del Congreso que posponga el pleno de votación del proyecto de ley a causa del choque en torno a estas modificaciones presupuestarias. Esta solicitud, sin embargo, se presenta con el voto en contra del propio Grupo Popular, evidenciando una compleja interna lucha por el control de la agenda legislativa.\n\nEl asunto refleja la tensión constante entre las fuerzas políticas en España y cómo pueden impactar directamente en leyes cruciales para distintos sectores, como es el caso del desperdicio alimentario. El debate sobre si modificar o no el IVA de alimentos básicos tiene implicaciones económicas significativas que resuenan con las políticas sociales del gobierno.\""
-  },
-  {
-    "question": "Which message talks about menores migrantes?",
-    "expected_answer": "The messages \"message_lauwq\" and \"message_m6hd1\" talk about menores migrantes."
-  },
-  {
-    "question": "What is the label of the experiment?",
-    "expected_answer": "Experiment 1's label is Experiment 1."
-  },
-  {
-    "question": "Which emotion recognition strategy does the experiment use?",
-    "expected_answer": "The experiment's emotion recognition strategy is Local Emotion Recognition."
-  },
-  {
-    "question": "Which recommendation strategies are used in the experiment?",
-    "expected_answer": "`experiment1-gloria1422`'s recommendation strategies are `EmotionSimilarity`, `MoralSimilarity`."
-  },
-  {
-    "question": "Which dataset does the experiment use?",
-    "expected_answer": "The experiment uses dataset `dataset5`."
-  },
-  {
-    "question": "Which is the link where the experiment records to the SEGB?",
-    "expected_answer": "The link where the experiment \"experiment1-gloria1422\" records to the SEGB is `https://amor-segb.gsi.upm.es`."
-  },
-  {
-    "question": "What visualization strategies are used in the experiment?",
-    "expected_answer": "The visualization strategies used in the experiment are Moral Value Visualization Strategy and Click Bait Visualization Strategy."
-  },
-  {
-    "question": "What language is used in experiment?",
-    "expected_answer": "`experiment1-gloria1422`'s language is `es_ES`."
-  },
-  {
-    "question": "Which is the message that contains \"me siento mal\"?",
-    "expected_answer": "The message's execution is `message_bxgau`."
-  },
-  {
-    "question": "Which action involves the message_hn2if?",
-    "expected_answer": "The action involving `message_hn2if` is `action_ddnwh`."
-  },
-  {
-    "question": "Which message talks about una pirueta política?",
-    "expected_answer": "message_qjgqs's execution is 'una pirueta política'."
-  }
-]
+{
+  "dataset": [
+    {
+      "question": "Which is the message that contains \"como defiende marlaska lograr una migración legal y segura\"?",
+      "expected_answer": "The message's execution is message_xy75i."
+    },
+    {
+      "question": "What is the text of message_qjgqs?",
+      "expected_answer": "`message_qjgqs`'s `text` is \"es una pirueta política\"."
+    },
+    {
+      "question": "To which experiment is action_io2ja related?",
+      "expected_answer": "Action_io2ja's related experiment is experiment1-gloria1422."
+    },
+    {
+      "question": "Who is the speaker in SpeechAction action_buo7h?",
+      "expected_answer": "The speaker's name is ari41."
+    },
+    {
+      "question": "Who is the listener in action_io2ja?",
+      "expected_answer": "The listener's property is human1."
+    },
+    {
+      "question": "What message is associated with action_03gro?",
+      "expected_answer": "The message associated with `action_03gro` is `message_zss1y`."
+    },
+    {
+      "question": "Which action involves the message_bxgau?",
+      "expected_answer": "The action involving `message_bxgau` is `action_an8u0`."
+    },
+    {
+      "question": "Who is the listener in action_an8u0?",
+      "expected_answer": "Ari41's role in action_an8u0 is as the listener."
+    },
+    {
+      "question": "What is the text of message_03mk7?",
+      "expected_answer": "The text of message_03mk7 is \"El fragmento que has proporcionado está sacado de una sección sobre los desacuerdos políticos en el Congreso español. En concreto, se menciona un conflicto relacionado con las enmiendas del proyecto de ley de desperdicio alimentario, específicamente aquellas referidas al IVA (impuesto sobre el valor añadido) de alimentos básicos. A continuación, te detallo lo relevante: Papel del PP: El Partido Popular (PP) ha estado criticando un acuerdo previo alcanzado por la Mesa del Congreso, donde varias enmiendas propuestas para modificar el IVA aplicado a los alimentos básicos fueron vetadas inicialmente debido a su impacto presupuestario. Estas enmiendas habían sido incorporadas al proyecto de ley tras ser aprobadas en el Senado. Situación del conflicto: La Mesa de la Cámara alta, en mayoría popular, decidió levantar el veto impuesto anteriormente al levantamiento por parte del Gobierno sobre estas enmiendas. Esta acción ha sido criticada por el PP como un intento de Pedro Sánchez (líder del PSOE) de gobernar evitando la cooperación necesaria con las Cortes Generales. Reacción del PP: El partido ha solicitado repetidamente a la Mesa del Congreso que posponga el pleno de votación del proyecto de ley a causa del choque en torno a estas modificaciones presupuestarias. Esta solicitud, sin embargo, se presenta con el voto en contra del propio Grupo Popular, evidenciando una compleja interna lucha por el control de la agenda legislativa.\n\nEl asunto refleja la tensión constante entre las fuerzas políticas en España y cómo pueden impactar directamente en leyes cruciales para distintos sectores, como es el caso del desperdicio alimentario. El debate sobre si modificar o no el IVA de alimentos básicos tiene implicaciones económicas significativas que resuenan con las políticas sociales del gobierno.\""
+    },
+    {
+      "question": "Which message talks about menores migrantes?",
+      "expected_answer": "The messages \"message_lauwq\" and \"message_m6hd1\" talk about menores migrantes."
+    },
+    {
+      "question": "What is the label of the experiment?",
+      "expected_answer": "Experiment 1's label is Experiment 1."
+    },
+    {
+      "question": "Which emotion recognition strategy does the experiment use?",
+      "expected_answer": "The experiment's emotion recognition strategy is Local Emotion Recognition."
+    },
+    {
+      "question": "Which recommendation strategies are used in the experiment?",
+      "expected_answer": "`experiment1-gloria1422`'s recommendation strategies are `EmotionSimilarity`, `MoralSimilarity`."
+    },
+    {
+      "question": "Which dataset does the experiment use?",
+      "expected_answer": "The experiment uses dataset `dataset5`."
+    },
+    {
+      "question": "Which is the link where the experiment records to the SEGB?",
+      "expected_answer": "The link where the experiment \"experiment1-gloria1422\" records to the SEGB is `https://amor-segb.gsi.upm.es`."
+    },
+    {
+      "question": "What visualization strategies are used in the experiment?",
+      "expected_answer": "The visualization strategies used in the experiment are Moral Value Visualization Strategy and Click Bait Visualization Strategy."
+    },
+    {
+      "question": "What language is used in experiment?",
+      "expected_answer": "`experiment1-gloria1422`'s language is `es_ES`."
+    },
+    {
+      "question": "Which is the message that contains \"me siento mal\"?",
+      "expected_answer": "The message's execution is `message_bxgau`."
+    },
+    {
+      "question": "Which action involves the message_hn2if?",
+      "expected_answer": "The action involving `message_hn2if` is `action_ddnwh`."
+    },
+    {
+      "question": "Which message talks about una pirueta política?",
+      "expected_answer": "message_qjgqs's execution is 'una pirueta política'."
+    }
+  ]
+}
