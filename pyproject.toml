@@ -17,8 +17,9 @@ dependencies = [
     "streamlit_agraph",
     "pyvis",
     "langchain",
-    "langchain-community", 
+    "langchain-community",
     "SPARQLWrapper==2.0.0",
     "pandas",
     "scikit-learn",
+    "python-multipart>=0.0.9"
 ]

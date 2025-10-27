@@ -9,8 +9,8 @@ LABEL org.opencontainers.image.licenses=MIT
 
 EXPOSE 5000
 
-
 WORKDIR /app
+
 ADD uv.lock uv.lock
 ADD pyproject.toml pyproject.toml
 
@@ -25,5 +25,6 @@ RUN mkdir /logs
 
 COPY ./server /app
 
-CMD ["uv", "run", "fastapi", "run", "utils/main_combined.py", "--port", "5000"]
+# CMD ["uv", "run", "fastapi", "run", "utils/combined/main.py", "--port", "5000", "--lifespan on"]
+CMD ["uv", "run", "uvicorn", "--app-dir", "/app/combined", "main:app", "--host", "0.0.0.0", "--port", "5000", "--lifespan", "on"]
 

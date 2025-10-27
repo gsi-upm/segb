@@ -9,31 +9,20 @@ services:
     networks:
       - internal_network
     depends_on:
-      - amor-segb-mongodb
       - amor-segb-neo4j
       - amor-segb-virtuoso
-      - ollama
     environment:
-      - SECRET_KEY=${SECRET_KEY} # Defined in .env file or leave empty
-      - DATABASE_SERVICE=segb-mongodb
       - LOGGING_LEVEL=DEBUG
       - VERSION=${VERSION}
-      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN} # Defined in .env file or leave empty
+    env_file:
+      - .env
     volumes:
       - ./logs:/logs
     links:
-      - "amor-segb-mongodb:database"
       - "amor-segb-neo4j:graph"
       - "amor-segb-virtuoso:virtuoso"
+    restart: always
 
-  amor-segb-mongodb:
-    container_name: amor-segb-mongodb
-    image: mongodb/mongodb-community-server:8.0.0-ubi8
-    volumes:
-      - amor-segb-db:/data/db
-      - amor-segb-db:/data/configdb
-    networks:
-      - internal_network
 
   amor-segb-neo4j:
     container_name: amor-segb-neo4j
@@ -61,49 +50,28 @@ services:
       - "1111:1111"
     environment:
       DBA_PASSWORD: viryourbear
+
     volumes:
       - ./db:/database
     networks:
       - internal_network
       
-  streamlit:
-    container_name: amor-segb-ui
-    build:
-      context: .
-      dockerfile: Dockerfile.streamlit
-    ports:
-      - "8501:8501"
-    depends_on:
-      - amor-segb
+  # streamlit:
+  #   container_name: amor-segb-ui
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.streamlit
+  #   ports:
+  #     - "8501:8501"
+  #   depends_on:
+  #     - amor-segb
 
-    networks:
-      - internal_network
-    environment:
-      - API_URL=http://amor-segb:5000
-    env_file:
-      - ./.env
-
-  ollama-init:
-    image: ollama/ollama
-    volumes:
-      - ollama:/root/.ollama 
-    entrypoint: ["ollama", "pull", "llama3.1"]
-    networks:
-      - internal_network
-    restart: "no"
-
-  ollama:
-    container_name: ollama
-    image: ollama/ollama
-    depends_on:
-      - ollama-init
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama:/root/.ollama 
-    networks:
-      - internal_network
-    command: serve
+  #   networks:
+  #     - internal_network
+  #   environment:
+  #     - API_URL=http://amor-segb:5000
+  #   env_file:
+  #     - ./.env
 
 
 networks:
