@@ -26,5 +26,6 @@ RUN mkdir /logs
 COPY ./server /app
 
 # CMD ["uv", "run", "fastapi", "run", "utils/combined/main.py", "--port", "5000", "--lifespan on"]
-CMD ["uv", "run", "uvicorn", "--app-dir", "/app/combined", "main:app", "--host", "0.0.0.0", "--port", "5000", "--lifespan", "on"]
+# CMD ["uv", "run", "uvicorn", "--app-dir", "/app/combined", "main:app", "--host", "0.0.0.0", "--port", "5000", "--lifespan", "on"]
+CMD ["uv", "run", "uvicorn", "combined.main:app", "--host", "0.0.0.0", "--port", "5000", "--lifespan", "on"]
 

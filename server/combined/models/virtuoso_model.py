@@ -12,7 +12,7 @@ from requests.auth import HTTPDigestAuth
 from rdflib import Graph, Literal, Namespace, URIRef, BNode
 from rdflib.namespace import RDF
 
-from .prefix_utils import (
+from combined.utils.prefix_utils import (
     extract_prefixes,
     save_prefixes,
     load_prefixes,

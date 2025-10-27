@@ -29,30 +29,14 @@ from rdflib import Graph
 
 
 # Internal Utilities
-# from server.utils.main_combined import DeleteRequest, TTLContent
-# from utils.credentials import User, validate_token, Role
-
-# from utils.Neo4j.model_N import (
-#     connect_to_db,
-#     get_logs_by_date,
-#     get_recent_logs,
-#     store_bulk_deletion,
-#     store_modification
-# )
-# from utils.Virtuoso.model_V import (
-#     delete_all_triples,
-#     get_ttls,
-#     insert_ttl,
-#     run_custom_query
-# )
-
-
+from combined.utils.semantic import DeleteRequest, TTLContent
+from combined.utils.credentials import User, validate_token, Role
 
 
 
 # Data Models
-from models.neo4j_model import Neo4jModel
-from models.virtuoso_model import VirtuosoModel
+from combined.models.neo4j_model import Neo4jModel
+from combined.models.virtuoso_model import VirtuosoModel
 
 
 
@@ -61,6 +45,7 @@ from models.virtuoso_model import VirtuosoModel
 # Global Locks
 # ==============================
 transaction_lock = Lock()
+
 
 
 # ==============================
@@ -316,148 +301,148 @@ def ready():
 # ---------- Main endpoints ------------- # 
 
 
-# @app.post("/ttl")
-# async def insert_ttl_combined(
-#     request: Request,
-#     data: TTLContent,
-#     user: Annotated[User, Depends(validate_token)]
-# ):
-#     logger.info(f"Received post for log from IP: {request.client.host} from user {user.name} (username: {user.username} - roles: {user.roles})")
-#     if not (Role.LOGGER.value in user.roles or Role.ADMIN.value in user.roles):
-#         logger.info(f"User {user.name} (username: {user.username} - roles: {user.roles}) does not have permission to perform this action")
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="User does not have permission to perform this action"
-#         )
+@app.post("/ttl")
+async def insert_ttl_combined(
+    request: Request,
+    data: TTLContent,
+    user: Annotated[User, Depends(validate_token)]
+):
+    logger.info(f"Received post for log from IP: {request.client.host} from user {user.name} (username: {user.username} - roles: {user.roles})")
+    if not (Role.LOGGER.value in user.roles or Role.ADMIN.value in user.roles):
+        logger.info(f"User {user.name} (username: {user.username} - roles: {user.roles}) does not have permission to perform this action")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have permission to perform this action"
+        )
     
-#     if transaction_lock.locked():
-#         raise HTTPException(
-#             status_code=429,
-#             detail="Another transaction is in progress. Please try again later."
-#         )
+    if transaction_lock.locked():
+        raise HTTPException(
+            status_code=429,
+            detail="Another transaction is in progress. Please try again later."
+        )
     
-#     async with transaction_lock:    
-#         try:
-#             origin_ip = request.client.host
-#             actor = data.user or user.username or "anonymous"
+    async with transaction_lock:    
+        try:
+            origin_ip = request.client.host
+            actor = data.user or user.username or "anonymous"
 
-#             # Insert into Virtuoso
-#             log_id = insert_ttl(data.ttl_content)
+            # Insert into Virtuoso
+            log_id = app.state.virtuoso.insert_ttl(data.ttl_content)
 
-#             # Store in Neo4j as insertion
-#             store_modification("insertion", origin_ip, actor, data.ttl_content)
+            # Store in Neo4j as insertion
+            app.state.neo4j.store_modification("insertion", origin_ip, actor, data.ttl_content)
 
-#             return JSONResponse(
-#                 content={"message": "TTL inserted into both Virtuoso and Neo4j", "log_id": log_id},
-#                 status_code=201
-#             )
-#         except Exception as e:
-#             logger.exception("Insertion failed")
-#             raise HTTPException(status_code=500, detail=f"Error inserting TTL: {str(e)}")
-
-
-
-# @app.get("/events", response_class=PlainTextResponse) 
-# async def get_events(user: Annotated[User, Depends(validate_token)]):
-#     logger.info(f"Received request for log from user {user.name} (username: {user.username} - roles: {user.roles})")
-#     if not (Role.AUDITOR.value in user.roles or Role.ADMIN.value in user.roles):
-#         logger.info(f"User {user.name} (username: {user.username} - roles: {user.roles}) does not have permission to perform this action")
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="User does not have permission to perform this action"
-#         )
-#     try:
-#         ttl_data = get_ttls()       
-#         return PlainTextResponse(content=ttl_data, media_type="text/turtle") # so that it returns in TTL format instead of serialized JSON
-#     except Exception as e:
-#         logger.exception("Failed fetching events")
-#         raise HTTPException(status_code=500, detail="Error fetching events")
+            return JSONResponse(
+                content={"message": "TTL inserted into both Virtuoso and Neo4j", "log_id": log_id},
+                status_code=201  # Created
+            )
+        except Exception as e:
+            logger.exception("Insertion failed")
+            raise HTTPException(status_code=500, detail=f"Error inserting TTL: {str(e)}")
 
 
-# @app.get("/query")
-# async def execute_query(user: Annotated[User, Depends(validate_token)], query: str):
-#     logger.info(f"Received request for query from user {user.name} (username: {user.username} - roles: {user.roles})")
-#     if Role.ADMIN.value not in user.roles:
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="User does not have permission to perform this action"
-#         )
-#     try:
-#         return run_custom_query(query)
-#     except Exception as e:
-#         logger.exception("SPARQL query failed")
-#         raise HTTPException(status_code=500, detail=f"SPARQL error: {str(e)}")
+
+@app.get("/events", response_class=PlainTextResponse) 
+async def get_events(user: Annotated[User, Depends(validate_token)]):
+    logger.info(f"Received request for log from user {user.name} (username: {user.username} - roles: {user.roles})")
+    if not (Role.AUDITOR.value in user.roles or Role.ADMIN.value in user.roles):
+        logger.info(f"User {user.name} (username: {user.username} - roles: {user.roles}) does not have permission to perform this action")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have permission to perform this action"
+        )
+    try:
+        ttl_data = app.state.virtuoso.get_ttls()
+        return PlainTextResponse(content=ttl_data, media_type="text/turtle") # so that it returns in TTL format instead of serialized JSON
+    except Exception as e:
+        logger.exception("Failed fetching events")
+        raise HTTPException(status_code=500, detail="Error fetching events")
 
 
-# @app.get("/modifications")
-# async def get_modifications(limit: int, request: Request, user: Annotated[User, Depends(validate_token)]):
-#     logger.info(f"Received request for history from IP: {request.client.host} from user {user.name} (username: {user.username} - roles: {user.roles})")
-#     if not (Role.AUDITOR.value in user.roles or Role.ADMIN.value in user.roles):
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="User does not have permission to perform this action"
-#         )
-#     try:
-#         return get_recent_logs(limit)
-#     except Exception as e:
-#         logger.error(f"Error fetching logs: {e}")
-#         raise HTTPException(status_code=500, detail="Error retrieving logs")
+@app.get("/query")
+async def execute_query(user: Annotated[User, Depends(validate_token)], query: str):
+    logger.info(f"Received request for query from user {user.name} (username: {user.username} - roles: {user.roles})")
+    if Role.ADMIN.value not in user.roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have permission to perform this action"
+        )
+    try:
+        return app.state.virtuoso.run_custom_query(query)
+    except Exception as e:
+        logger.exception("SPARQL query failed")
+        raise HTTPException(status_code=500, detail=f"SPARQL error: {str(e)}")
 
 
-# @app.get("/modifications_date")
-# async def get_modifications_by_date(start_date: str, end_date: str, request: Request, user: Annotated[User, Depends(validate_token)]):
-#     logger.info(f"Received request for history by date from IP: {request.client.host} from user {user.name} (username: {user.username} - roles: {user.roles})")
-#     if not (Role.AUDITOR.value in user.roles or Role.ADMIN.value in user.roles):
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="User does not have permission to perform this action"
-#         )
+@app.get("/modifications")
+async def get_modifications(limit: int, request: Request, user: Annotated[User, Depends(validate_token)]):
+    logger.info(f"Received request for history from IP: {request.client.host} from user {user.name} (username: {user.username} - roles: {user.roles})")
+    if not (Role.AUDITOR.value in user.roles or Role.ADMIN.value in user.roles):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have permission to perform this action"
+        )
+    try:
+        return app.state.neo4j.get_recent_logs(limit)
+    except Exception as e:
+        logger.error(f"Error fetching logs: {e}")
+        raise HTTPException(status_code=500, detail="Error retrieving logs")
+
+
+@app.get("/modifications_date")
+async def get_modifications_by_date(start_date: str, end_date: str, request: Request, user: Annotated[User, Depends(validate_token)]):
+    logger.info(f"Received request for history by date from IP: {request.client.host} from user {user.name} (username: {user.username} - roles: {user.roles})")
+    if not (Role.AUDITOR.value in user.roles or Role.ADMIN.value in user.roles):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have permission to perform this action"
+        )
     
-#     try:
-#         return get_logs_by_date(start_date, end_date)
-#     except Exception as e:
-#         logger.error(f"Error fetching logs by date: {e}")
-#         raise HTTPException(status_code=500, detail="Error retrieving logs by date")
+    try:
+        return app.state.neo4j.get_logs_by_date(start_date, end_date)
+    except Exception as e:
+        logger.error(f"Error fetching logs by date: {e}")
+        raise HTTPException(status_code=500, detail="Error retrieving logs by date")
     
-# @app.post("/ttl/delete_all")
-# async def delete_all_ttls(request: Request, data: DeleteRequest, user: Annotated[User, Depends(validate_token)]):
-#     logger.info(f"Received post for delete all log from user {user.name} (username: {user.username} - roles: {user.roles})")
-#     if Role.ADMIN.value not in user.roles:
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="User does not have permission to perform this action"
-#         )
+@app.post("/ttl/delete_all")
+async def delete_all_ttls(request: Request, data: DeleteRequest, user: Annotated[User, Depends(validate_token)]):
+    logger.info(f"Received post for delete all log from user {user.name} (username: {user.username} - roles: {user.roles})")
+    if Role.ADMIN.value not in user.roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have permission to perform this action"
+        )
 
-#     try:
-#         origin_ip = request.client.host
-#         actor = data.user or user.username or "anonymous"
+    try:
+        origin_ip = request.client.host
+        actor = data.user or user.username or "anonymous"
 
-#         # Get all TTLs from Virtuoso
-#         ttl_text = get_ttls()
-#         if not ttl_text:
-#             return JSONResponse(content={"message": "No TTLs to delete"}, status_code=200)
+        # Get all TTLs from Virtuoso
+        ttl_text = app.state.virtuoso.get_ttls()
+        if not ttl_text:
+            return JSONResponse(content={"message": "No TTLs to delete"}, status_code=200)
 
-#         # Convert TTL to RDF graph
-#         g = Graph()
-#         g.parse(data=ttl_text, format="turtle")
+        # Convert TTL to RDF graph
+        g = Graph()
+        g.parse(data=ttl_text, format="turtle")
 
-#         # Convert to TTL lines
-#         ttl_lines = []
-#         for s, p, o in g:
-#             line = f"{s.n3()} {p.n3()} {o.n3()} ."
-#             ttl_lines.append(line)
+        # Convert to TTL lines
+        ttl_lines = []
+        for s, p, o in g:
+            line = f"{s.n3()} {p.n3()} {o.n3()} ."
+            ttl_lines.append(line)
 
-#         # Save in Neo4j as deletion
-#         store_bulk_deletion(origin_ip, actor, ttl_lines)
+        # Save in Neo4j as deletion
+        app.state.neo4j.store_bulk_deletion(origin_ip, actor, ttl_lines)
 
-#         # Delete graph
-#         delete_all_triples()
+        # Delete graph
+        app.state.virtuoso.delete_all_triples()
 
-#         return JSONResponse(content={"message": "Graph cleared and deletions logged."}, status_code=200)
+        return JSONResponse(content={"message": "Graph cleared and deletions logged."}, status_code=200)
 
-#     except Exception as e:
-#         logger.exception("Deletion failed")
-#         raise HTTPException(status_code=500, detail=f"Error deleting TTLs: {str(e)}")
+    except Exception as e:
+        logger.exception("Deletion failed")
+        raise HTTPException(status_code=500, detail=f"Error deleting TTLs: {str(e)}")
     
 
 
