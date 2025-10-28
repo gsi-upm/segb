@@ -1,9 +1,14 @@
+version: "3.9"
+
 services:
+  # ─────────────────────────────
+  # Backend SEGB (FastAPI o Flask)
+  # ─────────────────────────────
   amor-segb:
     container_name: amor-segb-server
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: images/Dockerfile.segb
     ports:
       - "5000:5000"
     networks:
@@ -18,12 +23,11 @@ services:
       - .env
     volumes:
       - ./logs:/logs
-    links:
-      - "amor-segb-neo4j:graph"
-      - "amor-segb-virtuoso:virtuoso"
     restart: always
 
-
+  # ─────────────────────────────
+  # Neo4j Database
+  # ─────────────────────────────
   amor-segb-neo4j:
     container_name: amor-segb-neo4j
     image: neo4j:5.20.0
@@ -33,7 +37,6 @@ services:
     environment:
       - NEO4J_AUTH=neo4j/neoforyou
       - NEO4J_PLUGINS=["apoc", "n10s"]
-
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs
@@ -42,6 +45,9 @@ services:
     networks:
       - internal_network
 
+  # ─────────────────────────────
+  # Virtuoso Triple Store
+  # ─────────────────────────────
   amor-segb-virtuoso:
     container_name: amor-segb-virtuoso
     image: openlink/virtuoso-opensource-7
@@ -49,41 +55,48 @@ services:
       - "8890:8890"
       - "1111:1111"
     environment:
-      DBA_PASSWORD: viryourbear
-
+      - DBA_PASSWORD=viryourbear
     volumes:
-      - ./db:/database
+      - virtuoso_data:/database
     networks:
       - internal_network
-      
-  # streamlit:
-  #   container_name: amor-segb-ui
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.streamlit
-  #   ports:
-  #     - "8501:8501"
-  #   depends_on:
-  #     - amor-segb
 
-  #   networks:
-  #     - internal_network
-  #   environment:
-  #     - API_URL=http://amor-segb:5000
-  #   env_file:
-  #     - ./.env
+  # ─────────────────────────────
+  # Frontend SEGB-UI (Vue + Nginx)
+  # ─────────────────────────────
+  segb-ui:
+    container_name: segb-ui
+    build:
+      context: .             
+      dockerfile: images/Dockerfile.segb-ui
+      args:
+        VITE_API_URL: "/api"           
+    depends_on:
+      - amor-segb
+    ports:
+      - "8080:8080"                   
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 15s
+      timeout: 3s
+      retries: 10
+    restart: always
 
-
+# ─────────────────────────────
+# Redes
+# ─────────────────────────────
 networks:
   internal_network:
     driver: bridge
 
+# ─────────────────────────────
+# Volúmenes persistentes
+# ─────────────────────────────
 volumes:
-  amor-segb-db:
-  neo4j_data: # Do not use same volume for mongo and neo4j
+  neo4j_data:
   neo4j_logs:
   neo4j_import:
   neo4j_plugins:
-  virtuoso_database:
-  ollama:
- 
+  virtuoso_data:

@@ -24,6 +24,8 @@ from fastapi import (
 )
 from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
+
 from pydantic import BaseModel
 from rdflib import Graph
 
@@ -262,6 +264,20 @@ app = FastAPI(
     license_info=api_info["license"],
     lifespan=lifespan
 )
+
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,         # dominios permitidos
+    allow_credentials=True,
+    allow_methods=["*"],           # permite todos los métodos (GET, POST, etc.)
+    allow_headers=["*"],           # permite todas las cabeceras
+)
+
 
 
 
