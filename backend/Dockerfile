@@ -23,9 +23,9 @@ ADD ./api_info/${PROJECT}/api_description.md api_description.md
 
 RUN mkdir /logs
 
-COPY ./server /app
+COPY ./backend/combined /app/combined
+COPY ./backend/static /app/static
 
 # CMD ["uv", "run", "fastapi", "run", "utils/combined/main.py", "--port", "5000", "--lifespan on"]
 # CMD ["uv", "run", "uvicorn", "--app-dir", "/app/combined", "main:app", "--host", "0.0.0.0", "--port", "5000", "--lifespan", "on"]
 CMD ["uv", "run", "uvicorn", "combined.main:app", "--host", "0.0.0.0", "--port", "5000", "--lifespan", "on"]
-

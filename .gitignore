@@ -15,3 +15,5 @@ local_scripts/
 *.env
 logs
 db/
+frontend/segb-ui/node_modules/
+frontend/segb-ui/dist/
