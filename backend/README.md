@@ -6,7 +6,7 @@ This backend follows a simple Clean Architecture split:
 - `combined/services/`: use-case orchestration (`LogService`, `SharedContextService`, lifecycle)
 - `combined/models/`: infrastructure adapters (Neo4j, Virtuoso)
 - `combined/api/`: HTTP contracts and route handlers
-- `combined/utils/`: specialized helpers (prefix handling, experiment queries, shared context engine)
+- `combined/utils/`: specialized helpers (prefix handling, shared context engine)
 
 ## Request flow
 

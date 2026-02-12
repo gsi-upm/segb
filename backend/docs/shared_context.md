@@ -30,7 +30,6 @@ Naming note:
 {
   "event_kind": "human_utterance",
   "observed_at": "2026-02-11T09:12:13.150Z",
-  "experiment_uri": "https://.../experiment/exp_001",
   "subject_uri": "https://.../human/maria",
   "modality": "speech",
   "text": "Could you show me climate news?",
@@ -50,7 +49,7 @@ Only `event_kind` and `observed_at` are mandatory.
 
 The resolver normalizes:
 
-- `event_kind`, `subject_uri`, `experiment_uri`, `modality` to lowercase/trimmed strings
+- `event_kind`, `subject_uri`, `modality` to lowercase/trimmed strings
 - `text` to lowercase, compact spaces, punctuation removed
 - `observed_at` to UTC
 
@@ -61,7 +60,6 @@ A context is considered a candidate only if:
 - `event_kind` matches exactly
 - time difference is within `time_window_seconds * candidate_window_multiplier`
 - if strict subject check is enabled and both subjects exist, they must match
-- if strict experiment check is enabled and both experiment URIs exist, they must match
 
 ### 3. Candidate scoring
 
@@ -71,12 +69,11 @@ For each candidate, score components are computed:
 - `S_text`: lexical similarity (`Jaccard(tokens)` + `SequenceMatcher`) when text exists
 - `S_subject`: 1.0 same subject, 0.0 different, 0.5 unknown
 - `S_modality`: 1.0 same modality, 0.0 different, 0.5 unknown
-- `S_context`: 1.0 same experiment, 0.0 different, 0.5 unknown
 
 Weighted score:
 
 ```text
-S = w_time*S_time + w_text*S_text + w_subject*S_subject + w_modality*S_modality + w_context*S_context
+S = w_time*S_time + w_text*S_text + w_subject*S_subject + w_modality*S_modality
 ```
 
 If text is missing, weights are renormalized over available components.
@@ -113,8 +110,7 @@ Given best candidate score `S_best` and optional second score `S_second`:
     "time": 0.96,
     "text": 0.93,
     "subject": 1.0,
-    "modality": 1.0,
-    "context": 1.0
+    "modality": 1.0
   }
 }
 ```
@@ -196,7 +192,7 @@ Policy can be tuned through environment variables:
 3. Robot asks for canonical context URI via:
    - `SemanticSEGBLogger.get_shared_event_uri(...)`, optionally with `shared_event_resolver=HTTPSharedContextResolver(...)`.
 4. Inside `get_shared_event_uri(...)`:
-   - Build a normalized request (`event_kind`, `observed_at`, `subject`, `text`, `modality`, `experiment`).
+   - Build a normalized request (`event_kind`, `observed_at`, `subject`, `text`, `modality`).
    - If resolver exists, call `POST /shared-context/resolve`.
    - If API returns `shared_context_uri`, use that URI and add local SharedContext metadata triples.
    - If API call fails and `raise_on_error=False`, fallback to local deterministic `resolve_shared_event(...)`.

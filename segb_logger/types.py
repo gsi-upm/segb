@@ -2,11 +2,29 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum
 from typing import Any, Callable, Mapping
 
 from rdflib import URIRef
 
 RDFTermLike = str | URIRef
+
+
+class ActivityKind(str, Enum):
+    """Controlled activity categories for deterministic logging.
+
+    These values provide a stable, high-level API. The logger maps each kind to one
+    or more ontology classes (RDF types). For custom ontological classes, use
+    `extra_types` in `log_activity`.
+    """
+
+    LISTENING = "listening"
+    DECISION = "decision"
+    RESPONSE = "response"
+    EMOTION_RECOGNITION = "emotion_recognition"
+    EMOTION_ANALYSIS = "emotion_analysis"
+    HUMAN_DETECTION = "human_detection"
+    ML_RUN = "ml_run"
 
 
 @dataclass(slots=True, frozen=True)
@@ -62,7 +80,6 @@ class SharedEventRequest:
     subject: RDFTermLike | None = None
     text: str | None = None
     modality: str | None = None
-    experiment: RDFTermLike | None = None
     shared_event_namespace: str | None = None
     event_types: tuple[RDFTermLike, ...] = ()
     event_id: str | None = None

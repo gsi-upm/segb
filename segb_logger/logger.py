@@ -20,7 +20,6 @@ from rdflib.namespace import FOAF, PROV, RDF, RDFS, XSD
 
 from .namespaces import (
     AMOR,
-    AMOR_EXP,
     DEFAULT_PREFIXES,
     EMOML,
     MLS,
@@ -31,6 +30,7 @@ from .namespaces import (
     SEGB,
 )
 from .types import (
+    ActivityKind,
     EmotionScore,
     ModelUsage,
     RDFTermLike,
@@ -51,6 +51,16 @@ class SemanticSEGBLogger:
     It does not decide *what happened*; it only records *what the caller says happened*.
     """
     DEFAULT_SHARED_EVENT_NAMESPACE = "https://gsi.upm.es/segb/shared-events/"
+    
+    ACTIVITY_KIND_TYPES: Mapping[ActivityKind, tuple[RDFTermLike, ...]] = {
+        ActivityKind.LISTENING: ("oro:ListeningEvent",),
+        ActivityKind.DECISION: ("oro:DecisionMakingAction",),
+        ActivityKind.RESPONSE: ("oro:ResponseAction",),
+        ActivityKind.EMOTION_RECOGNITION: ("oro:EmotionRecognitionEvent",),
+        ActivityKind.EMOTION_ANALYSIS: ("onyx:EmotionAnalysis",),
+        ActivityKind.HUMAN_DETECTION: ("oro:DetectedHumanEvent",),
+        ActivityKind.ML_RUN: ("mls:Run",),
+    }
 
     def __init__(
         self,
@@ -60,6 +70,7 @@ class SemanticSEGBLogger:
         robot_name: str | None = None,
         default_language: str = "en",
         graph: Graph | None = None,
+        strict_activity_types: bool = False,
         shared_event_policy: SharedEventPolicy | None = None,
         shared_event_resolver: SharedEventResolver | None = None,
     ) -> None:
@@ -68,12 +79,13 @@ class SemanticSEGBLogger:
         self.default_language = default_language
         self.graph = graph if graph is not None else Graph()
         self.prefixes: dict[str, Namespace] = dict(DEFAULT_PREFIXES)
+        self.prefixes.pop("amor-exp", None)
         self.prefixes["robotlog"] = self.base
         for prefix, namespace in self.prefixes.items():
             self.graph.bind(prefix, namespace)
 
         self.robot_uri = self.resource_uri("robot", robot_id)
-        self.default_experiment_uri: URIRef | None = None
+        self.strict_activity_types = strict_activity_types
         self.shared_event_policy = shared_event_policy if shared_event_policy is not None else SharedEventPolicy()
         self.shared_event_resolver = shared_event_resolver
         self.register_robot(robot_name=robot_name)
@@ -195,27 +207,6 @@ class SemanticSEGBLogger:
             self.graph.add((human_uri, FOAF.homepage, URIRef(homepage)))
         return human_uri
 
-    def start_experiment(
-        self,
-        experiment_id: str,
-        *,
-        label: str | None = None,
-        subject: RDFTermLike | None = None,
-        started_at: datetime | None = None,
-    ) -> URIRef:
-        """Creates a new experiment and sets it as default context."""
-        experiment_uri = self.resource_uri("experiment", experiment_id)
-        self.graph.add((experiment_uri, RDF.type, AMOR_EXP.Experiment))
-        self.graph.add((experiment_uri, AMOR_EXP.hasExecutor, self.robot_uri))
-        if label:
-            self.graph.add((experiment_uri, RDFS.label, Literal(label, lang=self.default_language)))
-        if subject:
-            self.graph.add((experiment_uri, AMOR_EXP.hasExperimentationSubject, self.resolve_term(subject)))
-        if started_at:
-            self.graph.add((experiment_uri, PROV.startedAtTime, self._literal(started_at)))
-        self.default_experiment_uri = experiment_uri
-        return experiment_uri
-
     def _add_shared_event_metadata(
         self,
         *,
@@ -225,7 +216,6 @@ class SemanticSEGBLogger:
         subject_uri: URIRef | None,
         text: str | None,
         modality: str | None,
-        experiment_uri: URIRef | None,
         event_types: Sequence[RDFTermLike] | None,
         time_bucket_seconds: int,
         event_key: str | None = None,
@@ -246,8 +236,6 @@ class SemanticSEGBLogger:
 
         if subject_uri is not None:
             self.graph.add((event_uri, SCHEMA.about, subject_uri))
-        if experiment_uri is not None:
-            self.graph.add((event_uri, SCHEMA.isPartOf, experiment_uri))
         if canonical_modality:
             self.graph.add((event_uri, SCHEMA.measurementTechnique, Literal(canonical_modality)))
         if canonical_text:
@@ -264,7 +252,6 @@ class SemanticSEGBLogger:
         subject: RDFTermLike | None = None,
         text: str | None = None,
         modality: str | None = None,
-        experiment: RDFTermLike | None = None,
         shared_event_namespace: str | None = None,
         event_types: Sequence[RDFTermLike] | None = None,
         event_id: str | None = None,
@@ -296,7 +283,6 @@ class SemanticSEGBLogger:
             subject=subject,
             text=text,
             modality=modality,
-            experiment=experiment,
             shared_event_namespace=effective_namespace,
             event_types=event_types_tuple,
             event_id=event_id,
@@ -305,7 +291,6 @@ class SemanticSEGBLogger:
         resolver_fn = resolver if resolver is not None else self.shared_event_resolver
 
         subject_uri = self.resolve_term(subject) if subject is not None else None
-        experiment_uri = self.resolve_term(experiment) if experiment is not None else self.default_experiment_uri
         if resolver_fn is not None:
             resolved_event = resolver_fn(resolver_request)
             if resolved_event is not None:
@@ -320,7 +305,6 @@ class SemanticSEGBLogger:
                     subject_uri=subject_uri,
                     text=text,
                     modality=modality,
-                    experiment_uri=experiment_uri,
                     event_types=event_types_tuple,
                     time_bucket_seconds=effective_bucket,
                     event_key=self._slugify(event_id) if event_id else None,
@@ -333,7 +317,6 @@ class SemanticSEGBLogger:
             subject=subject_uri,
             text=text,
             modality=modality,
-            experiment=experiment_uri,
             shared_event_namespace=effective_namespace,
             event_types=event_types_tuple,
             event_id=event_id,
@@ -348,7 +331,6 @@ class SemanticSEGBLogger:
         subject: RDFTermLike | None = None,
         text: str | None = None,
         modality: str | None = None,
-        experiment: RDFTermLike | None = None,
         shared_event_namespace: str | None = None,
         event_types: Sequence[RDFTermLike] | None = None,
         event_id: str | None = None,
@@ -371,7 +353,6 @@ class SemanticSEGBLogger:
         shared_ns = Namespace(namespace_text)
 
         subject_uri = self.resolve_term(subject) if subject is not None else None
-        experiment_uri = self.resolve_term(experiment) if experiment is not None else self.default_experiment_uri
         bucket_dt = self._bucket_datetime_seconds(observed_at, bucket_seconds=time_bucket_seconds)
         canonical_text = self._canonicalize_text(text)
         canonical_modality = self._canonicalize_text(modality)
@@ -385,7 +366,6 @@ class SemanticSEGBLogger:
                     str(subject_uri) if subject_uri is not None else "",
                     canonical_modality,
                     canonical_text,
-                    str(experiment_uri) if experiment_uri is not None else "",
                 )
             )
             digest = hashlib.sha256(fingerprint_source.encode("utf-8")).hexdigest()[:20]
@@ -402,7 +382,6 @@ class SemanticSEGBLogger:
             subject_uri=subject_uri,
             text=canonical_text,
             modality=canonical_modality,
-            experiment_uri=experiment_uri,
             event_types=event_types,
             time_bucket_seconds=time_bucket_seconds,
             event_key=event_key,
@@ -425,19 +404,6 @@ class SemanticSEGBLogger:
         self.graph.add((shared_event_uri, RDF.type, SEGB.Trigger))
         if confidence is not None:
             self.graph.add((observation_uri, SCHEMA.confidence, self._literal(float(confidence))))
-
-    def end_experiment(
-        self,
-        *,
-        experiment_uri: RDFTermLike | None = None,
-        ended_at: datetime | None = None,
-    ) -> URIRef:
-        """Ends an experiment by adding prov:endedAtTime."""
-        uri = self.resolve_term(experiment_uri) if experiment_uri else self.default_experiment_uri
-        if uri is None:
-            raise ValueError("No experiment URI was provided and no default experiment exists.")
-        self.graph.add((uri, PROV.endedAtTime, self._literal(ended_at or datetime.now(tz=timezone.utc))))
-        return uri
 
     def register_ml_model(
         self,
@@ -490,6 +456,61 @@ class SemanticSEGBLogger:
         for activity_type in self._iter_terms(activity_types):
             self.graph.add((activity_uri, RDF.type, activity_type))
 
+    def _coerce_activity_kind(self, value: ActivityKind | str | None) -> ActivityKind | None:
+        if value is None:
+            return None
+        if isinstance(value, ActivityKind):
+            return value
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("Parameter 'activity_kind' must be a non-empty string, ActivityKind, or None.")
+
+        normalized = value.strip().lower().replace("-", "_")
+        for member in ActivityKind:
+            if normalized == member.value:
+                return member
+            if normalized == member.name.lower():
+                return member
+        allowed = ", ".join(kind.value for kind in ActivityKind)
+        raise ValueError(f"Unknown activity kind '{value}'. Allowed values: {allowed}.")
+
+    def _merge_activity_types(
+        self,
+        *,
+        activity_kind: ActivityKind | str | None,
+        activity_types: Sequence[RDFTermLike] | None,
+        extra_types: Sequence[RDFTermLike] | None,
+    ) -> tuple[URIRef, ...]:
+        kind = self._coerce_activity_kind(activity_kind)
+        if self.strict_activity_types and activity_types is not None:
+            raise ValueError(
+                "Parameter 'activity_types' is disabled in strict activity mode. "
+                "Use 'activity_kind' for controlled types and 'extra_types' for explicit extensions."
+            )
+
+        merged: list[RDFTermLike] = []
+        if kind is not None:
+            merged.extend(self.ACTIVITY_KIND_TYPES[kind])
+        if activity_types is not None:
+            merged.extend(activity_types)
+        if extra_types is not None:
+            merged.extend(extra_types)
+
+        if self.strict_activity_types and kind is None and not merged:
+            raise ValueError(
+                "Strict activity mode requires at least one explicit type. "
+                "Use 'activity_kind' or 'extra_types'."
+            )
+
+        deduplicated: list[URIRef] = []
+        seen: set[URIRef] = set()
+        for activity_type in merged:
+            resolved = self.resolve_term(activity_type)
+            if resolved in seen:
+                continue
+            seen.add(resolved)
+            deduplicated.append(resolved)
+        return tuple(deduplicated)
+
     def _link_model_usage(self, activity_uri: URIRef, usage: ModelUsage) -> None:
         model_uri = self.resolve_term(usage.model)
         self.graph.add((model_uri, RDF.type, MLS.Model))
@@ -539,9 +560,10 @@ class SemanticSEGBLogger:
         self,
         *,
         activity_id: str | None = None,
+        activity_kind: ActivityKind | str | None = None,
         activity_types: Sequence[RDFTermLike] | None = None,
+        extra_types: Sequence[RDFTermLike] | None = None,
         label: str | None = None,
-        experiment: RDFTermLike | None = None,
         performer: RDFTermLike | None = None,
         started_at: datetime | None = None,
         ended_at: datetime | None = None,
@@ -558,6 +580,9 @@ class SemanticSEGBLogger:
         """Logs one activity and its semantic relations.
 
         Data provenance expected from the caller:
+        - `activity_kind`: recommended controlled value to avoid RDF-term typos.
+        - `extra_types`: optional extension classes when canonical kinds are not enough.
+        - `activity_types`: legacy direct RDF class input (disabled when strict mode is enabled).
         - `started_at` / `ended_at`: system clock timestamps when the action/event starts/ends.
         - `triggered_by_activity`: single upstream action trigger.
         - `triggered_by_entity`: preferred single upstream entity trigger (message, detection, file).
@@ -570,14 +595,15 @@ class SemanticSEGBLogger:
         This method records those relations explicitly; it does not infer causal links.
         """
         activity_uri = self.resource_uri("activity", activity_id)
-        self._ensure_activity(activity_uri, activity_types)
+        resolved_activity_types = self._merge_activity_types(
+            activity_kind=activity_kind,
+            activity_types=activity_types,
+            extra_types=extra_types,
+        )
+        self._ensure_activity(activity_uri, resolved_activity_types)
 
         if label:
             self.graph.add((activity_uri, RDFS.label, Literal(label, lang=self.default_language)))
-
-        exp_uri = self.resolve_term(experiment) if experiment else self.default_experiment_uri
-        if exp_uri:
-            self.graph.add((activity_uri, AMOR_EXP.isRelatedWithExperiment, exp_uri))
 
         performer_uri = self.resolve_term(performer) if performer else self.robot_uri
         self.graph.add((activity_uri, SEGB.wasPerformedBy, performer_uri))

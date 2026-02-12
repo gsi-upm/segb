@@ -24,7 +24,6 @@ class TestSharedContextResolver(unittest.TestCase):
             SharedContextResolveRequest(
                 event_kind="human_utterance",
                 observed_at=datetime(2026, 2, 10, 12, 0, 0, tzinfo=timezone.utc),
-                experiment_uri="https://example.org/exp/1",
                 subject_uri="https://example.org/human/maria",
                 modality="speech",
                 text="Could you show me climate news?",
@@ -35,7 +34,6 @@ class TestSharedContextResolver(unittest.TestCase):
             SharedContextResolveRequest(
                 event_kind="human_utterance",
                 observed_at=datetime(2026, 2, 10, 12, 0, 1, tzinfo=timezone.utc),
-                experiment_uri="https://example.org/exp/1",
                 subject_uri="https://example.org/human/maria",
                 modality="speech",
                 text="Could you show me climate news",
@@ -53,7 +51,6 @@ class TestSharedContextResolver(unittest.TestCase):
             SharedContextResolveRequest(
                 event_kind="human_utterance",
                 observed_at=datetime(2026, 2, 10, 12, 0, 0, tzinfo=timezone.utc),
-                experiment_uri="https://example.org/exp/1",
                 subject_uri="https://example.org/human/maria",
                 modality="speech",
                 text="hello there",
@@ -63,7 +60,6 @@ class TestSharedContextResolver(unittest.TestCase):
             SharedContextResolveRequest(
                 event_kind="human_utterance",
                 observed_at=datetime(2026, 2, 10, 12, 0, 0, 500000, tzinfo=timezone.utc),
-                experiment_uri="https://example.org/exp/1",
                 subject_uri="https://example.org/human/john",
                 modality="speech",
                 text="hello there",
@@ -79,7 +75,6 @@ class TestSharedContextResolver(unittest.TestCase):
             SharedContextResolveRequest(
                 event_kind="human_utterance",
                 observed_at=datetime(2026, 2, 10, 12, 0, 0, tzinfo=timezone.utc),
-                experiment_uri="https://example.org/exp/1",
                 modality="speech",
                 text="climate change news now",
             )
@@ -88,7 +83,6 @@ class TestSharedContextResolver(unittest.TestCase):
             SharedContextResolveRequest(
                 event_kind="human_utterance",
                 observed_at=datetime(2026, 2, 10, 12, 0, 1, tzinfo=timezone.utc),
-                experiment_uri="https://example.org/exp/1",
                 modality="speech",
                 text="climate change updates now",
             )

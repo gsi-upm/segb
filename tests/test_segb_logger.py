@@ -5,6 +5,7 @@ from rdflib import Graph, URIRef
 from rdflib.namespace import PROV, RDF
 
 from segb_logger import (
+    ActivityKind,
     EmotionScore,
     ModelUsage,
     RobotStateSnapshot,
@@ -21,17 +22,11 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             robot_id="ari1",
             robot_name="ARI",
         )
-        self.experiment = self.logger.start_experiment(
-            "exp_001",
-            label="Experiment 1",
-            started_at=datetime.now(timezone.utc),
-        )
 
     def test_activity_links_and_model_config(self) -> None:
         listening = self.logger.log_activity(
             activity_id="listen_1",
             activity_types=["oro:ListeningEvent"],
-            experiment=self.experiment,
             started_at=datetime.now(timezone.utc),
         )
 
@@ -39,7 +34,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
         decision = self.logger.log_activity(
             activity_id="decision_1",
             activity_types=["oro:DecisionMakingAction"],
-            experiment=self.experiment,
             triggered_by_activity=listening,
             model_usages=[
                 ModelUsage(
@@ -65,7 +59,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
         source_activity = self.logger.log_activity(
             activity_id="source_activity",
             activity_types=["oro:ListeningEvent"],
-            experiment=self.experiment,
             started_at=datetime.now(timezone.utc),
         )
         source_entity = self.logger.log_message(
@@ -78,7 +71,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
         target_activity = self.logger.log_activity(
             activity_id="target_activity",
             activity_types=["oro:DecisionMakingAction"],
-            experiment=self.experiment,
             triggered_by_activity=source_activity,
             triggered_by_entity=source_entity,
             triggered_by_entities=[source_entity],
@@ -94,11 +86,47 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             1,
         )
 
+    def test_activity_kind_maps_to_controlled_rdf_type(self) -> None:
+        activity = self.logger.log_activity(
+            activity_id="listen_by_kind",
+            activity_kind=ActivityKind.LISTENING,
+            started_at=datetime.now(timezone.utc),
+        )
+        self.assertIn((activity, RDF.type, ORO.ListeningEvent), self.logger.graph)
+
+    def test_strict_activity_types_rejects_legacy_activity_types(self) -> None:
+        strict_logger = SemanticSEGBLogger(
+            base_namespace="http://example.org/segb/robots/ari1/",
+            robot_id="ari1",
+            strict_activity_types=True,
+        )
+
+        with self.assertRaises(ValueError):
+            strict_logger.log_activity(
+                activity_id="strict_invalid",
+                activity_types=["oro:ListeningEvent"],
+            )
+
+    def test_strict_activity_types_accepts_kind_plus_extra_types(self) -> None:
+        strict_logger = SemanticSEGBLogger(
+            base_namespace="http://example.org/segb/robots/ari1/",
+            robot_id="ari1",
+            strict_activity_types=True,
+        )
+        activity = strict_logger.log_activity(
+            activity_id="strict_ok",
+            activity_kind=ActivityKind.DECISION,
+            extra_types=["oro:CoordinationAction"],
+        )
+
+        graph = strict_logger.graph
+        self.assertIn((activity, RDF.type, ORO.DecisionMakingAction), graph)
+        self.assertIn((activity, RDF.type, strict_logger.resolve_term("oro:CoordinationAction")), graph)
+
     def test_emotions_and_robot_state(self) -> None:
         emotion_activity = self.logger.log_activity(
             activity_id="emotion_1",
             activity_types=["oro:EmotionRecognitionEvent"],
-            experiment=self.experiment,
             started_at=datetime.now(timezone.utc),
         )
         msg = self.logger.log_message(
@@ -154,15 +182,9 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             graph=shared_graph,
         )
 
-        experiment = ari.start_experiment(
-            "exp_multi",
-            label="Cross robot test",
-            started_at=datetime.now(timezone.utc),
-        )
         listening = ari.log_activity(
             activity_id="listening_1",
             activity_types=["oro:ListeningEvent"],
-            experiment=experiment,
             started_at=datetime.now(timezone.utc),
         )
         msg = ari.log_message(
@@ -175,7 +197,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
         coordination = tiago.log_activity(
             activity_id="coordination_1",
             activity_types=["oro:DecisionMakingAction"],
-            experiment=experiment,
             started_at=datetime.now(timezone.utc),
             triggered_by_entities=[msg],
             used_entities=[msg],
@@ -183,7 +204,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
         ari_decision = ari.log_activity(
             activity_id="decision_1",
             activity_types=["oro:DecisionMakingAction"],
-            experiment=experiment,
             started_at=datetime.now(timezone.utc),
             triggered_by_activity=coordination,
             triggered_by_entities=[msg],
@@ -208,7 +228,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             subject=human,
             text="Hello world",
             modality="speech",
-            experiment=self.experiment,
             time_bucket_seconds=2,
         )
         event_uri_2 = self.logger.resolve_shared_event(
@@ -217,7 +236,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             subject=human,
             text=" hello   world ",
             modality="speech",
-            experiment=self.experiment,
             time_bucket_seconds=2,
         )
 
@@ -226,7 +244,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
         listening = self.logger.log_activity(
             activity_id="listening_shared_event",
             activity_types=["oro:ListeningEvent"],
-            experiment=self.experiment,
             started_at=observed_at,
             triggered_by_entities=[event_uri_1],
         )
@@ -257,7 +274,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             subject=human,
             text="Hello world",
             modality="speech",
-            experiment=self.experiment,
             policy=policy,
         )
         event_uri_2 = self.logger.get_shared_event_uri(
@@ -266,7 +282,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             subject=human,
             text=" hello   world ",
             modality="speech",
-            experiment=self.experiment,
             policy=policy,
         )
 
@@ -287,7 +302,6 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             subject=human,
             text="hello world",
             modality="speech",
-            experiment=self.experiment,
             resolver=resolver,
         )
 

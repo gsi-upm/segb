@@ -60,7 +60,6 @@ class HTTPSharedContextResolver:
         payload = {
             "event_kind": request.event_kind,
             "observed_at": self._as_iso_datetime(request.observed_at),
-            "experiment_uri": self._as_uri_text(request.experiment),
             "subject_uri": self._as_uri_text(request.subject),
             "modality": request.modality,
             "text": request.text,

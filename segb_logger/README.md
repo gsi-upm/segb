@@ -44,7 +44,7 @@ Resolution strategy:
 ```python
 from datetime import datetime, timezone
 
-from segb_logger import SemanticSEGBLogger
+from segb_logger import ActivityKind, SemanticSEGBLogger
 
 logger = SemanticSEGBLogger(
     base_namespace="https://example.org/segb/robots/r1/",
@@ -52,16 +52,9 @@ logger = SemanticSEGBLogger(
     robot_name="Robot-1",
 )
 
-exp = logger.start_experiment(
-    "exp_001",
-    label="Production run",
-    started_at=datetime.now(timezone.utc),
-)
-
 activity = logger.log_activity(
     activity_id="perception_1",
-    activity_types=["oro:ListeningEvent"],
-    experiment=exp,
+    activity_kind=ActivityKind.LISTENING,
     started_at=datetime.now(timezone.utc),
 )
 

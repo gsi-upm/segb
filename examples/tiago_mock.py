@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 
 from rdflib import URIRef
 
-from segb_logger import SemanticSEGBLogger
+from segb_logger import ActivityKind, SemanticSEGBLogger
 
 
 @dataclass(slots=True)
@@ -22,7 +22,6 @@ class TiagoMockResult:
 def tiago_handle_human_utterance(
     *,
     logger: SemanticSEGBLogger,
-    experiment_uri: URIRef,
     human_uri: URIRef,
     text: str,
     observed_at: datetime,
@@ -34,13 +33,11 @@ def tiago_handle_human_utterance(
         subject=human_uri,
         text=text,
         modality="speech",
-        experiment=experiment_uri,
     )
 
     listening_activity_uri = logger.log_activity(
         activity_id="tiago_listening_1",
-        activity_types=["oro:ListeningEvent"],
-        experiment=experiment_uri,
+        activity_kind=ActivityKind.LISTENING,
         started_at=observed_at,
         ended_at=datetime.now(timezone.utc),
         triggered_by_entities=[shared_event_uri],

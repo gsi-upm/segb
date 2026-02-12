@@ -4,7 +4,7 @@ from rdflib import URIRef
 from rdflib.namespace import PROV, RDF
 
 from examples.run_simulation import run_simulation
-from segb_logger.namespaces import AMOR_EXP, ORO, SEGB
+from segb_logger.namespaces import ORO, SEGB
 
 
 class TestROS2MockSimulation(unittest.TestCase):
@@ -17,8 +17,6 @@ class TestROS2MockSimulation(unittest.TestCase):
         ari_decision_activity = URIRef(f"{result.ari_namespace}activity/ari_decision_1")
 
         self.assertIn((result.human_uri, RDF.type, ORO.Human), graph)
-        self.assertIn((ari_decision_activity, AMOR_EXP.isRelatedWithExperiment, result.experiment_uri), graph)
-        self.assertIn((tiago_listening_activity, AMOR_EXP.isRelatedWithExperiment, result.experiment_uri), graph)
 
         self.assertIn((result.shared_event_uri, RDF.type, PROV.Entity), graph)
         self.assertIn((result.shared_event_uri, RDF.type, SEGB.Trigger), graph)

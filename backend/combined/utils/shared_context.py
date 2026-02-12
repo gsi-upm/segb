@@ -31,12 +31,10 @@ class SharedContextPolicy:
     ambiguous_threshold: float = 0.70
     close_score_margin: float = 0.05
     strict_subject_mismatch: bool = True
-    strict_experiment_mismatch: bool = True
     weight_time: float = 0.30
     weight_text: float = 0.35
     weight_subject: float = 0.20
     weight_modality: float = 0.10
-    weight_context: float = 0.05
 
 
 class SharedContextResolveRequest(BaseModel):
@@ -44,7 +42,6 @@ class SharedContextResolveRequest(BaseModel):
 
     event_kind: str
     observed_at: datetime
-    experiment_uri: str | None = None
     subject_uri: str | None = None
     modality: str | None = None
     text: str | None = None
@@ -82,7 +79,6 @@ class SharedContextRecord:
     uri: str
     event_kind: str
     observed_at: datetime
-    experiment_uri: str | None
     subject_uri: str | None
     modality: str | None
     canonical_text: str
@@ -143,11 +139,6 @@ class SharedContextResolver:
             return 1.0 if a == b else 0.0
         return 0.5
 
-    def _context_score(self, a: str | None, b: str | None) -> float:
-        if a and b:
-            return 1.0 if a == b else 0.0
-        return 0.5
-
     def _text_score(self, a: str, b: str) -> float | None:
         if not a or not b:
             return None
@@ -167,7 +158,6 @@ class SharedContextResolver:
         self,
         *,
         request_observed_at: datetime,
-        request_experiment_uri: str | None,
         request_subject_uri: str | None,
         request_modality: str | None,
         request_text: str,
@@ -179,13 +169,11 @@ class SharedContextResolver:
         score_text = self._text_score(request_text, record.canonical_text)
         score_subject = self._subject_score(request_subject_uri, record.subject_uri)
         score_modality = self._modality_score(request_modality, record.modality)
-        score_context = self._context_score(request_experiment_uri, record.experiment_uri)
 
         weighted_values: list[tuple[str, float, float]] = [
             ("time", self.policy.weight_time, score_time),
             ("subject", self.policy.weight_subject, score_subject),
             ("modality", self.policy.weight_modality, score_modality),
-            ("context", self.policy.weight_context, score_context),
         ]
         if score_text is not None:
             weighted_values.append(("text", self.policy.weight_text, score_text))
@@ -207,7 +195,6 @@ class SharedContextResolver:
         *,
         request_observed_at: datetime,
         request_event_kind: str,
-        request_experiment_uri: str | None,
         request_subject_uri: str | None,
         request_modality: str | None,
         request_time_window: float,
@@ -221,13 +208,6 @@ class SharedContextResolver:
                 continue
             delta_seconds = abs((request_observed_at - record.observed_at).total_seconds())
             if delta_seconds > max_candidate_delta:
-                continue
-            if (
-                self.policy.strict_experiment_mismatch
-                and request_experiment_uri is not None
-                and record.experiment_uri is not None
-                and request_experiment_uri != record.experiment_uri
-            ):
                 continue
             if (
                 self.policy.strict_subject_mismatch
@@ -248,7 +228,6 @@ class SharedContextResolver:
         uri: str,
         request_observed_at: datetime,
         request_event_kind: str,
-        request_experiment_uri: str | None,
         request_subject_uri: str | None,
         request_modality: str | None,
         request_text: str,
@@ -259,7 +238,6 @@ class SharedContextResolver:
             uri=uri,
             event_kind=request_event_kind,
             observed_at=request_observed_at,
-            experiment_uri=request_experiment_uri,
             subject_uri=request_subject_uri,
             modality=request_modality,
             canonical_text=request_text,
@@ -274,7 +252,6 @@ class SharedContextResolver:
         if request_event_kind is None:
             raise ValueError("Parameter 'event_kind' must be a non-empty string.")
 
-        request_experiment_uri = self._normalize_atom(request.experiment_uri)
         request_subject_uri = self._normalize_atom(request.subject_uri)
         request_modality = self._normalize_atom(request.modality)
         request_text = self._normalize_text(request.text)
@@ -284,7 +261,6 @@ class SharedContextResolver:
             candidates = self._candidate_records(
                 request_observed_at=request_observed_at,
                 request_event_kind=request_event_kind,
-                request_experiment_uri=request_experiment_uri,
                 request_subject_uri=request_subject_uri,
                 request_modality=request_modality,
                 request_time_window=request_time_window,
@@ -294,7 +270,6 @@ class SharedContextResolver:
             for candidate in candidates:
                 score, breakdown = self._score_candidate(
                     request_observed_at=request_observed_at,
-                    request_experiment_uri=request_experiment_uri,
                     request_subject_uri=request_subject_uri,
                     request_modality=request_modality,
                     request_text=request_text,
@@ -323,8 +298,6 @@ class SharedContextResolver:
                 record.observed_at = request_observed_at
                 if record.subject_uri is None and request_subject_uri is not None:
                     record.subject_uri = request_subject_uri
-                if record.experiment_uri is None and request_experiment_uri is not None:
-                    record.experiment_uri = request_experiment_uri
                 return SharedContextResolveResponse(
                     shared_context_uri=self._resolve_alias(record.uri),
                     status="matched",
@@ -342,7 +315,6 @@ class SharedContextResolver:
                     uri=uri,
                     request_observed_at=request_observed_at,
                     request_event_kind=request_event_kind,
-                    request_experiment_uri=request_experiment_uri,
                     request_subject_uri=request_subject_uri,
                     request_modality=request_modality,
                     request_text=request_text,
@@ -368,7 +340,6 @@ class SharedContextResolver:
                 uri=uri,
                 request_observed_at=request_observed_at,
                 request_event_kind=request_event_kind,
-                request_experiment_uri=request_experiment_uri,
                 request_subject_uri=request_subject_uri,
                 request_modality=request_modality,
                 request_text=request_text,
@@ -397,7 +368,6 @@ class SharedContextResolver:
                     for candidate in self._candidate_records(
                         request_observed_at=record.observed_at,
                         request_event_kind=record.event_kind,
-                        request_experiment_uri=record.experiment_uri,
                         request_subject_uri=record.subject_uri,
                         request_modality=record.modality,
                         request_time_window=self.policy.time_window_seconds,
@@ -411,7 +381,6 @@ class SharedContextResolver:
                 for candidate in candidates:
                     score, _ = self._score_candidate(
                         request_observed_at=record.observed_at,
-                        request_experiment_uri=record.experiment_uri,
                         request_subject_uri=record.subject_uri,
                         request_modality=record.modality,
                         request_text=record.canonical_text,

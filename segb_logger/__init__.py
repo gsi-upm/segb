@@ -4,6 +4,7 @@ from .logger import SemanticSEGBLogger
 from .publisher import SEGBPublisher
 from .shared_context import HTTPSharedContextResolver
 from .types import (
+    ActivityKind,
     EmotionScore,
     ModelUsage,
     RobotStateSnapshot,
@@ -13,6 +14,7 @@ from .types import (
 )
 
 __all__ = [
+    "ActivityKind",
     "EmotionScore",
     "ModelUsage",
     "RobotStateSnapshot",

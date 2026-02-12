@@ -29,7 +29,6 @@ class TestHTTPSharedContextResolver(unittest.TestCase):
                 subject="https://example.org/human/maria",
                 text="hello",
                 modality="speech",
-                experiment="https://example.org/exp/1",
             )
         )
 
@@ -53,7 +52,6 @@ class TestHTTPSharedContextResolver(unittest.TestCase):
                     subject="https://example.org/human/maria",
                     text="hello",
                     modality="speech",
-                    experiment="https://example.org/exp/1",
                 )
             )
 
