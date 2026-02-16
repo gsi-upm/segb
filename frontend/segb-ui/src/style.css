@@ -1,117 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
 :root {
-  --brand: #00a9e0;
-  --brand-dark: #00629b;
-  --border: #005599;
+  --brand-gsi: #00a9e0;
+  --brand-upm: #00629b;
+  --brand-upm-strong: #00517f;
+  --bg: #f2f8fc;
+  --surface: #ffffff;
+  --surface-alt: #e8f5fd;
+  --border: #c5dceb;
+  --border-muted: #d9e8f2;
+  --ink-900: #0f172a;
+  --ink-800: #1e293b;
+  --ink-700: #334155;
+  --ink-600: #475569;
+  --ink-500: #64748b;
+  --accent: #00629b;
+  --accent-2: #00a9e0;
+  --danger: #b91c1c;
+  --panel-dark: #004f7b;
+  --panel-dark-2: #003f63;
+  --panel-ink: #eaf7ff;
+  --shadow-sm: 0 2px 12px rgba(0, 98, 155, 0.12);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html,
 body,
 #app {
-  height: 100%;
   margin: 0;
+  min-height: 100%;
 }
 
-.app-shell {
-  display: flex;
-  flex-direction: column; 
-  height: 100vh;
-  overflow: hidden;
+body {
+  background:
+    radial-gradient(circle at 20% -5%, rgba(0, 169, 224, 0.18), transparent 34%),
+    radial-gradient(circle at 90% -8%, rgba(0, 98, 155, 0.16), transparent 31%),
+    var(--bg);
+  color: var(--ink-900);
+  font-family: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.45;
 }
 
-.app-header,
-.footer-bar {
-  flex: 0 0 auto;
+#app {
+  padding: 0.9rem;
 }
 
-.app-main {
-  flex: 1 1 auto;    
-  flex-direction: row;        
-  display: flex;              
-  min-height: 0;              
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
-.main-sidebar {
-  flex: 0 1 auto;
-  max-width: 15%;
-  min-width: 5%;
+button {
+  cursor: pointer;
 }
-
-.main-content {
-  flex: 1 1 auto;
-  overflow: auto;
-  min-height: 0;
-  margin: 16px;
-}
-
-
-.panel {
-  background:var(--brand);
-  padding: 16px;
-  backdrop-filter: blur(5px);
-}
-
-h1,
-h2,
-h3 {
-  color: #000000;
-  font-family: Montserrat, sans-serif;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  text-align: center;
-}
-
 
 .btn {
-  font-family: Montserrat, sans-serif;
-  font-size: 1rem;
-  background: #ffffff;
-  color: #004080;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 10px;
-  padding: 0.9rem 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(130deg, var(--accent), var(--accent-2));
+  color: #effcfe;
+  font-weight: 640;
+  font-size: 0.9rem;
+  padding: 0.55rem 0.8rem;
 }
 
-.btn:hover {
-  background: #e6f0ff;
-  transform: translateY(-1px);
+.btn:hover:not(:disabled) {
+  filter: brightness(1.06);
 }
 
-.btn.primary {
-  background: linear-gradient(135deg, var(--brand-dark), var(--brand));
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.code {
-  white-space: pre;
-  background: #0b0f17;
-  color: #cde;
-  padding: 12px;
-  border-radius: 8px;
-  overflow: auto;
+.btn.ghost {
+  background: #ffffff;
+  color: var(--ink-800);
+  border-color: var(--border);
 }
 
-
-.title {
-  text-align: center;
-  color: var(--brand-dark);
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1.25rem;
-  letter-spacing: 0.5px;
+.btn.danger {
+  background: linear-gradient(130deg, #dc2626, #b91c1c);
+  color: #fff1f2;
 }
-
-
-.subtitle {
-  text-align: center;
-  color: var(--brand-dark);
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.5px;
-}
-
-

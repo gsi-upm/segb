@@ -24,6 +24,7 @@ The caller (robot software stack) obtains observations and passes them to this l
 - `SEGBPublisher`: publish logs to backend API.
 - `HTTPSharedContextResolver`: request canonical shared-context URI from backend.
 - `SharedEventPolicy`, `SharedEventRequest`: control and describe shared-event resolution inputs.
+- `log_activity(...)` uses `ActivityKind` as the controlled activity contract (`activity_kind` is required).
 
 ## SharedContext in production
 
@@ -31,8 +32,9 @@ For the "same external event observed by different robots" pattern:
 
 1. Call `get_shared_event_uri(...)`.
 2. Link local observation with `link_observation_to_shared_event(...)`.
-3. Use that shared URI in triggers (`triggered_by_entity` / `triggered_by_entities`).
-4. Publish the graph.
+3. Optionally link activities contextually with `related_shared_events=[...]` or `link_activity_to_shared_event(...)`.
+4. Keep triggers (`triggered_by_entity` / `triggered_by_entities`) for direct causal inputs (messages, detections, files).
+5. Publish the graph.
 
 Resolution strategy:
 

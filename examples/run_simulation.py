@@ -5,19 +5,32 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from rdflib import Graph, URIRef
 
-from segb_logger import SEGBPublisher, SemanticSEGBLogger, SharedEventPolicy
+if __package__ is None or __package__ == "":
+    # Script mode (`python examples/run_simulation.py`): ensure project root is importable.
+    project_root = Path(__file__).resolve().parents[1]
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
 
-from .ari_mock import AriMockResult, ari_handle_human_utterance
-from .tiago_mock import TiagoMockResult, tiago_handle_human_utterance
+    from segb_logger import SEGBPublisher, SemanticSEGBLogger, SharedEventPolicy
+    from examples.ari_mock import AriMockResult, ari_handle_human_utterance
+    from examples.tiago_mock import TiagoMockResult, tiago_handle_human_utterance
+else:
+    # Module mode (`python -m examples.run_simulation`).
+    from segb_logger import SEGBPublisher, SemanticSEGBLogger, SharedEventPolicy
+    from .ari_mock import AriMockResult, ari_handle_human_utterance
+    from .tiago_mock import TiagoMockResult, tiago_handle_human_utterance
 
 ARI_NAMESPACE = "https://gsi.upm.es/segb/robots/ari/v1/"
 TIAGO_NAMESPACE = "https://gsi.upm.es/segb/robots/tiago/v1/"
+DEFAULT_PUBLISH_URL = "http://localhost:5000"
 
 
 @dataclass(slots=True)
@@ -136,7 +149,7 @@ def publish_simulation_result(simulation_result: SimulationResult, *, config: Pu
 
 def build_publish_config_from_args(args: argparse.Namespace) -> PublishConfig | None:
     """Builds PublishConfig from CLI args and environment variables."""
-    base_url = args.publish_url or os.getenv("SEGB_API_URL")
+    base_url = args.publish_url or os.getenv("SEGB_API_URL") or DEFAULT_PUBLISH_URL
     if not base_url:
         return None
 
@@ -159,7 +172,11 @@ def build_publish_config_from_args(args: argparse.Namespace) -> PublishConfig | 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the simple ARI/TIAGo SEGB demo.")
-    parser.add_argument("--publish-url", default=None, help="SEGB API base URL (optional).")
+    parser.add_argument(
+        "--publish-url",
+        default=None,
+        help=f"SEGB API base URL (default: {DEFAULT_PUBLISH_URL}; env override: SEGB_API_URL).",
+    )
     parser.add_argument("--token", default=None, help="Bearer token for API authentication (optional).")
     parser.add_argument("--user", default=None, help="Logical user to include in /ttl payload (optional).")
     parser.add_argument("--queue-file", default=None, help="Optional offline queue file for publication.")

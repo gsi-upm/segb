@@ -1,0 +1,104 @@
+services:
+  # Backend API with hot reload
+  amor-segb:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command:
+      - uv
+      - run
+      - uvicorn
+      - combined.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5000"
+      - --lifespan
+      - on
+      - --reload
+      - --reload-dir
+      - /app/combined
+    ports:
+      - "5000:5000"
+    networks:
+      - internal_network
+    depends_on:
+      - amor-segb-neo4j
+      - amor-segb-virtuoso
+    environment:
+      - LOGGING_LEVEL=DEBUG
+      - VERSION=${VERSION:-dev}
+      - WATCHFILES_FORCE_POLLING=true
+    env_file:
+      - .env
+    volumes:
+      - ./backend/combined:/app/combined
+      - ./backend/static:/app/static
+      - ./examples:/app/examples
+      - ./segb_logger:/app/segb_logger
+      - ./api_info/segb/api_info.json:/app/api_info.json
+      - ./api_info/segb/api_description.md:/app/api_description.md
+      - ./log_conf.yaml:/app/log_conf.yaml
+      - ./logs:/logs
+
+  # Neo4j database
+  amor-segb-neo4j:
+    image: neo4j:5.20.0
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/neoforyou
+      - NEO4J_PLUGINS=["apoc", "n10s"]
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+    networks:
+      - internal_network
+
+  # Virtuoso triple store
+  amor-segb-virtuoso:
+    image: openlink/virtuoso-opensource-7
+    ports:
+      - "8890:8890"
+      - "1111:1111"
+    environment:
+      - DBA_PASSWORD=viryourbear
+    volumes:
+      - virtuoso_data:/database
+    networks:
+      - internal_network
+
+  # Frontend with Vite HMR
+  segb-ui:
+    image: node:20-alpine3.19
+    working_dir: /app
+    command: >
+      sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
+    depends_on:
+      - amor-segb
+    environment:
+      - VITE_API_URL=http://localhost:5000
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=100
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/segb-ui:/app
+      - segb_ui_node_modules:/app/node_modules
+    networks:
+      - internal_network
+
+networks:
+  internal_network:
+    driver: bridge
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_import:
+  neo4j_plugins:
+  virtuoso_data:
+  segb_ui_node_modules:

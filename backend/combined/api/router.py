@@ -73,7 +73,7 @@ async def get_events(
     return PlainTextResponse(content=service.get_events_ttl(), media_type="text/turtle")
 
 
-@router.get("/query")
+@router.get("/query", response_class=PlainTextResponse)
 async def execute_query(
     request: Request,
     query: str,
@@ -82,7 +82,7 @@ async def execute_query(
     require_roles(user, allowed=(Role.ADMIN,))
     services: RuntimeServices = get_services(request)
     service = LogService(neo4j=services.neo4j, virtuoso=services.virtuoso)
-    return service.execute_query(query)
+    return PlainTextResponse(content=service.execute_query(query), media_type="text/turtle")
 
 
 @router.get("/modifications")

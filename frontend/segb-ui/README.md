@@ -1,42 +1,82 @@
-# segb-ui
+# SEGB UI (Vue 3)
 
-This template should help get you started developing with Vue 3 in Vite.
+Production-oriented frontend aligned with the current backend API.
 
-## Recommended IDE Setup
+## Goals
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Keep a clean, modular structure (`app`, `core`, `features`, `shared`).
+- Prioritize report-oriented analysis views from the notebook.
+- Remove historical graph UI paths.
+- Keep API integration explicit and typed.
 
-## Recommended Browser Setup
+## Project Structure
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```text
+src/
+  app/
+    layout/
+    router.ts
+  core/
+    api/
+    auth/
+    config/
+  features/
+    reports/
+    logs/
+    modifications/
+    query/
+    shared-context/
+    health/
+    session/
+  shared/
+    charts/
+    rdf/
+    ui/
+    utils/
 ```
 
-### Compile and Hot-Reload for Development
+## Main Routes
 
-```sh
+- `/reports`: notebook-style analytics dashboard
+- `/logs/insert`: insert TTL and inspect KG snapshot
+- `/logs/modifications`: audit logs and delete-all admin action
+- `/query`: read-only SPARQL workbench
+- `/shared-context`: resolver/reconcile/stats console
+- `/health`: backend probes
+- `/session`: bearer token setup
+
+## Backend Match
+
+The UI maps directly to these backend endpoints:
+
+- `GET /healthz/live`
+- `GET /healthz/ready`
+- `POST /ttl`
+- `GET /events`
+- `GET /query`
+- `GET /modifications`
+- `GET /modifications_date`
+- `POST /ttl/delete_all`
+- `POST /shared-context/resolve`
+- `POST /shared-context/reconcile`
+- `GET /shared-context/stats`
+
+## Security Notes
+
+- Token is stored in `sessionStorage` (not persisted across browser restarts).
+- Authorization header is attached only when token exists.
+- Query workbench blocks non-read-only verbs client-side; backend still enforces policy.
+- No HTML injection rendering is used in report/result components.
+
+## Dev
+
+```bash
+npm install
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## Build
 
-```sh
+```bash
 npm run build
 ```

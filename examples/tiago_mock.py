@@ -40,7 +40,7 @@ def tiago_handle_human_utterance(
         activity_kind=ActivityKind.LISTENING,
         started_at=observed_at,
         ended_at=datetime.now(timezone.utc),
-        triggered_by_entities=[shared_event_uri],
+        related_shared_events=[shared_event_uri],
     )
     observation_message_uri = logger.log_message(
         text,

@@ -1,19 +1,7 @@
 <template>
-  <div class="app-shell">
-    <AppHeader />
-    <div class="app-main">
-      <Sidebar class="main-sidebar"/>
-      <main class="main-content">
-        <router-view />
-      </main>
-    </div>
-    <FooterLogo />
-  </div>
-
+  <RouterView />
 </template>
 
-<script setup>
-import AppHeader from '@/components/AppHeader.vue'
-import Sidebar from '@/components/Sidebar.vue'
-import FooterLogo from '@/components/FooterLogo.vue'
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
 </script>

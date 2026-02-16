@@ -4,7 +4,7 @@ from rdflib import URIRef
 from rdflib.namespace import PROV, RDF
 
 from examples.run_simulation import run_simulation
-from segb_logger.namespaces import ORO, SEGB
+from segb_logger.namespaces import ORO, SCHEMA, SEGB
 
 
 class TestROS2MockSimulation(unittest.TestCase):
@@ -19,13 +19,14 @@ class TestROS2MockSimulation(unittest.TestCase):
         self.assertIn((result.human_uri, RDF.type, ORO.Human), graph)
 
         self.assertIn((result.shared_event_uri, RDF.type, PROV.Entity), graph)
-        self.assertIn((result.shared_event_uri, RDF.type, SEGB.Trigger), graph)
-        self.assertIn((ari_listening_activity, SEGB.triggeredByEntity, result.shared_event_uri), graph)
-        self.assertIn((tiago_listening_activity, SEGB.triggeredByEntity, result.shared_event_uri), graph)
+        self.assertIn((result.shared_event_uri, RDF.type, SCHEMA.Event), graph)
+        self.assertIn((ari_listening_activity, SCHEMA.about, result.shared_event_uri), graph)
+        self.assertIn((tiago_listening_activity, SCHEMA.about, result.shared_event_uri), graph)
         self.assertIn((result.ari_observation_uri, PROV.specializationOf, result.shared_event_uri), graph)
         self.assertIn((result.tiago_observation_uri, PROV.specializationOf, result.shared_event_uri), graph)
 
         self.assertIn((ari_decision_activity, SEGB.triggeredByActivity, ari_listening_activity), graph)
+        self.assertIn((ari_decision_activity, SEGB.triggeredByEntity, result.ari_observation_uri), graph)
         self.assertIn((ari_decision_activity, SEGB.producedEntityResult, result.ari_response_uri), graph)
 
         response_messages = list(graph.subjects(RDF.type, ORO.ResponseMessage))

@@ -70,7 +70,6 @@ class SemanticSEGBLogger:
         robot_name: str | None = None,
         default_language: str = "en",
         graph: Graph | None = None,
-        strict_activity_types: bool = False,
         shared_event_policy: SharedEventPolicy | None = None,
         shared_event_resolver: SharedEventResolver | None = None,
     ) -> None:
@@ -85,7 +84,6 @@ class SemanticSEGBLogger:
             self.graph.bind(prefix, namespace)
 
         self.robot_uri = self.resource_uri("robot", robot_id)
-        self.strict_activity_types = strict_activity_types
         self.shared_event_policy = shared_event_policy if shared_event_policy is not None else SharedEventPolicy()
         self.shared_event_resolver = shared_event_resolver
         self.register_robot(robot_name=robot_name)
@@ -226,7 +224,6 @@ class SemanticSEGBLogger:
         bucket_dt = self._bucket_datetime_seconds(observed_at, bucket_seconds=time_bucket_seconds)
 
         self.graph.add((event_uri, RDF.type, PROV.Entity))
-        self.graph.add((event_uri, RDF.type, SEGB.Trigger))
         self.graph.add((event_uri, RDF.type, SCHEMA.Event))
         if event_key:
             self.graph.add((event_uri, SCHEMA.identifier, Literal(event_key)))
@@ -401,9 +398,26 @@ class SemanticSEGBLogger:
         shared_event_uri = self.resolve_term(shared_event)
         self.graph.add((observation_uri, PROV.specializationOf, shared_event_uri))
         self.graph.add((shared_event_uri, RDF.type, PROV.Entity))
-        self.graph.add((shared_event_uri, RDF.type, SEGB.Trigger))
+        self.graph.add((shared_event_uri, RDF.type, SCHEMA.Event))
         if confidence is not None:
             self.graph.add((observation_uri, SCHEMA.confidence, self._literal(float(confidence))))
+
+    def link_activity_to_shared_event(
+        self,
+        activity: RDFTermLike,
+        shared_event: RDFTermLike,
+    ) -> None:
+        """Adds a contextual relation between an activity and a shared event.
+
+        This is intentionally non-causal. Use it when the activity is about the same
+        real-world event observed by multiple robots, but that shared event should not
+        be modeled as the direct trigger input.
+        """
+        activity_uri = self.resolve_term(activity)
+        shared_event_uri = self.resolve_term(shared_event)
+        self.graph.add((activity_uri, SCHEMA.about, shared_event_uri))
+        self.graph.add((shared_event_uri, RDF.type, PROV.Entity))
+        self.graph.add((shared_event_uri, RDF.type, SCHEMA.Event))
 
     def register_ml_model(
         self,
@@ -476,30 +490,18 @@ class SemanticSEGBLogger:
     def _merge_activity_types(
         self,
         *,
-        activity_kind: ActivityKind | str | None,
-        activity_types: Sequence[RDFTermLike] | None,
+        activity_kind: ActivityKind | str,
         extra_types: Sequence[RDFTermLike] | None,
     ) -> tuple[URIRef, ...]:
         kind = self._coerce_activity_kind(activity_kind)
-        if self.strict_activity_types and activity_types is not None:
-            raise ValueError(
-                "Parameter 'activity_types' is disabled in strict activity mode. "
-                "Use 'activity_kind' for controlled types and 'extra_types' for explicit extensions."
-            )
+        if kind is None:
+            allowed = ", ".join(item.value for item in ActivityKind)
+            raise ValueError(f"Parameter 'activity_kind' is required. Allowed values: {allowed}.")
 
         merged: list[RDFTermLike] = []
-        if kind is not None:
-            merged.extend(self.ACTIVITY_KIND_TYPES[kind])
-        if activity_types is not None:
-            merged.extend(activity_types)
+        merged.extend(self.ACTIVITY_KIND_TYPES[kind])
         if extra_types is not None:
             merged.extend(extra_types)
-
-        if self.strict_activity_types and kind is None and not merged:
-            raise ValueError(
-                "Strict activity mode requires at least one explicit type. "
-                "Use 'activity_kind' or 'extra_types'."
-            )
 
         deduplicated: list[URIRef] = []
         seen: set[URIRef] = set()
@@ -560,10 +562,10 @@ class SemanticSEGBLogger:
         self,
         *,
         activity_id: str | None = None,
-        activity_kind: ActivityKind | str | None = None,
-        activity_types: Sequence[RDFTermLike] | None = None,
+        activity_kind: ActivityKind | str,
         extra_types: Sequence[RDFTermLike] | None = None,
         label: str | None = None,
+        related_shared_events: Sequence[RDFTermLike] | None = None,
         performer: RDFTermLike | None = None,
         started_at: datetime | None = None,
         ended_at: datetime | None = None,
@@ -582,7 +584,7 @@ class SemanticSEGBLogger:
         Data provenance expected from the caller:
         - `activity_kind`: recommended controlled value to avoid RDF-term typos.
         - `extra_types`: optional extension classes when canonical kinds are not enough.
-        - `activity_types`: legacy direct RDF class input (disabled when strict mode is enabled).
+        - `related_shared_events`: contextual shared-event links (not direct trigger causality).
         - `started_at` / `ended_at`: system clock timestamps when the action/event starts/ends.
         - `triggered_by_activity`: single upstream action trigger.
         - `triggered_by_entity`: preferred single upstream entity trigger (message, detection, file).
@@ -597,7 +599,6 @@ class SemanticSEGBLogger:
         activity_uri = self.resource_uri("activity", activity_id)
         resolved_activity_types = self._merge_activity_types(
             activity_kind=activity_kind,
-            activity_types=activity_types,
             extra_types=extra_types,
         )
         self._ensure_activity(activity_uri, resolved_activity_types)
@@ -612,6 +613,11 @@ class SemanticSEGBLogger:
             self.graph.add((activity_uri, PROV.startedAtTime, self._literal(started_at)))
         if ended_at:
             self.graph.add((activity_uri, PROV.endedAtTime, self._literal(ended_at)))
+
+        for shared_event_uri in self._iter_terms(related_shared_events):
+            self.graph.add((activity_uri, SCHEMA.about, shared_event_uri))
+            self.graph.add((shared_event_uri, RDF.type, PROV.Entity))
+            self.graph.add((shared_event_uri, RDF.type, SCHEMA.Event))
 
         if triggered_by_activity is not None:
             trigger_uri = self.resolve_term(triggered_by_activity)

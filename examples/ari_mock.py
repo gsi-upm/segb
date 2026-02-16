@@ -42,7 +42,7 @@ def ari_handle_human_utterance(
         activity_kind=ActivityKind.LISTENING,
         started_at=observed_at,
         ended_at=datetime.now(timezone.utc),
-        triggered_by_entities=[shared_event_uri],
+        related_shared_events=[shared_event_uri],
     )
 
     observation_message_uri = logger.log_message(
@@ -58,7 +58,8 @@ def ari_handle_human_utterance(
         activity_kind=ActivityKind.DECISION,
         started_at=datetime.now(timezone.utc),
         triggered_by_activity=listening_activity_uri,
-        triggered_by_entities=[shared_event_uri],
+        triggered_by_entity=observation_message_uri,
+        related_shared_events=[shared_event_uri],
         used_entities=[observation_message_uri],
     )
     response_message_uri = logger.log_message(

@@ -71,7 +71,17 @@ class TestSharedContextResolver(unittest.TestCase):
         self.assertNotEqual(first.shared_context_uri, second.shared_context_uri)
 
     def test_reconcile_merges_ambiguous_context(self) -> None:
-        base = self.resolver.resolve(
+        resolver = SharedContextResolver(
+            policy=SharedContextPolicy(
+                namespace="https://example.org/shared-context/",
+                time_window_seconds=3.0,
+                match_threshold=0.75,
+                ambiguous_threshold=0.60,
+                close_score_margin=0.03,
+            )
+        )
+        # Seed one canonical active context that later observations can be compared against.
+        base_result = resolver.resolve(
             SharedContextResolveRequest(
                 event_kind="human_utterance",
                 observed_at=datetime(2026, 2, 10, 12, 0, 0, tzinfo=timezone.utc),
@@ -79,7 +89,10 @@ class TestSharedContextResolver(unittest.TestCase):
                 text="climate change news now",
             )
         )
-        ambiguous = self.resolver.resolve(
+        self.assertEqual(base_result.status, "created")
+
+        # Create an ambiguous context near the base one (plausible but not strong enough to match).
+        _ = resolver.resolve(
             SharedContextResolveRequest(
                 event_kind="human_utterance",
                 observed_at=datetime(2026, 2, 10, 12, 0, 1, tzinfo=timezone.utc),
@@ -87,15 +100,21 @@ class TestSharedContextResolver(unittest.TestCase):
                 text="climate change updates now",
             )
         )
+        # Third observation is intentionally ambiguous at resolve-time, but should be merged by reconcile.
+        ambiguous_result = resolver.resolve(
+            SharedContextResolveRequest(
+                event_kind="human_utterance",
+                observed_at=datetime(2026, 2, 10, 12, 0, 1, 200000, tzinfo=timezone.utc),
+                modality="speech",
+                text="climate change news now",
+            )
+        )
+        self.assertEqual(ambiguous_result.status, "ambiguous")
 
-        if ambiguous.status != "ambiguous":
-            self.skipTest("Ambiguous branch not reached with current deterministic policy inputs.")
-
-        report = self.resolver.reconcile_pending()
-        self.assertGreaterEqual(report.scanned_ambiguous, 1)
-        self.assertGreaterEqual(report.merged_count, 0)
-        if report.merged_count > 0:
-            self.assertIn(ambiguous.shared_context_uri, report.mappings)
+        report = resolver.reconcile_pending()
+        self.assertEqual(report.scanned_ambiguous, 2)
+        self.assertEqual(report.merged_count, 1)
+        self.assertIn(ambiguous_result.shared_context_uri, report.mappings)
 
 
 if __name__ == "__main__":

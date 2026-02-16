@@ -74,7 +74,7 @@ class TestROS2MockPublishing(unittest.TestCase):
         self.assertEqual(config.timeout_seconds, 12.0)
         self.assertTrue(config.verify_tls)
 
-    def test_build_publish_config_returns_none_without_url(self) -> None:
+    def test_build_publish_config_uses_default_url_without_args_or_env(self) -> None:
         args = argparse.Namespace(
             publish_url=None,
             token=None,
@@ -86,7 +86,9 @@ class TestROS2MockPublishing(unittest.TestCase):
         )
         with patch.dict(os.environ, {}, clear=True):
             config = build_publish_config_from_args(args)
-        self.assertIsNone(config)
+        self.assertIsNotNone(config)
+        assert config is not None
+        self.assertEqual(config.base_url, "http://localhost:5000")
 
 
 if __name__ == "__main__":
