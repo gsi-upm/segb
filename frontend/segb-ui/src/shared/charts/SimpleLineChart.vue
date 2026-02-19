@@ -12,6 +12,7 @@
     <div
       ref="scrollEl"
       class="chart-scroll"
+      @scroll="hidePointTooltip"
       @wheel="onWheelScroll"
       @pointerdown="onPointerDown"
       @pointermove="onPointerMove"
@@ -32,7 +33,17 @@
           <polyline :points="polylinePoints" class="line" />
 
           <g v-for="(point, idx) in scaledPoints" :key="idx">
-            <circle :cx="point.x" :cy="point.y" :r="pointRadius" :fill="emotionStyle(point.tag).color" />
+            <circle
+              class="point-dot"
+              :cx="point.x"
+              :cy="point.plotY"
+              :r="pointRadius"
+              :fill="emotionStyle(point.tag).color"
+              @pointerenter="onPointPointerEnter($event, point)"
+              @pointermove="onPointPointerMove($event)"
+              @pointerleave="hidePointTooltip"
+              @pointercancel="hidePointTooltip"
+            />
             <text :x="point.x" :y="height - paddingBottom + 16" class="tick">
               <tspan :x="point.x">{{ splitTickLabel(point.xLabel)[0] }}</tspan>
               <tspan v-if="splitTickLabel(point.xLabel)[1]" :x="point.x" dy="11">
@@ -53,16 +64,29 @@
         </svg>
       </div>
     </div>
+
+    <div
+      v-if="tooltip.visible"
+      class="point-tooltip"
+      :style="{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }"
+      role="tooltip"
+    >
+      <div v-for="(line, index) in tooltip.lines" :key="index">{{ line }}</div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { formatRatioAsPercent } from '@/shared/utils/format'
 
 export type LinePoint = {
   xLabel: string
   y: number
   tag: string
+  activity?: string
+  trigger?: string
+  confidence?: number | null
 }
 
 type EmotionLegendItem = {
@@ -92,10 +116,6 @@ const INSIDE_OUT_PALETTE = {
   anger: { key: 'anger', label: 'Anger', color: '#dc2626' },
   fear: { key: 'fear', label: 'Fear', color: '#9333ea' },
   disgust: { key: 'disgust', label: 'Disgust', color: '#16a34a' },
-  anxiety: { key: 'anxiety', label: 'Anxiety', color: '#f97316' },
-  envy: { key: 'envy', label: 'Envy', color: '#14b8a6' },
-  ennui: { key: 'ennui', label: 'Ennui', color: '#6d28d9' },
-  embarrassment: { key: 'embarrassment', label: 'Embarrassment', color: '#ec4899' },
   surprise: { key: 'surprise', label: 'Surprise', color: '#60a5fa' },
 } satisfies Record<string, EmotionLegendItem>
 
@@ -107,10 +127,6 @@ const legendOrder: EmotionKey[] = [
   'anger',
   'fear',
   'disgust',
-  'anxiety',
-  'envy',
-  'ennui',
-  'embarrassment',
   'surprise',
 ]
 
@@ -125,11 +141,8 @@ function normalizeEmotionKey(tag: string): EmotionKey {
   if (normalized.includes('sad') || normalized.includes('triste')) return 'sadness'
   if (normalized.includes('anger') || normalized.includes('ira')) return 'anger'
   if (normalized.includes('fear') || normalized.includes('miedo')) return 'fear'
+  if (normalized.includes('anxiety') || normalized.includes('ansiedad')) return 'fear'
   if (normalized.includes('disgust') || normalized.includes('desagrado')) return 'disgust'
-  if (normalized.includes('anxiety') || normalized.includes('ansiedad')) return 'anxiety'
-  if (normalized.includes('envy') || normalized.includes('envidia')) return 'envy'
-  if (normalized.includes('ennui') || normalized.includes('aburrimiento')) return 'ennui'
-  if (normalized.includes('embarrass') || normalized.includes('verg')) return 'embarrassment'
   if (normalized.includes('surprise') || normalized.includes('sorpresa')) return 'surprise'
   return 'surprise'
 }
@@ -144,6 +157,24 @@ function splitTickLabel(value: string): [string, string?] {
     return [first, second]
   }
   return [value]
+}
+
+function pointTooltipLines(point: LinePoint): string[] {
+  const lines = [
+    `Emotion: ${point.tag}`,
+    `Intensity: ${formatRatioAsPercent(point.y, 0)}`,
+    `Timestamp: ${point.xLabel} UTC`,
+  ]
+  if (point.trigger && point.trigger.trim().length > 0) {
+    lines.push(`Trigger: ${point.trigger}`)
+  }
+  if (point.activity && point.activity.trim().length > 0) {
+    lines.push(`Analysis activity: ${point.activity}`)
+  }
+  if (typeof point.confidence === 'number') {
+    lines.push(`Confidence: ${formatRatioAsPercent(point.confidence, 0)}`)
+  }
+  return lines
 }
 
 const chartWidth = computed(() => {
@@ -165,12 +196,14 @@ const yTicks = computed(() => {
       const value = (safeYMax.value / steps) * step
       const ratio = safeYMax.value === 0 ? 0 : value / safeYMax.value
       const y = height - paddingBottom - ratio * (height - paddingTop - paddingBottom)
-      return { value, y, label: `${(value * 100).toFixed(0)}%` }
+      return { value, y, label: formatRatioAsPercent(value, 0) }
     })
     .filter((tick) => tick.value > 0)
 })
 
-const scaledPoints = computed(() => {
+type ScaledPoint = LinePoint & { x: number; plotY: number }
+
+const scaledPoints = computed<ScaledPoint[]>(() => {
   if (props.points.length === 0) {
     return []
   }
@@ -183,16 +216,16 @@ const scaledPoints = computed(() => {
       props.points.length === 1
         ? chartWidth.value / 2
         : paddingLeft + (index / (props.points.length - 1)) * xSpan
-    const y = height - paddingBottom - (Math.max(Math.min(point.y, safeYMax.value), 0) / safeYMax.value) * ySpan
+    const plotY = height - paddingBottom - (Math.max(Math.min(point.y, safeYMax.value), 0) / safeYMax.value) * ySpan
     return {
       ...point,
       x,
-      y,
+      plotY,
     }
   })
 })
 
-const polylinePoints = computed(() => scaledPoints.value.map((point) => `${point.x},${point.y}`).join(' '))
+const polylinePoints = computed(() => scaledPoints.value.map((point) => `${point.x},${point.plotY}`).join(' '))
 
 const legendItems = computed<EmotionLegendItem[]>(() => legendOrder.map((key) => INSIDE_OUT_PALETTE[key]))
 
@@ -201,7 +234,50 @@ const containerWidth = ref(0)
 const isDragging = ref(false)
 const dragStartX = ref(0)
 const dragStartLeft = ref(0)
+const tooltip = ref<{ visible: boolean; x: number; y: number; lines: string[] }>({
+  visible: false,
+  x: 0,
+  y: 0,
+  lines: [],
+})
 let resizeObserver: ResizeObserver | null = null
+
+function updateTooltipPosition(clientX: number, clientY: number): void {
+  const margin = 12
+  const estimatedWidth = 340
+  const estimatedHeight = Math.max(88, tooltip.value.lines.length * 22)
+  let x = clientX + margin
+  let y = clientY + margin
+
+  if (typeof window !== 'undefined') {
+    if (x + estimatedWidth > window.innerWidth - 8) {
+      x = Math.max(8, clientX - estimatedWidth - margin)
+    }
+    if (y + estimatedHeight > window.innerHeight - 8) {
+      y = Math.max(8, clientY - estimatedHeight - margin)
+    }
+  }
+
+  tooltip.value.x = x
+  tooltip.value.y = y
+}
+
+function onPointPointerEnter(event: PointerEvent, point: LinePoint): void {
+  tooltip.value.lines = pointTooltipLines(point)
+  tooltip.value.visible = true
+  updateTooltipPosition(event.clientX, event.clientY)
+}
+
+function onPointPointerMove(event: PointerEvent): void {
+  if (!tooltip.value.visible) {
+    return
+  }
+  updateTooltipPosition(event.clientX, event.clientY)
+}
+
+function hidePointTooltip(): void {
+  tooltip.value.visible = false
+}
 
 function updateContainerWidth(): void {
   const container = scrollEl.value
@@ -243,6 +319,7 @@ function onWheelScroll(event: WheelEvent): void {
 }
 
 function onPointerDown(event: PointerEvent): void {
+  hidePointTooltip()
   const container = scrollEl.value
   if (!container || container.scrollWidth <= container.clientWidth) {
     return
@@ -368,6 +445,10 @@ function onPointerUp(event: PointerEvent): void {
   stroke-width: 2.6;
 }
 
+.point-dot {
+  cursor: pointer;
+}
+
 .tick {
   font-size: 14.5px;
   text-anchor: middle;
@@ -394,5 +475,20 @@ function onPointerUp(event: PointerEvent): void {
 
 .y-axis-title {
   text-anchor: middle;
+}
+
+.point-tooltip {
+  position: fixed;
+  z-index: 1200;
+  pointer-events: none;
+  background: rgba(15, 23, 42, 0.96);
+  color: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  border-radius: 8px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.3);
+  padding: 0.45rem 0.6rem;
+  max-width: min(360px, calc(100vw - 16px));
+  font-size: 0.82rem;
+  line-height: 1.35;
 }
 </style>

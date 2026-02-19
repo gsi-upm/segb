@@ -7,7 +7,7 @@ import json
 import os
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -20,13 +20,23 @@ if __package__ is None or __package__ == "":
         sys.path.insert(0, str(project_root))
 
     from segb_logger import SEGBPublisher, SemanticSEGBLogger, SharedEventPolicy
-    from examples.ari_mock import AriMockResult, ari_handle_human_utterance
-    from examples.tiago_mock import TiagoMockResult, tiago_handle_human_utterance
+    from examples.ari_mock import AriDetectionResult, AriMockResult, ari_detect_human_entry, ari_handle_human_utterance
+    from examples.tiago_mock import (
+        TiagoDetectionResult,
+        TiagoMockResult,
+        tiago_detect_human_entry,
+        tiago_handle_human_utterance,
+    )
 else:
     # Module mode (`python -m examples.run_simulation`).
     from segb_logger import SEGBPublisher, SemanticSEGBLogger, SharedEventPolicy
-    from .ari_mock import AriMockResult, ari_handle_human_utterance
-    from .tiago_mock import TiagoMockResult, tiago_handle_human_utterance
+    from .ari_mock import AriDetectionResult, AriMockResult, ari_detect_human_entry, ari_handle_human_utterance
+    from .tiago_mock import (
+        TiagoDetectionResult,
+        TiagoMockResult,
+        tiago_detect_human_entry,
+        tiago_handle_human_utterance,
+    )
 
 ARI_NAMESPACE = "https://gsi.upm.es/segb/robots/ari/v1/"
 TIAGO_NAMESPACE = "https://gsi.upm.es/segb/robots/tiago/v1/"
@@ -39,6 +49,7 @@ class SimulationResult:
 
     graph: Graph
     human_uri: URIRef
+    entry_shared_event_uri: URIRef
     shared_event_uri: URIRef
     ari_observation_uri: URIRef
     tiago_observation_uri: URIRef
@@ -59,7 +70,8 @@ class PublishConfig:
     verify_tls: bool = True
 
 
-def _build_loggers() -> tuple[Graph, SemanticSEGBLogger, SemanticSEGBLogger]:
+def build_loggers() -> tuple[Graph, SemanticSEGBLogger, SemanticSEGBLogger]:
+    """Builds an isolated in-memory graph and one logger per robot."""
     graph = Graph()
     policy = SharedEventPolicy(
         namespace="https://gsi.upm.es/segb/shared-events/",
@@ -70,6 +82,8 @@ def _build_loggers() -> tuple[Graph, SemanticSEGBLogger, SemanticSEGBLogger]:
         robot_id="ari1",
         robot_name="ARI",
         graph=graph,
+        namespace_prefix="ari",
+        compact_resource_ids=True,
         shared_event_policy=policy,
     )
     tiago_logger = SemanticSEGBLogger(
@@ -77,35 +91,54 @@ def _build_loggers() -> tuple[Graph, SemanticSEGBLogger, SemanticSEGBLogger]:
         robot_id="tiago1",
         robot_name="TIAGo",
         graph=graph,
+        namespace_prefix="tiago",
+        compact_resource_ids=True,
         shared_event_policy=policy,
     )
     return graph, ari_logger, tiago_logger
 
 
-def run_simulation() -> SimulationResult:
-    """Runs one clear interaction:
-    - Maria speaks once.
-    - ARI listens and answers.
-    - TIAGo listens and does not answer.
+def run_basic_simulation() -> SimulationResult:
+    """Runs one interaction scenario:
+    - Maria enters the room and both robots detect her.
+    - Maria tells ARI she is sad.
+    - ARI detects sadness (speech + face), responds with support, then detects happiness.
+    - TIAGo listens, evaluates engagement, and does not respond.
     """
-    graph, ari_logger, tiago_logger = _build_loggers()
+    graph, ari_logger, tiago_logger = build_loggers()
 
     maria_uri = ari_logger.register_human("maria", first_name="Maria")
 
-    text = "Could you show me climate news?"
-    observed_at = datetime.now(timezone.utc)
+    entry_observed_at = datetime.now(timezone.utc)
+    speech_observed_at = entry_observed_at + timedelta(seconds=4)
+
+    ari_entry_result: AriDetectionResult = ari_detect_human_entry(
+        logger=ari_logger,
+        human_uri=maria_uri,
+        observed_at=entry_observed_at,
+    )
+    tiago_entry_result: TiagoDetectionResult = tiago_detect_human_entry(
+        logger=tiago_logger,
+        human_uri=maria_uri,
+        observed_at=entry_observed_at,
+    )
+
+    if ari_entry_result.shared_event_uri != tiago_entry_result.shared_event_uri:
+        raise RuntimeError("Shared context mismatch: ARI and TIAGo should resolve the same human-entry URI.")
+
+    text = "ARI, me siento triste porque he recibido una mala noticia."
 
     ari_result: AriMockResult = ari_handle_human_utterance(
         logger=ari_logger,
         human_uri=maria_uri,
         text=text,
-        observed_at=observed_at,
+        observed_at=speech_observed_at,
     )
     tiago_result: TiagoMockResult = tiago_handle_human_utterance(
         logger=tiago_logger,
         human_uri=maria_uri,
         text=text,
-        observed_at=observed_at,
+        observed_at=speech_observed_at,
     )
 
     if ari_result.shared_event_uri != tiago_result.shared_event_uri:
@@ -114,6 +147,7 @@ def run_simulation() -> SimulationResult:
     return SimulationResult(
         graph=graph,
         human_uri=maria_uri,
+        entry_shared_event_uri=ari_entry_result.shared_event_uri,
         shared_event_uri=ari_result.shared_event_uri,
         ari_observation_uri=ari_result.observation_message_uri,
         tiago_observation_uri=tiago_result.observation_message_uri,
@@ -123,13 +157,18 @@ def run_simulation() -> SimulationResult:
     )
 
 
+def run_simulation() -> SimulationResult:
+    """Backward-compatible alias. Prefer `run_basic_simulation()`."""
+    return run_basic_simulation()
+
+
 def run_professional_ros2_mock_simulation() -> SimulationResult:
     """Backward-compatible alias kept for existing callers/tests."""
-    return run_simulation()
+    return run_basic_simulation()
 
 
 def publish_simulation_result(simulation_result: SimulationResult, *, config: PublishConfig) -> dict[str, Any]:
-    """Publishes the demo graph into SEGB backend."""
+    """Clears previous KG content and publishes the new demo graph."""
     publisher = SEGBPublisher(
         base_url=config.base_url,
         token=config.token,
@@ -138,9 +177,11 @@ def publish_simulation_result(simulation_result: SimulationResult, *, config: Pu
         verify_tls=config.verify_tls,
         queue_file=config.queue_file,
     )
+    cleanup_response = publisher.delete_all_ttls(user=config.user)
     publish_response = publisher.publish_graph(simulation_result.graph, user=config.user)
     return {
         "published": True,
+        "cleanup_response": cleanup_response,
         "publish_endpoint": f"{config.base_url.rstrip('/')}/ttl",
         "publish_response": publish_response,
         "graph_triplet_count": len(simulation_result.graph),
@@ -188,7 +229,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    result = run_simulation()
+    result = run_basic_simulation()
 
     publish_config = build_publish_config_from_args(args)
     if publish_config is not None:

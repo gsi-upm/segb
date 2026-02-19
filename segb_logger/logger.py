@@ -50,8 +50,9 @@ class SemanticSEGBLogger:
 
     It does not decide *what happened*; it only records *what the caller says happened*.
     """
+
     DEFAULT_SHARED_EVENT_NAMESPACE = "https://gsi.upm.es/segb/shared-events/"
-    
+
     ACTIVITY_KIND_TYPES: Mapping[ActivityKind, tuple[RDFTermLike, ...]] = {
         ActivityKind.LISTENING: ("oro:ListeningEvent",),
         ActivityKind.DECISION: ("oro:DecisionMakingAction",),
@@ -70,16 +71,26 @@ class SemanticSEGBLogger:
         robot_name: str | None = None,
         default_language: str = "en",
         graph: Graph | None = None,
+        namespace_prefix: str = "robotlog",
+        compact_resource_ids: bool = False,
         shared_event_policy: SharedEventPolicy | None = None,
         shared_event_resolver: SharedEventResolver | None = None,
+        emit_prov_redundant: bool = True,
     ) -> None:
         self.base_namespace = self._normalize_base_namespace(base_namespace)
         self.base = Namespace(self.base_namespace)
         self.default_language = default_language
         self.graph = graph if graph is not None else Graph()
+        self.namespace_prefix = self._normalize_prefix_label(namespace_prefix)
+        self.compact_resource_ids = bool(compact_resource_ids)
+
+        # If True, emit redundant PROV triples in addition to SEGB subproperties.
+        # This improves interoperability in deployments without OWL reasoning enabled.
+        self.emit_prov_redundant = bool(emit_prov_redundant)
+
         self.prefixes: dict[str, Namespace] = dict(DEFAULT_PREFIXES)
-        self.prefixes.pop("amor-exp", None)
-        self.prefixes["robotlog"] = self.base
+        # Do not drop prefixes arbitrarily; keep all defaults for interoperability.
+        self.prefixes[self.namespace_prefix] = self.base
         for prefix, namespace in self.prefixes.items():
             self.graph.bind(prefix, namespace)
 
@@ -101,6 +112,17 @@ class SemanticSEGBLogger:
     def _slugify(text: str) -> str:
         slug = re.sub(r"[^A-Za-z0-9]+", "_", text.strip()).strip("_").lower()
         return slug or uuid.uuid4().hex
+
+    @staticmethod
+    def _normalize_prefix_label(prefix: str) -> str:
+        if not isinstance(prefix, str) or not prefix.strip():
+            raise ValueError("Parameter 'namespace_prefix' must be a non-empty string.")
+        normalized = re.sub(r"[^A-Za-z0-9_]+", "_", prefix.strip()).strip("_").lower()
+        if not normalized:
+            raise ValueError("Parameter 'namespace_prefix' must include at least one alphanumeric character.")
+        if normalized[0].isdigit():
+            normalized = f"ns_{normalized}"
+        return normalized
 
     def resolve_term(self, value: RDFTermLike) -> URIRef:
         """Resolves a URIRef, absolute URI string, prefix:name string, or local identifier."""
@@ -129,6 +151,8 @@ class SemanticSEGBLogger:
         if not isinstance(kind, str) or not kind.strip():
             raise ValueError("Parameter 'kind' must be a non-empty string.")
         suffix = self._slugify(resource_id) if resource_id else uuid.uuid4().hex
+        if self.compact_resource_ids:
+            return self.base[f"{self._slugify(kind)}_{suffix}"]
         return self.base[f"{kind.strip()}/{suffix}"]
 
     def _literal(self, value: Any) -> Literal:
@@ -136,7 +160,9 @@ class SemanticSEGBLogger:
             return value
         if isinstance(value, datetime):
             dt = value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
-            return Literal(dt.isoformat(), datatype=XSD.dateTime)
+            dt = dt.astimezone(timezone.utc)
+            lexical = dt.replace(tzinfo=None).isoformat(timespec="microseconds") + "Z"
+            return Literal(lexical, datatype=XSD.dateTime)
         if isinstance(value, bool):
             return Literal(value, datatype=XSD.boolean)
         if isinstance(value, int):
@@ -152,6 +178,7 @@ class SemanticSEGBLogger:
 
     @staticmethod
     def _canonicalize_text(value: str | None) -> str:
+        """Canonicalizes text ONLY for hashing/fingerprinting (never for storing)."""
         if value is None:
             return ""
         return re.sub(r"\s+", " ", value.strip().lower())
@@ -165,6 +192,29 @@ class SemanticSEGBLogger:
         bucket_epoch = int(utc_value.timestamp()) // bucket_seconds * bucket_seconds
         return datetime.fromtimestamp(bucket_epoch, tz=timezone.utc)
 
+    @staticmethod
+    def _as_percent(value: float) -> float:
+        """Normalizes values to 0..100 when schema:unitCode is PERCENT."""
+        v = float(value)
+        if 0.0 <= v <= 1.0:
+            return v * 100.0
+        return v
+
+    def _mark_as_segb_result(self, uri: URIRef) -> None:
+        """Adds segb:Result typing aligned to an externally inconsistent SEGB TBox.
+
+        NOTE (ontology inconsistency - external, cannot be changed here):
+        - In segb.ttl, segb:Result is declared as rdfs:subClassOf prov:Activity,
+          but it is also used in ranges intersecting prov:Entity (e.g., segb:producedEntityResult range
+          is (prov:Entity AND segb:Result)).
+        - To satisfy those ranges in stores without OWL reasoning, we type results explicitly as BOTH:
+            - prov:Entity (when the node is an entity-like artifact), AND
+            - segb:Result, AND (redundantly) prov:Activity (because segb:Result ⊑ prov:Activity).
+        """
+        self.graph.add((uri, RDF.type, SEGB.Result))
+        # Redundant but needed for interoperability without a reasoner, given segb:Result ⊑ prov:Activity
+        self.graph.add((uri, RDF.type, PROV.Activity))
+
     def register_robot(
         self,
         *,
@@ -174,7 +224,8 @@ class SemanticSEGBLogger:
     ) -> URIRef:
         """Registers the robot agent in the local graph."""
         uri = self.resolve_term(robot_uri) if robot_uri is not None else self.robot_uri
-        self.graph.add((uri, RDF.type, PROV.SoftwareAgent))
+        # Prefer prov:Agent for a physical robot. Software agents should be modeled separately.
+        self.graph.add((uri, RDF.type, PROV.Agent))
         self.graph.add((uri, RDF.type, ORO.Robot))
         if robot_name:
             self.graph.add((uri, ORO.hasName, Literal(robot_name, lang=self.default_language)))
@@ -190,11 +241,7 @@ class SemanticSEGBLogger:
         first_name: str | None = None,
         homepage: str | None = None,
     ) -> URIRef:
-        """Registers a human actor often used as interaction subject.
-
-        Usually called when the robot identifies a person for the first time in a session.
-        After that, the same URI can be reused in later triples; no need to recreate it.
-        """
+        """Registers a human actor often used as interaction subject."""
         human_uri = self.resource_uri("human", human_id)
         self.graph.add((human_uri, RDF.type, PROV.Person))
         self.graph.add((human_uri, RDF.type, FOAF.Person))
@@ -218,25 +265,27 @@ class SemanticSEGBLogger:
         time_bucket_seconds: int,
         event_key: str | None = None,
     ) -> None:
-        canonical_text = self._canonicalize_text(text)
-        canonical_modality = self._canonicalize_text(modality)
-        canonical_kind = self._canonicalize_text(event_kind)
+        normalized_kind = self._canonicalize_text(event_kind)
         bucket_dt = self._bucket_datetime_seconds(observed_at, bucket_seconds=time_bucket_seconds)
+
+        raw_text = text.strip() if isinstance(text, str) and text.strip() else None
+        raw_modality = modality.strip() if isinstance(modality, str) and modality.strip() else None
 
         self.graph.add((event_uri, RDF.type, PROV.Entity))
         self.graph.add((event_uri, RDF.type, SCHEMA.Event))
         if event_key:
             self.graph.add((event_uri, SCHEMA.identifier, Literal(event_key)))
-        if canonical_kind:
-            self.graph.add((event_uri, SCHEMA.eventType, Literal(canonical_kind)))
+        if normalized_kind:
+            self.graph.add((event_uri, SCHEMA.eventType, Literal(normalized_kind)))
         self.graph.add((event_uri, PROV.generatedAtTime, self._literal(bucket_dt)))
 
         if subject_uri is not None:
             self.graph.add((event_uri, SCHEMA.about, subject_uri))
-        if canonical_modality:
-            self.graph.add((event_uri, SCHEMA.measurementTechnique, Literal(canonical_modality)))
-        if canonical_text:
-            self.graph.add((event_uri, SCHEMA.description, Literal(canonical_text, lang=self.default_language)))
+        if raw_modality:
+            self.graph.add((event_uri, SCHEMA.measurementTechnique, Literal(raw_modality)))
+        if raw_text:
+            # Store original text; do not canonicalize content.
+            self.graph.add((event_uri, SCHEMA.description, Literal(raw_text, lang=self.default_language)))
 
         for event_type in self._iter_terms(event_types):
             self.graph.add((event_uri, RDF.type, event_type))
@@ -256,23 +305,11 @@ class SemanticSEGBLogger:
         resolver: SharedEventResolver | None = None,
         policy: SharedEventPolicy | None = None,
     ) -> URIRef:
-        """Gets a shared-event URI via external resolver or deterministic local fallback.
-
-        This is the high-level API for production integration:
-        - if a resolver is configured (argument or logger default), it is tried first,
-        - if resolver is missing or returns None, local deterministic resolution is used.
-        """
+        """Gets a shared-event URI via external resolver or deterministic local fallback."""
         effective_policy = policy if policy is not None else self.shared_event_policy
-        effective_namespace = (
-            shared_event_namespace
-            if shared_event_namespace is not None
-            else effective_policy.namespace
-        )
-        effective_bucket = (
-            time_bucket_seconds
-            if time_bucket_seconds is not None
-            else effective_policy.time_bucket_seconds
-        )
+        effective_namespace = shared_event_namespace if shared_event_namespace is not None else effective_policy.namespace
+        effective_bucket = time_bucket_seconds if time_bucket_seconds is not None else effective_policy.time_bucket_seconds
+
         event_types_tuple = tuple(event_types) if event_types is not None else ()
         resolver_request = SharedEventRequest(
             event_kind=event_kind,
@@ -333,24 +370,18 @@ class SemanticSEGBLogger:
         event_id: str | None = None,
         time_bucket_seconds: int = 1,
     ) -> URIRef:
-        """Returns a canonical SharedEvent URI and registers it as an RDF node.
-
-        SharedEvent pattern:
-        - one global event URI represents the "same real-world event",
-        - each robot may attach its local observation as a specialization.
-        """
+        """Returns a canonical SharedEvent URI and registers it as an RDF node."""
         if not isinstance(event_kind, str) or not event_kind.strip():
             raise ValueError("Parameter 'event_kind' must be a non-empty string.")
         if not isinstance(observed_at, datetime):
             raise TypeError("Parameter 'observed_at' must be a datetime.")
 
-        namespace_text = self._normalize_base_namespace(
-            shared_event_namespace or self.DEFAULT_SHARED_EVENT_NAMESPACE
-        )
+        namespace_text = self._normalize_base_namespace(shared_event_namespace or self.DEFAULT_SHARED_EVENT_NAMESPACE)
         shared_ns = Namespace(namespace_text)
 
         subject_uri = self.resolve_term(subject) if subject is not None else None
         bucket_dt = self._bucket_datetime_seconds(observed_at, bucket_seconds=time_bucket_seconds)
+
         canonical_text = self._canonicalize_text(text)
         canonical_modality = self._canonicalize_text(modality)
         canonical_kind = self._canonicalize_text(event_kind)
@@ -374,16 +405,15 @@ class SemanticSEGBLogger:
         self.graph.bind("shared-event", shared_ns)
         self._add_shared_event_metadata(
             event_uri=event_uri,
-            event_kind=canonical_kind,
+            event_kind=event_kind,
             observed_at=bucket_dt,
             subject_uri=subject_uri,
-            text=canonical_text,
-            modality=canonical_modality,
+            text=text,          # store original text
+            modality=modality,  # store original modality
             event_types=event_types,
             time_bucket_seconds=time_bucket_seconds,
             event_key=event_key,
         )
-
         return event_uri
 
     def link_observation_to_shared_event(
@@ -407,12 +437,7 @@ class SemanticSEGBLogger:
         activity: RDFTermLike,
         shared_event: RDFTermLike,
     ) -> None:
-        """Adds a contextual relation between an activity and a shared event.
-
-        This is intentionally non-causal. Use it when the activity is about the same
-        real-world event observed by multiple robots, but that shared event should not
-        be modeled as the direct trigger input.
-        """
+        """Adds a contextual relation between an activity and a shared event."""
         activity_uri = self.resolve_term(activity)
         shared_event_uri = self.resolve_term(shared_event)
         self.graph.add((activity_uri, SCHEMA.about, shared_event_uri))
@@ -430,11 +455,17 @@ class SemanticSEGBLogger:
         comment: str | None = None,
         characteristics: Mapping[str, Any] | None = None,
     ) -> URIRef:
-        """Registers a machine learning model with optional metadata."""
+        """Registers a machine learning model with optional metadata.
+
+        NOTE (ontology inconsistency - external, cannot be changed here):
+        segb:producedEntityResult range expects (prov:Entity AND segb:Result),
+        but segb:Result is declared as a subclass of prov:Activity in segb.ttl.
+        We therefore type SEGB "results" redundantly as prov:Activity when needed.
+        """
         model_uri = self.resource_uri("model", model_id)
         self.graph.add((model_uri, RDF.type, MLS.Model))
         self.graph.add((model_uri, RDF.type, PROV.Entity))
-        self.graph.add((model_uri, RDF.type, SEGB.Result))
+        self._mark_as_segb_result(model_uri)
         if label:
             self.graph.add((model_uri, RDFS.label, Literal(label, lang=self.default_language)))
         if version:
@@ -455,10 +486,7 @@ class SemanticSEGBLogger:
             self.graph.add((model_uri, RDFS.comment, Literal(comment, lang=self.default_language)))
 
         for name, value in (characteristics or {}).items():
-            characteristic_uri = self.resource_uri(
-                "model-characteristic",
-                f"{model_id}_{name}",
-            )
+            characteristic_uri = self.resource_uri("model-characteristic", f"{model_id}_{name}")
             self.graph.add((characteristic_uri, RDF.type, MLS.ModelCharacteristic))
             self.graph.add((characteristic_uri, RDFS.label, Literal(name, lang="en")))
             self.graph.add((characteristic_uri, MLS.hasValue, self._literal(value)))
@@ -466,6 +494,8 @@ class SemanticSEGBLogger:
         return model_uri
 
     def _ensure_activity(self, activity_uri: URIRef, activity_types: Sequence[RDFTermLike] | None = None) -> None:
+        # Redundant prov:Activity typing for interoperability without OWL reasoning.
+        self.graph.add((activity_uri, RDF.type, PROV.Activity))
         self.graph.add((activity_uri, RDF.type, SEGB.LoggedActivity))
         for activity_type in self._iter_terms(activity_types):
             self.graph.add((activity_uri, RDF.type, activity_type))
@@ -517,6 +547,9 @@ class SemanticSEGBLogger:
         model_uri = self.resolve_term(usage.model)
         self.graph.add((model_uri, RDF.type, MLS.Model))
         self.graph.add((activity_uri, SEGB.usedMLModel, model_uri))
+        if self.emit_prov_redundant:
+            # segb:usedMLModel is a subPropertyOf prov:used in segb.ttl, but emit redundantly for stores without reasoning.
+            self.graph.add((activity_uri, PROV.used, model_uri))
 
         implementation_uri: URIRef | None = None
         requires_implementation = usage.implementation is not None or bool(usage.parameters) or bool(
@@ -581,20 +614,11 @@ class SemanticSEGBLogger:
     ) -> URIRef:
         """Logs one activity and its semantic relations.
 
-        Data provenance expected from the caller:
-        - `activity_kind`: recommended controlled value to avoid RDF-term typos.
-        - `extra_types`: optional extension classes when canonical kinds are not enough.
-        - `related_shared_events`: contextual shared-event links (not direct trigger causality).
-        - `started_at` / `ended_at`: system clock timestamps when the action/event starts/ends.
-        - `triggered_by_activity`: single upstream action trigger.
-        - `triggered_by_entity`: preferred single upstream entity trigger (message, detection, file).
-        - `triggered_by_entities`: optional additional entity triggers.
-        - `used_entities`: concrete inputs consumed by the action.
-        - `used_models` / `model_usages`: model identifiers and runtime config known by the
-          component that executed inference/decision.
-        - `produced_*_results`: outputs emitted by the action.
-
-        This method records those relations explicitly; it does not infer causal links.
+        NOTE (ontology semantics):
+        - segb:wasPerformedBy ⊑ prov:wasAssociatedWith
+        - segb:triggeredBy* ⊑ prov:wasInfluencedBy
+        - segb:producedEntityResult ⊑ prov:generated
+        This logger can emit redundant PROV triples for deployments without OWL reasoning.
         """
         activity_uri = self.resource_uri("activity", activity_id)
         resolved_activity_types = self._merge_activity_types(
@@ -608,6 +632,8 @@ class SemanticSEGBLogger:
 
         performer_uri = self.resolve_term(performer) if performer else self.robot_uri
         self.graph.add((activity_uri, SEGB.wasPerformedBy, performer_uri))
+        if self.emit_prov_redundant:
+            self.graph.add((activity_uri, PROV.wasAssociatedWith, performer_uri))
 
         if started_at:
             self.graph.add((activity_uri, PROV.startedAtTime, self._literal(started_at)))
@@ -622,38 +648,40 @@ class SemanticSEGBLogger:
         if triggered_by_activity is not None:
             trigger_uri = self.resolve_term(triggered_by_activity)
             self.graph.add((activity_uri, SEGB.triggeredByActivity, trigger_uri))
-            self.graph.add((activity_uri, PROV.wasInfluencedBy, trigger_uri))
+            if self.emit_prov_redundant:
+                self.graph.add((activity_uri, PROV.wasInfluencedBy, trigger_uri))
 
         entity_triggers: list[URIRef] = []
         if triggered_by_entity is not None:
             entity_triggers.append(self.resolve_term(triggered_by_entity))
         entity_triggers.extend(self._iter_terms(triggered_by_entities))
 
-        # Causal links from entities (messages, objects, files, detection outputs, etc.).
         for trigger_uri in entity_triggers:
             self.graph.add((activity_uri, SEGB.triggeredByEntity, trigger_uri))
-            self.graph.add((activity_uri, PROV.wasInfluencedBy, trigger_uri))
-        # Optional decomposition: this activity has internal intermediate steps.
+            if self.emit_prov_redundant:
+                self.graph.add((activity_uri, PROV.wasInfluencedBy, trigger_uri))
+
         for intermediate_uri in self._iter_terms(intermediate_activities):
             self.graph.add((activity_uri, SEGB.intermediateActivity, intermediate_uri))
-            self.graph.add((activity_uri, PROV.wasInfluencedBy, intermediate_uri))
+            if self.emit_prov_redundant:
+                self.graph.add((activity_uri, PROV.wasInfluencedBy, intermediate_uri))
 
-        # Input entities consumed by the activity.
         for entity_uri in self._iter_terms(used_entities):
             self.graph.add((activity_uri, PROV.used, entity_uri))
 
         for model_uri in self._iter_terms(used_models):
             self.graph.add((activity_uri, SEGB.usedMLModel, model_uri))
             self.graph.add((model_uri, RDF.type, MLS.Model))
+            if self.emit_prov_redundant:
+                self.graph.add((activity_uri, PROV.used, model_uri))
 
-        # Model execution metadata (hyperparameters, software runtime, etc.).
         for usage in model_usages or ():
             self._link_model_usage(activity_uri, usage)
 
-        # Entity outputs directly generated by the activity.
         for result_uri in self._iter_terms(produced_entity_results):
             self.graph.add((activity_uri, SEGB.producedEntityResult, result_uri))
-            self.graph.add((activity_uri, PROV.generated, result_uri))
+            if self.emit_prov_redundant:
+                self.graph.add((activity_uri, PROV.generated, result_uri))
 
         for result_uri in self._iter_terms(produced_activity_results):
             self.graph.add((activity_uri, SEGB.producedActivityResult, result_uri))
@@ -669,7 +697,8 @@ class SemanticSEGBLogger:
         activity_uri = self.resolve_term(activity)
         trigger_uri = self.resolve_term(trigger_activity)
         self.graph.add((activity_uri, SEGB.triggeredByActivity, trigger_uri))
-        self.graph.add((activity_uri, PROV.wasInfluencedBy, trigger_uri))
+        if self.emit_prov_redundant:
+            self.graph.add((activity_uri, PROV.wasInfluencedBy, trigger_uri))
 
     def link_triggered_entity(
         self,
@@ -680,7 +709,8 @@ class SemanticSEGBLogger:
         activity_uri = self.resolve_term(activity)
         trigger_uri = self.resolve_term(trigger_entity)
         self.graph.add((activity_uri, SEGB.triggeredByEntity, trigger_uri))
-        self.graph.add((activity_uri, PROV.wasInfluencedBy, trigger_uri))
+        if self.emit_prov_redundant:
+            self.graph.add((activity_uri, PROV.wasInfluencedBy, trigger_uri))
 
     def link_intermediate_activity(
         self,
@@ -691,7 +721,8 @@ class SemanticSEGBLogger:
         activity_uri = self.resolve_term(activity)
         intermediate_uri = self.resolve_term(intermediate_activity)
         self.graph.add((activity_uri, SEGB.intermediateActivity, intermediate_uri))
-        self.graph.add((activity_uri, PROV.wasInfluencedBy, intermediate_uri))
+        if self.emit_prov_redundant:
+            self.graph.add((activity_uri, PROV.wasInfluencedBy, intermediate_uri))
 
     def link_influence(
         self,
@@ -710,7 +741,123 @@ class SemanticSEGBLogger:
         activity_uri = self.resolve_term(activity)
         entity_uri = self.resolve_term(entity_result)
         self.graph.add((activity_uri, SEGB.producedEntityResult, entity_uri))
-        self.graph.add((activity_uri, PROV.generated, entity_uri))
+        if self.emit_prov_redundant:
+            self.graph.add((activity_uri, PROV.generated, entity_uri))
+
+    def link_activity_model(
+        self,
+        activity: RDFTermLike,
+        model: RDFTermLike,
+    ) -> None:
+        """Links one activity to one ML model used during execution."""
+        activity_uri = self.resolve_term(activity)
+        model_uri = self.resolve_term(model)
+        self.graph.add((activity_uri, SEGB.usedMLModel, model_uri))
+        self.graph.add((model_uri, RDF.type, MLS.Model))
+        if self.emit_prov_redundant:
+            self.graph.add((activity_uri, PROV.used, model_uri))
+
+    def register_dataset(
+        self,
+        dataset_id: str,
+        *,
+        label: str | None = None,
+        comment: str | None = None,
+    ) -> URIRef:
+        """Registers an MLS dataset entity."""
+        dataset_uri = self.resource_uri("dataset", dataset_id)
+        self.graph.add((dataset_uri, RDF.type, MLS.Dataset))
+        self.graph.add((dataset_uri, RDF.type, PROV.Entity))
+        if label:
+            self.graph.add((dataset_uri, RDFS.label, Literal(label, lang=self.default_language)))
+        if comment:
+            self.graph.add((dataset_uri, RDFS.comment, Literal(comment, lang=self.default_language)))
+        return dataset_uri
+
+    def register_model_evaluation(
+        self,
+        evaluation_id: str,
+        *,
+        value: float,
+        label: str | None = None,
+        comment: str | None = None,
+    ) -> URIRef:
+        """Registers an MLS model-evaluation entity with one score value."""
+        evaluation_uri = self.resource_uri("model-eval", evaluation_id)
+        self.graph.add((evaluation_uri, RDF.type, MLS.ModelEvaluation))
+        self.graph.add((evaluation_uri, RDF.type, PROV.Entity))
+        self.graph.add((evaluation_uri, MLS.hasValue, self._literal(float(value))))
+        if label:
+            self.graph.add((evaluation_uri, RDFS.label, Literal(label, lang=self.default_language)))
+        if comment:
+            self.graph.add((evaluation_uri, RDFS.comment, Literal(comment, lang=self.default_language)))
+        return evaluation_uri
+
+    def link_ml_run_input(
+        self,
+        run_activity: RDFTermLike,
+        input_entity: RDFTermLike,
+    ) -> None:
+        """Links one MLS run activity to one input entity."""
+        run_uri = self.resolve_term(run_activity)
+        input_uri = self.resolve_term(input_entity)
+        self.graph.add((run_uri, MLS.hasInput, input_uri))
+        self.graph.add((run_uri, PROV.used, input_uri))
+
+    def link_ml_run_output(
+        self,
+        run_activity: RDFTermLike,
+        output_entity: RDFTermLike,
+    ) -> None:
+        """Links one MLS run activity to one output entity."""
+        run_uri = self.resolve_term(run_activity)
+        output_uri = self.resolve_term(output_entity)
+        self.graph.add((run_uri, MLS.hasOutput, output_uri))
+        self.graph.add((run_uri, PROV.generated, output_uri))
+        self.graph.add((run_uri, SEGB.producedEntityResult, output_uri))
+
+    def log_observation(
+        self,
+        *,
+        observation_id: str | None = None,
+        label: str | None = None,
+        observation_types: Sequence[RDFTermLike] | None = None,
+        generated_by_activity: RDFTermLike | None = None,
+        related_shared_event: RDFTermLike | None = None,
+        confidence: float | None = None,
+        mark_as_result: bool = False,
+    ) -> URIRef:
+        """Logs a generic observation entity and optional contextual links.
+
+        NOTE (ontology inconsistency - external, cannot be changed here):
+        If mark_as_result=True, we add segb:Result which (in segb.ttl) is a subclass of prov:Activity,
+        while observations are also prov:Entity. This dual-typing is required to satisfy segb ranges.
+        """
+        if confidence is not None and related_shared_event is None:
+            raise ValueError("Parameter 'confidence' requires 'related_shared_event'.")
+
+        observation_uri = self.resource_uri("observation", observation_id)
+        self.graph.add((observation_uri, RDF.type, PROV.Entity))
+        if mark_as_result:
+            self._mark_as_segb_result(observation_uri)
+        for observation_type in self._iter_terms(observation_types):
+            self.graph.add((observation_uri, RDF.type, observation_type))
+        if label:
+            self.graph.add((observation_uri, RDFS.label, Literal(label, lang=self.default_language)))
+
+        if generated_by_activity is not None:
+            activity_uri = self.resolve_term(generated_by_activity)
+            # Ensure activity typing for interoperability even if caller didn't log it first.
+            self._ensure_activity(activity_uri, None)
+            self.graph.add((observation_uri, PROV.wasGeneratedBy, activity_uri))
+            self.graph.add((activity_uri, SEGB.producedEntityResult, observation_uri))
+            if self.emit_prov_redundant:
+                self.graph.add((activity_uri, PROV.generated, observation_uri))
+
+        if related_shared_event is not None:
+            self.link_observation_to_shared_event(observation_uri, related_shared_event, confidence=confidence)
+
+        return observation_uri
 
     def log_message(
         self,
@@ -722,25 +869,30 @@ class SemanticSEGBLogger:
         generated_by_activity: RDFTermLike | None = None,
         previous_message: RDFTermLike | None = None,
     ) -> URIRef:
-        """Logs a message entity and optional conversational relations.
-
-        Typical source of this data:
-        - ASR module output (user speech transcribed to text).
-        - LLM/NLG module output (robot response text).
-        - Coordination/handover channel between robots.
-        """
+        """Logs a message entity and optional conversational relations."""
         message_uri = self.resource_uri("message", message_id)
         self.graph.add((message_uri, RDF.type, ORO.Message))
         self.graph.add((message_uri, RDF.type, PROV.Entity))
-        for message_type in self._iter_terms(message_types):
+
+        resolved_types = {self.resolve_term(t) for t in (message_types or ())}
+        for message_type in resolved_types:
             self.graph.add((message_uri, RDF.type, message_type))
+
+        # Enforce explicit language for human input messages to avoid systematic @en mislabeling.
+        if language is None and ORO.InitialMessage in resolved_types:
+            raise ValueError(
+                "Human input messages (oro:InitialMessage) require an explicit language tag (e.g., 'es', 'en')."
+            )
         literal_language = language or self.default_language
         self.graph.add((message_uri, ORO.hasText, Literal(text, lang=literal_language)))
 
         if generated_by_activity:
             activity_uri = self.resolve_term(generated_by_activity)
+            self._ensure_activity(activity_uri, None)
             self.graph.add((message_uri, PROV.wasGeneratedBy, activity_uri))
             self.graph.add((activity_uri, SEGB.producedEntityResult, message_uri))
+            if self.emit_prov_redundant:
+                self.graph.add((activity_uri, PROV.generated, message_uri))
 
         if previous_message:
             previous_uri = self.resolve_term(previous_message)
@@ -759,24 +911,28 @@ class SemanticSEGBLogger:
     ) -> URIRef:
         """Logs emotion analysis results using ONYX and EmotionML categories.
 
-        Expected upstream component:
-        - an emotion recognizer that already produced categories + intensity/confidence.
+        NOTE (ontology inconsistency - external, cannot be changed here):
+        segb:producedEntityResult range expects (prov:Entity AND segb:Result),
+        while segb:Result is a subclass of prov:Activity in segb.ttl.
+        We therefore type the annotation as prov:Entity + segb:Result + (redundantly) prov:Activity.
         """
         if not emotions:
             raise ValueError("Parameter 'emotions' cannot be empty.")
 
         source_activity_uri = self.resolve_term(source_activity)
-        self.graph.add((source_activity_uri, RDF.type, SEGB.LoggedActivity))
-        self.graph.add((source_activity_uri, RDF.type, ONYX.EmotionAnalysis))
+        self._ensure_activity(source_activity_uri, (ONYX.EmotionAnalysis,))
         self.graph.add((source_activity_uri, ONYX.usesEmotionModel, self.resolve_term(emotion_model)))
 
         annotation_uri = self.resource_uri("emotion-annotation", annotation_id)
         self.graph.add((annotation_uri, RDF.type, AMOR.EmotionAnnotation))
         self.graph.add((annotation_uri, RDF.type, PROV.Entity))
-        self.graph.add((annotation_uri, RDF.type, SEGB.Result))
-        self.graph.add((source_activity_uri, PROV.generated, annotation_uri))
-        self.graph.add((source_activity_uri, SEGB.producedEntityResult, annotation_uri))
+        self._mark_as_segb_result(annotation_uri)
 
+        self.graph.add((source_activity_uri, SEGB.producedEntityResult, annotation_uri))
+        if self.emit_prov_redundant:
+            self.graph.add((source_activity_uri, PROV.generated, annotation_uri))
+
+        # OA targets: allowed as a list, but be aware that multiple targets can be ambiguous semantically.
         for target in self._iter_terms(targets):
             self.graph.add((annotation_uri, OA.hasTarget, target))
 
@@ -819,20 +975,24 @@ class SemanticSEGBLogger:
         Logs one robot state snapshot as an RDF entity.
         Snapshot values are represented with schema:PropertyValue nodes.
 
-        Expected upstream component:
-        - telemetry/state estimator node (battery, CPU, memory, network, location, mode).
-        This method only records that snapshot; it does not query hardware by itself.
+        NOTE (ontology inconsistency - external, cannot be changed here):
+        If we type the state as segb:Result, segb.ttl implies it is also a prov:Activity.
+        We keep state as prov:Entity and add segb:Result + prov:Activity redundantly
+        to satisfy segb:producedEntityResult range constraints in stores without reasoning.
         """
         state_uri = self.resource_uri("state", state_id)
         self.graph.add((state_uri, RDF.type, PROV.Entity))
-        self.graph.add((state_uri, RDF.type, SEGB.Result))
+        self._mark_as_segb_result(state_uri)
+
         self.graph.add((state_uri, PROV.wasAttributedTo, self.robot_uri))
         self.graph.add((state_uri, PROV.generatedAtTime, self._literal(snapshot.timestamp or datetime.now(timezone.utc))))
 
         if source_activity:
             source_uri = self.resolve_term(source_activity)
-            self.graph.add((source_uri, PROV.generated, state_uri))
+            self._ensure_activity(source_uri, None)
             self.graph.add((source_uri, SEGB.producedEntityResult, state_uri))
+            if self.emit_prov_redundant:
+                self.graph.add((source_uri, PROV.generated, state_uri))
 
         if snapshot.location:
             location_value = snapshot.location
@@ -850,7 +1010,7 @@ class SemanticSEGBLogger:
             self._add_state_property(
                 state_uri=state_uri,
                 property_id="battery_level",
-                value=float(snapshot.battery_level),
+                value=self._as_percent(snapshot.battery_level),
                 unit_code="PERCENT",
             )
         if snapshot.autonomy_mode is not None:
@@ -869,14 +1029,14 @@ class SemanticSEGBLogger:
             self._add_state_property(
                 state_uri=state_uri,
                 property_id="cpu_load",
-                value=float(snapshot.cpu_load),
+                value=self._as_percent(snapshot.cpu_load),
                 unit_code="PERCENT",
             )
         if snapshot.memory_load is not None:
             self._add_state_property(
                 state_uri=state_uri,
                 property_id="memory_load",
-                value=float(snapshot.memory_load),
+                value=self._as_percent(snapshot.memory_load),
                 unit_code="PERCENT",
             )
         if snapshot.network_status is not None:

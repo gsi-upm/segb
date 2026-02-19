@@ -9,8 +9,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from rdflib import Graph, Literal
-from rdflib.namespace import RDF, RDFS, XSD
+from rdflib import Graph
 
 if __package__ is None or __package__ == "":
     # Script mode (`python examples/run_advanced_simulation.py`).
@@ -18,30 +17,34 @@ if __package__ is None or __package__ == "":
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
 
+    from examples.ari_mock import AriDetectionResult, AriMockResult, ari_detect_human_entry, ari_handle_human_utterance
+    from examples.tiago_mock import TiagoDetectionResult, TiagoMockResult, tiago_detect_human_entry, tiago_handle_human_utterance
     from examples.run_simulation import (
         ARI_NAMESPACE,
         TIAGO_NAMESPACE,
+        build_loggers,
         build_publish_config_from_args,
         publish_simulation_result,
         PublishConfig,
         SimulationResult,
-        run_simulation,
     )
     from segb_logger import ActivityKind, EmotionScore, RobotStateSnapshot, SemanticSEGBLogger
-    from segb_logger.namespaces import EMOML, MLS, SEGB
+    from segb_logger.namespaces import EMOML, ORO
 else:
     # Module mode (`python -m examples.run_advanced_simulation`).
+    from .ari_mock import AriDetectionResult, AriMockResult, ari_detect_human_entry, ari_handle_human_utterance
+    from .tiago_mock import TiagoDetectionResult, TiagoMockResult, tiago_detect_human_entry, tiago_handle_human_utterance
     from .run_simulation import (
         ARI_NAMESPACE,
         TIAGO_NAMESPACE,
+        build_loggers,
         build_publish_config_from_args,
         publish_simulation_result,
         PublishConfig,
         SimulationResult,
-        run_simulation,
     )
     from segb_logger import ActivityKind, EmotionScore, RobotStateSnapshot, SemanticSEGBLogger
-    from segb_logger.namespaces import EMOML, MLS, SEGB
+    from segb_logger.namespaces import EMOML, ORO
 
 
 @dataclass(slots=True)
@@ -53,21 +56,77 @@ class AdvancedSimulationResult:
     base_timestamp: datetime
 
 
+def _run_advanced_base_interaction() -> SimulationResult:
+    """Runs the advanced scenario baseline without relying on `run_basic_simulation`."""
+    graph, ari_logger, tiago_logger = build_loggers()
+
+    maria_uri = ari_logger.register_human("maria", first_name="Maria")
+
+    entry_observed_at = datetime.now(timezone.utc)
+    speech_observed_at = entry_observed_at + timedelta(seconds=4)
+
+    ari_entry_result: AriDetectionResult = ari_detect_human_entry(
+        logger=ari_logger,
+        human_uri=maria_uri,
+        observed_at=entry_observed_at,
+    )
+    tiago_entry_result: TiagoDetectionResult = tiago_detect_human_entry(
+        logger=tiago_logger,
+        human_uri=maria_uri,
+        observed_at=entry_observed_at,
+    )
+
+    if ari_entry_result.shared_event_uri != tiago_entry_result.shared_event_uri:
+        raise RuntimeError("Shared context mismatch: ARI and TIAGo should resolve the same human-entry URI.")
+
+    text = "ARI, me siento triste porque he recibido una mala noticia."
+
+    ari_result: AriMockResult = ari_handle_human_utterance(
+        logger=ari_logger,
+        human_uri=maria_uri,
+        text=text,
+        observed_at=speech_observed_at,
+    )
+    tiago_result: TiagoMockResult = tiago_handle_human_utterance(
+        logger=tiago_logger,
+        human_uri=maria_uri,
+        text=text,
+        observed_at=speech_observed_at,
+    )
+
+    if ari_result.shared_event_uri != tiago_result.shared_event_uri:
+        raise RuntimeError("Shared context mismatch: ARI and TIAGo should resolve the same URI.")
+
+    return SimulationResult(
+        graph=graph,
+        human_uri=maria_uri,
+        entry_shared_event_uri=ari_entry_result.shared_event_uri,
+        shared_event_uri=ari_result.shared_event_uri,
+        ari_observation_uri=ari_result.observation_message_uri,
+        tiago_observation_uri=tiago_result.observation_message_uri,
+        ari_response_uri=ari_result.response_message_uri,
+        ari_namespace=ARI_NAMESPACE,
+        tiago_namespace=TIAGO_NAMESPACE,
+    )
+
+
 def _enrich_notebook_ttl(base_result: SimulationResult) -> datetime:
     """Adds the same report-oriented TTL enrichment used in segb_reports_demo.ipynb."""
-    graph = base_result.graph
-
     ari_logger = SemanticSEGBLogger(
         base_namespace=ARI_NAMESPACE,
         robot_id="ari1",
         robot_name="ARI",
-        graph=graph,
+        graph=base_result.graph,
+        namespace_prefix="ari",
+        compact_resource_ids=True,
     )
     tiago_logger = SemanticSEGBLogger(
         base_namespace=TIAGO_NAMESPACE,
         robot_id="tiago1",
         robot_name="TIAGo",
-        graph=graph,
+        graph=base_result.graph,
+        namespace_prefix="tiago",
+        compact_resource_ids=True,
     )
 
     human_uri = base_result.human_uri
@@ -80,8 +139,8 @@ def _enrich_notebook_ttl(base_result: SimulationResult) -> datetime:
         version="2.1",
     )
 
-    ari_listening_activity = ari_logger.resolve_term(f"{ARI_NAMESPACE}activity/ari_listening_1")
-    graph.add((ari_listening_activity, SEGB.usedMLModel, asr_model))
+    ari_listening_activity = ari_logger.resource_uri("activity", "ari_listening_1")
+    ari_logger.link_activity_model(ari_listening_activity, asr_model)
 
     ari_logger.log_activity(
         activity_id="vision_perception_1",
@@ -92,13 +151,11 @@ def _enrich_notebook_ttl(base_result: SimulationResult) -> datetime:
         related_shared_events=[base_result.shared_event_uri],
     )
 
-    dataset_uri = ari_logger.resource_uri("dataset", "emotion_dataset_v1")
-    graph.add((dataset_uri, RDF.type, MLS.Dataset))
-    graph.add((dataset_uri, RDFS.label, Literal("EmotionDataset v1")))
-
-    eval_uri = ari_logger.resource_uri("model-eval", "emotion_accuracy_eval_1")
-    graph.add((eval_uri, RDF.type, MLS.ModelEvaluation))
-    graph.add((eval_uri, MLS.hasValue, Literal(0.89, datatype=XSD.double)))
+    dataset_uri = ari_logger.register_dataset("emotion_dataset_v1", label="EmotionDataset v1")
+    eval_uri = ari_logger.register_model_evaluation(
+        "emotion_accuracy_eval_1",
+        value=0.89,
+    )
 
     train_run = ari_logger.log_activity(
         activity_id="emotion_model_training_run_1",
@@ -106,120 +163,185 @@ def _enrich_notebook_ttl(base_result: SimulationResult) -> datetime:
         started_at=datetime.now(timezone.utc) - timedelta(minutes=30),
         ended_at=datetime.now(timezone.utc) - timedelta(minutes=20),
         used_models=[emotion_model],
+        used_entities=[dataset_uri],
         produced_entity_results=[emotion_model, eval_uri],
     )
-    graph.add((train_run, MLS.hasInput, dataset_uri))
-    graph.add((train_run, MLS.hasOutput, emotion_model))
-    graph.add((train_run, MLS.hasOutput, eval_uri))
+    ari_logger.link_ml_run_input(train_run, dataset_uri)
+    ari_logger.link_ml_run_output(train_run, emotion_model)
+    ari_logger.link_ml_run_output(train_run, eval_uri)
 
     base_t = datetime.now(timezone.utc) - timedelta(minutes=10)
 
-    news_summary_activity = ari_logger.log_activity(
-        activity_id="ari_news_summary_1",
-        activity_kind=ActivityKind.RESPONSE,
+    cheer_request_shared_event = ari_logger.get_shared_event_uri(
+        event_kind="human_utterance",
+        observed_at=base_t,
+        subject=human_uri,
+        text="ARI, can you show me a piece of news to cheer me up?",
+        modality="speech",
+    )
+
+    cheer_request_listening_activity = ari_logger.log_activity(
+        activity_id="ari_listening_cheer_request_1",
+        activity_kind=ActivityKind.LISTENING,
         started_at=base_t,
         ended_at=base_t + timedelta(seconds=5),
         triggered_by_activity=ari_listening_activity,
-        triggered_by_entity=base_result.ari_observation_uri,
-        related_shared_events=[base_result.shared_event_uri],
-        used_entities=[base_result.ari_observation_uri],
+        triggered_by_entity=base_result.ari_response_uri,
+        related_shared_events=[cheer_request_shared_event],
+        used_entities=[base_result.ari_response_uri],
+        used_models=[asr_model],
     )
-    news_summary_message = ari_logger.log_message(
-        "Climate update: heat waves are increasing and local air quality worsened this week.",
-        message_id="ari_news_summary_msg_1",
-        generated_by_activity=news_summary_activity,
-        message_types=["oro:ResponseMessage"],
+    cheer_request_message = ari_logger.log_message(
+        "ARI, can you show me some news to cheer me up?",
+        message_id="ari_heard_cheer_request_1",
+        generated_by_activity=cheer_request_listening_activity,
+        message_types=[ORO.InitialMessage],
+        language="en",
         previous_message=base_result.ari_response_uri,
     )
+    ari_logger.link_observation_to_shared_event(cheer_request_message, cheer_request_shared_event, confidence=0.95)
 
-    support_activity = ari_logger.log_activity(
-        activity_id="ari_support_plan_1",
+    exam_news_activity = ari_logger.log_activity(
+        activity_id="ari_exam_news_response_1",
         activity_kind=ActivityKind.RESPONSE,
-        started_at=base_t + timedelta(minutes=6),
-        ended_at=base_t + timedelta(minutes=6, seconds=5),
-        triggered_by_activity=news_summary_activity,
-        triggered_by_entity=news_summary_message,
-        used_entities=[news_summary_message],
+        started_at=base_t + timedelta(seconds=10),
+        ended_at=base_t + timedelta(seconds=15),
+        triggered_by_activity=cheer_request_listening_activity,
+        triggered_by_entity=cheer_request_message,
+        related_shared_events=[cheer_request_shared_event],
+        used_entities=[cheer_request_message],
     )
-    support_message = ari_logger.log_message(
-        "I can show you practical protection tips and schedule reminders for tomorrow.",
-        message_id="ari_support_plan_msg_1",
-        generated_by_activity=support_activity,
-        message_types=["oro:ResponseMessage"],
-        previous_message=news_summary_message,
+    exam_news_message = ari_logger.log_message(
+        "Here is one headline: many students are anxious because an important exam is coming soon.",
+        message_id="ari_exam_news_msg_1",
+        generated_by_activity=exam_news_activity,
+        message_types=[ORO.ResponseMessage],
+        previous_message=cheer_request_message,
     )
 
-    emotion_timeline = [
-        {
-            "category": EMOML.big6_surprise,
-            "intensity": 0.42,
-            "confidence": 0.91,
-            "trigger_entity": base_result.ari_observation_uri,
-            "note": "Maria notices both robots detected her request quickly.",
-        },
-        {
-            "category": EMOML.big6_fear,
-            "intensity": 0.86,
-            "confidence": 0.93,
-            "trigger_entity": news_summary_message,
-            "note": "Maria reacts with fear after hearing about stronger heat waves.",
-        },
-        {
-            "category": EMOML.big6_sadness,
-            "intensity": 0.79,
-            "confidence": 0.92,
-            "trigger_entity": news_summary_message,
-            "note": "Maria feels sadness when impacts on vulnerable people are mentioned.",
-        },
-        {
-            "category": EMOML.big6_disgust,
-            "intensity": 0.56,
-            "confidence": 0.89,
-            "trigger_entity": news_summary_message,
-            "note": "Maria shows disgust toward pollution sources discussed in the update.",
-        },
-        {
-            "category": EMOML.big6_anger,
-            "intensity": 0.82,
-            "confidence": 0.90,
-            "trigger_entity": news_summary_message,
-            "note": "Maria becomes angry about perceived lack of action.",
-        },
-        {
-            "category": EMOML.big6_happiness,
-            "intensity": 0.60,
-            "confidence": 0.90,
-            "trigger_entity": support_message,
-            "note": "Maria ends with relief and positive affect after receiving concrete help.",
-        },
-    ]
+    anxiety_face_observation = ari_logger.log_observation(
+        observation_id="ari_face_anxiety_after_exam_1",
+        label="Face snapshot after exam news",
+        related_shared_event=cheer_request_shared_event,
+        confidence=0.93,
+        mark_as_result=True,
+    )
 
-    for index, item in enumerate(emotion_timeline, start=1):
-        emotion_activity = ari_logger.log_activity(
-            activity_id=f"emotion_analysis_{index}",
-            activity_kind=ActivityKind.EMOTION_ANALYSIS,
-            extra_types=["oro:EmotionRecognitionEvent"],
-            label=f"Maria emotion snapshot {index}",
-            started_at=base_t + timedelta(minutes=index),
-            ended_at=base_t + timedelta(minutes=index, seconds=5),
-            used_models=[emotion_model],
-            related_shared_events=[base_result.shared_event_uri],
-            triggered_by_entity=item["trigger_entity"],
-            used_entities=[item["trigger_entity"]],
-        )
-        graph.add((emotion_activity, RDFS.comment, Literal(item["note"], lang="en")))
-        ari_logger.log_emotion_annotation(
-            source_activity=emotion_activity,
-            targets=[human_uri, ari_logger.robot_uri],
-            emotions=[
-                EmotionScore(
-                    category=item["category"],
-                    intensity=item["intensity"],
-                    confidence=item["confidence"],
-                ),
-            ],
-            emotion_model=EMOML.big6,
-        )
+    anxiety_activity = ari_logger.log_activity(
+        activity_id="emotion_analysis_1",
+        activity_kind=ActivityKind.EMOTION_ANALYSIS,
+        extra_types=[ORO.EmotionRecognitionEvent],
+        label="Maria anxiety detected after exam news",
+        started_at=base_t + timedelta(minutes=1),
+        ended_at=base_t + timedelta(minutes=1, seconds=5),
+        used_models=[emotion_model],
+        related_shared_events=[cheer_request_shared_event],
+        triggered_by_entity=anxiety_face_observation,
+        used_entities=[anxiety_face_observation],
+    )
+    ari_logger.log_emotion_annotation(
+        source_activity=anxiety_activity,
+        targets=[human_uri, ari_logger.robot_uri],
+        emotions=[
+            EmotionScore(
+                category=EMOML.big6_fear,
+                intensity=0.90,
+                confidence=0.95,
+            ),
+        ],
+        emotion_model=EMOML.big6,
+    )
+
+    apology_activity = ari_logger.log_activity(
+        activity_id="ari_apology_response_1",
+        activity_kind=ActivityKind.RESPONSE,
+        started_at=base_t + timedelta(minutes=2),
+        ended_at=base_t + timedelta(minutes=2, seconds=5),
+        triggered_by_activity=anxiety_activity,
+        triggered_by_entity=anxiety_face_observation,
+        related_shared_events=[cheer_request_shared_event],
+        used_entities=[anxiety_face_observation],
+    )
+    apology_message = ari_logger.log_message(
+        "I am sorry, Maria. That exam news was not a good choice right now.",
+        message_id="ari_apology_msg_1",
+        generated_by_activity=apology_activity,
+        message_types=[ORO.ResponseMessage],
+        previous_message=exam_news_message,
+    )
+
+    animal_news_activity = ari_logger.log_activity(
+        activity_id="ari_animal_news_response_1",
+        activity_kind=ActivityKind.RESPONSE,
+        started_at=base_t + timedelta(minutes=2, seconds=20),
+        ended_at=base_t + timedelta(minutes=2, seconds=25),
+        triggered_by_activity=apology_activity,
+        triggered_by_entity=apology_message,
+        related_shared_events=[cheer_request_shared_event],
+        used_entities=[apology_message],
+    )
+    animal_news_message = ari_logger.log_message(
+        "Here is another one: a rescue center found homes for twenty puppies this weekend.",
+        message_id="ari_animal_news_msg_1",
+        generated_by_activity=animal_news_activity,
+        message_types=[ORO.ResponseMessage],
+        previous_message=apology_message,
+    )
+
+    gratitude_listening_activity = ari_logger.log_activity(
+        activity_id="ari_listening_gratitude_1",
+        activity_kind=ActivityKind.LISTENING,
+        started_at=base_t + timedelta(minutes=3),
+        ended_at=base_t + timedelta(minutes=3, seconds=5),
+        triggered_by_activity=animal_news_activity,
+        triggered_by_entity=animal_news_message,
+        related_shared_events=[cheer_request_shared_event],
+        used_entities=[animal_news_message],
+        used_models=[asr_model],
+    )
+    gratitude_message = ari_logger.log_message(
+        "Thank you, ARI! That animal news made me very happy.",
+        message_id="ari_heard_gratitude_1",
+        generated_by_activity=gratitude_listening_activity,
+        message_types=[ORO.InitialMessage],
+        language="en",
+        previous_message=animal_news_message,
+    )
+    ari_logger.link_observation_to_shared_event(gratitude_message, cheer_request_shared_event, confidence=0.97)
+
+    very_happy_face_observation = ari_logger.log_observation(
+        observation_id="ari_face_very_happy_1",
+        label="Face snapshot after animal news",
+        related_shared_event=cheer_request_shared_event,
+        confidence=0.96,
+        mark_as_result=True,
+    )
+
+    very_happy_activity = ari_logger.log_activity(
+        activity_id="emotion_analysis_2",
+        activity_kind=ActivityKind.EMOTION_ANALYSIS,
+        extra_types=[ORO.EmotionRecognitionEvent],
+        label="Maria very happy after animal news",
+        started_at=base_t + timedelta(minutes=4),
+        ended_at=base_t + timedelta(minutes=4, seconds=5),
+        used_models=[emotion_model],
+        related_shared_events=[cheer_request_shared_event],
+        triggered_by_activity=gratitude_listening_activity,
+        triggered_by_entity=very_happy_face_observation,
+        used_entities=[very_happy_face_observation],
+    )
+    ari_logger.log_emotion_annotation(
+        source_activity=very_happy_activity,
+        targets=[human_uri, ari_logger.robot_uri],
+        emotions=[
+            EmotionScore(
+                category=EMOML.big6_happiness,
+                intensity=0.98,
+                confidence=0.96,
+            ),
+        ],
+        emotion_model=EMOML.big6,
+    )
 
     room_a = ari_logger.resource_uri("location", "room_a")
     room_b = ari_logger.resource_uri("location", "room_b")
@@ -266,8 +388,8 @@ def _enrich_notebook_ttl(base_result: SimulationResult) -> datetime:
 
 
 def run_advanced_simulation() -> AdvancedSimulationResult:
-    """Runs base simulation and enriches it with report-oriented TTL."""
-    base_result = run_simulation()
+    """Runs an independent advanced simulation and enriches it with report-oriented TTL."""
+    base_result = _run_advanced_base_interaction()
     base_timestamp = _enrich_notebook_ttl(base_result)
     return AdvancedSimulationResult(
         graph=base_result.graph,

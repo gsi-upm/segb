@@ -28,10 +28,17 @@ class BackendSettings:
     max_backoff_seconds: int
     runtime_ping_interval: int
     cors_origins: tuple[str, ...]
+    cors_origin_regex: str | None
     shared_context: SharedContextSettings
 
 
 def load_settings() -> BackendSettings:
+    raw_cors_origins = os.getenv("CORS_ORIGINS", "").strip()
+    if raw_cors_origins:
+        cors_origins = tuple(origin.strip() for origin in raw_cors_origins.split(",") if origin.strip())
+    else:
+        cors_origins = ("http://localhost:5173", "http://127.0.0.1:5173")
+
     return BackendSettings(
         log_level=os.getenv("LOGGING_LEVEL", "INFO").upper(),
         log_file=os.getenv("SERVER_LOG_FILE", "segb.log"),
@@ -41,9 +48,10 @@ def load_settings() -> BackendSettings:
         max_startup_retries=int(os.getenv("MAX_STARTUP_RETRIES", "6")),
         max_backoff_seconds=int(os.getenv("MAX_BACKOFF_SECONDS", "16")),
         runtime_ping_interval=int(os.getenv("RUNTIME_PING_INTERVAL", "5")),
-        cors_origins=("http://localhost:5173", "http://127.0.0.1:5173"),
+        cors_origins=cors_origins,
+        cors_origin_regex=os.getenv("CORS_ORIGIN_REGEX"),
         shared_context=SharedContextSettings(
-            namespace=os.getenv("SHARED_CONTEXT_NAMESPACE", "https://gsi.upm.es/segb/shared-context/"),
+            namespace=os.getenv("SHARED_CONTEXT_NAMESPACE", "https://gsi.upm.es/segb/shared-events/"),
             time_window_seconds=float(os.getenv("SHARED_CONTEXT_TIME_WINDOW_SECONDS", "3.0")),
             match_threshold=float(os.getenv("SHARED_CONTEXT_MATCH_THRESHOLD", "0.85")),
             ambiguous_threshold=float(os.getenv("SHARED_CONTEXT_AMBIGUOUS_THRESHOLD", "0.70")),

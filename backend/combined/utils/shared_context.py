@@ -23,7 +23,7 @@ from pydantic import BaseModel, Field
 class SharedContextPolicy:
     """Deterministic scoring and decision policy."""
 
-    namespace: str = "https://gsi.upm.es/segb/shared-context/"
+    namespace: str = "https://gsi.upm.es/segb/shared-events/"
     resolver_version: str = "shared-context-v1-rules"
     time_window_seconds: float = 3.0
     candidate_window_multiplier: float = 2.0

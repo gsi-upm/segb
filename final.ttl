@@ -1,0 +1,627 @@
+@prefix amor: <http://www.gsi.upm.es/ontologies/amor/ns#> .
+@prefix ari: <https://gsi.upm.es/segb/robots/ari/v1/> .
+@prefix emoml: <http://www.gsi.upm.es/ontologies/onyx/vocabularies/emotionml/ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix mls: <http://www.w3.org/ns/mls#> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix onyx: <http://www.gsi.upm.es/ontologies/onyx/ns#> .
+@prefix oro: <http://kb.openrobots.org#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema1: <http://schema.org/> .
+@prefix segb: <http://www.gsi.upm.es/ontologies/segb/ns#> .
+@prefix shared-event: <https://gsi.upm.es/segb/shared-events/> .
+@prefix tiago: <https://gsi.upm.es/segb/robots/tiago/v1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ari:activity_ari_emotion_from_face_after_1 a onyx:EmotionAnalysis,
+        segb:LoggedActivity,
+        prov:Activity ;
+    rdfs:label "ARI detects happiness after emotional support"@en ;
+    schema1:about shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    onyx:usesEmotionModel emoml:big6 ;
+    segb:producedEntityResult ari:emotion_annotation_3be1ed9aaed34e01a92583d3a298b085 ;
+    segb:triggeredByActivity ari:activity_ari_decision_1 ;
+    segb:triggeredByEntity ari:observation_ari_face_after_response_1 ;
+    segb:usedMLModel ari:model_face_emotion_cnn_v1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T17:00:40.240630+00:00"^^xsd:dateTime ;
+    prov:generated ari:emotion_annotation_3be1ed9aaed34e01a92583d3a298b085 ;
+    prov:startedAtTime "2026-02-18T17:00:39.240630+00:00"^^xsd:dateTime ;
+    prov:used ari:model_face_emotion_cnn_v1,
+        ari:observation_ari_face_after_response_1 ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:activity_ari_decision_1,
+        ari:observation_ari_face_after_response_1 .
+
+ari:activity_ari_emotion_from_face_before_1 a onyx:EmotionAnalysis,
+        segb:LoggedActivity,
+        prov:Activity ;
+    rdfs:label "ARI detects sadness from face emotion analysis"@en ;
+    schema1:about shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    onyx:usesEmotionModel emoml:big6 ;
+    segb:producedEntityResult ari:emotion_annotation_e519f30a19af48049cc7f26f955c60b2 ;
+    segb:triggeredByEntity ari:observation_ari_face_before_response_1 ;
+    segb:usedMLModel ari:model_face_emotion_cnn_v1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T17:00:37.240630+00:00"^^xsd:dateTime ;
+    prov:generated ari:emotion_annotation_e519f30a19af48049cc7f26f955c60b2 ;
+    prov:startedAtTime "2026-02-18T17:00:36.240630+00:00"^^xsd:dateTime ;
+    prov:used ari:model_face_emotion_cnn_v1,
+        ari:observation_ari_face_before_response_1 ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:observation_ari_face_before_response_1 .
+
+ari:activity_ari_emotion_from_speech_1 a onyx:EmotionAnalysis,
+        segb:LoggedActivity,
+        prov:Activity ;
+    rdfs:label "ARI detects sadness from Maria speech content"@en ;
+    schema1:about shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    onyx:usesEmotionModel emoml:big6 ;
+    segb:producedEntityResult ari:emotion_annotation_ae1a1940094e46b0bc219d6f9d33a7f3 ;
+    segb:triggeredByActivity ari:activity_ari_listening_1 ;
+    segb:triggeredByEntity ari:message_ari_heard_1 ;
+    segb:usedMLModel ari:model_emotion_text_classifier_v1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T17:00:36.240630+00:00"^^xsd:dateTime ;
+    prov:generated ari:emotion_annotation_ae1a1940094e46b0bc219d6f9d33a7f3 ;
+    prov:startedAtTime "2026-02-18T17:00:35.240630+00:00"^^xsd:dateTime ;
+    prov:used ari:message_ari_heard_1,
+        ari:model_emotion_text_classifier_v1 ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:activity_ari_listening_1,
+        ari:message_ari_heard_1 .
+
+ari:activity_emotion_analysis_2 a oro:EmotionRecognitionEvent,
+        onyx:EmotionAnalysis,
+        segb:LoggedActivity,
+        prov:Activity ;
+    rdfs:label "Maria very happy after animal news"@en ;
+    schema1:about shared-event:human_utterance_91672124fe4a770501ad ;
+    onyx:usesEmotionModel emoml:big6 ;
+    segb:producedEntityResult ari:emotion_annotation_b902b6d8fb414775aa8a132b59974bbf ;
+    segb:triggeredByActivity ari:activity_ari_listening_gratitude_1 ;
+    segb:triggeredByEntity ari:observation_ari_face_very_happy_1 ;
+    segb:usedMLModel ari:model_emotion_big6_v1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T16:54:35.242812+00:00"^^xsd:dateTime ;
+    prov:generated ari:emotion_annotation_b902b6d8fb414775aa8a132b59974bbf ;
+    prov:startedAtTime "2026-02-18T16:54:30.242812+00:00"^^xsd:dateTime ;
+    prov:used ari:model_emotion_big6_v1,
+        ari:observation_ari_face_very_happy_1 ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:activity_ari_listening_gratitude_1,
+        ari:observation_ari_face_very_happy_1 .
+
+ari:activity_emotion_model_training_run_1 a segb:LoggedActivity,
+        mls:Run,
+        prov:Activity ;
+    segb:producedEntityResult ari:model_emotion_big6_v1,
+        ari:model_eval_emotion_accuracy_eval_1 ;
+    segb:usedMLModel ari:model_emotion_big6_v1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    mls:hasInput ari:dataset_emotion_dataset_v1 ;
+    mls:hasOutput ari:model_emotion_big6_v1,
+        ari:model_eval_emotion_accuracy_eval_1 ;
+    prov:endedAtTime "2026-02-18T16:40:30.242707+00:00"^^xsd:dateTime ;
+    prov:generated ari:model_emotion_big6_v1,
+        ari:model_eval_emotion_accuracy_eval_1 ;
+    prov:startedAtTime "2026-02-18T16:30:30.242706+00:00"^^xsd:dateTime ;
+    prov:used ari:dataset_emotion_dataset_v1,
+        ari:model_emotion_big6_v1 ;
+    prov:wasAssociatedWith ari:robot_ari1 .
+
+ari:activity_vision_perception_1 a oro:DetectedHumanEvent,
+        segb:LoggedActivity,
+        prov:Activity ;
+    schema1:about shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    segb:usedMLModel ari:model_vision_human_detector_v1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T17:00:30.242605+00:00"^^xsd:dateTime ;
+    prov:startedAtTime "2026-02-18T17:00:30.242605+00:00"^^xsd:dateTime ;
+    prov:used ari:model_vision_human_detector_v1 ;
+    prov:wasAssociatedWith ari:robot_ari1 .
+
+ari:state_ari_state_1 a segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    schema1:additionalProperty ari:state_property_battery_level_ea9b6d8a146c4cca8de72e7c745c5f1c,
+        ari:state_property_mission_phase_aad853351a094c8cba1336f06ae9e041 ;
+    schema1:location ari:location_room_a ;
+    prov:generatedAtTime "2026-02-18T16:51:30.242812+00:00"^^xsd:dateTime ;
+    prov:wasAttributedTo ari:robot_ari1 .
+
+ari:state_ari_state_2 a segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    schema1:additionalProperty ari:state_property_battery_level_2984596f89504e70841a442a988bb088,
+        ari:state_property_mission_phase_c4a1d7d9b0ea4d738e0fc063f5a2cb28 ;
+    schema1:location ari:location_room_b ;
+    prov:generatedAtTime "2026-02-18T16:53:30.242812+00:00"^^xsd:dateTime ;
+    prov:wasAttributedTo ari:robot_ari1 .
+
+tiago:activity_tiago_engagement_check_1 a oro:DecisionMakingAction,
+        segb:LoggedActivity,
+        prov:Activity ;
+    rdfs:label "Engagement check: Maria addressed ARI, TIAGo does not respond"@en ;
+    schema1:about shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    segb:triggeredByActivity tiago:activity_tiago_listening_1 ;
+    segb:triggeredByEntity tiago:message_tiago_heard_1 ;
+    segb:wasPerformedBy tiago:robot_tiago1 ;
+    prov:endedAtTime "2026-02-18T17:00:36.240630+00:00"^^xsd:dateTime ;
+    prov:startedAtTime "2026-02-18T17:00:35.240630+00:00"^^xsd:dateTime ;
+    prov:used tiago:message_tiago_heard_1 ;
+    prov:wasAssociatedWith tiago:robot_tiago1 ;
+    prov:wasInfluencedBy tiago:activity_tiago_listening_1,
+        tiago:message_tiago_heard_1 .
+
+tiago:state_tiago_state_1 a segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    schema1:additionalProperty tiago:state_property_battery_level_bde2e969ebdd40fc92019e76b47ba793,
+        tiago:state_property_mission_phase_e61b7a8baee64eb2b318f90759b823a0 ;
+    schema1:location ari:location_room_b ;
+    prov:generatedAtTime "2026-02-18T16:51:30.242812+00:00"^^xsd:dateTime ;
+    prov:wasAttributedTo tiago:robot_tiago1 .
+
+tiago:state_tiago_state_2 a segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    schema1:additionalProperty tiago:state_property_battery_level_34dd155d9e3c4cb8bf0accb901522b5a,
+        tiago:state_property_mission_phase_5c02f2e8917b4456990d5bb67f411e60 ;
+    schema1:location ari:location_room_c ;
+    prov:generatedAtTime "2026-02-18T16:54:30.242812+00:00"^^xsd:dateTime ;
+    prov:wasAttributedTo tiago:robot_tiago1 .
+
+ari:activity_ari_exam_news_response_1 a oro:ResponseAction,
+        segb:LoggedActivity,
+        prov:Activity ;
+    schema1:about shared-event:human_utterance_91672124fe4a770501ad ;
+    segb:producedEntityResult ari:message_ari_exam_news_msg_1 ;
+    segb:triggeredByActivity ari:activity_ari_listening_cheer_request_1 ;
+    segb:triggeredByEntity ari:message_ari_heard_cheer_request_1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T16:50:45.242812+00:00"^^xsd:dateTime ;
+    prov:generated ari:message_ari_exam_news_msg_1 ;
+    prov:startedAtTime "2026-02-18T16:50:40.242812+00:00"^^xsd:dateTime ;
+    prov:used ari:message_ari_heard_cheer_request_1 ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:activity_ari_listening_cheer_request_1,
+        ari:message_ari_heard_cheer_request_1 .
+
+ari:activity_ari_human_detection_1 a oro:DetectedHumanEvent,
+        segb:LoggedActivity,
+        prov:Activity ;
+    rdfs:label "ARI detects Maria entering the room"@en ;
+    schema1:about shared-event:human_entry_b2203f7b48e7d3baec16 ;
+    segb:producedEntityResult ari:observation_ari_human_entry_1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T17:00:31.240630+00:00"^^xsd:dateTime ;
+    prov:generated ari:observation_ari_human_entry_1 ;
+    prov:startedAtTime "2026-02-18T17:00:30.240630+00:00"^^xsd:dateTime ;
+    prov:wasAssociatedWith ari:robot_ari1 .
+
+ari:emotion_353164ce55424ce3893e191493205259 a onyx:Emotion ;
+    onyx:algorithmConfidence 9.5e-01 ;
+    onyx:hasEmotionCategory emoml:big6_fear ;
+    onyx:hasEmotionIntensity 9e-01 .
+
+ari:emotion_7541971450f7484b8e6e17bb669dd91c a onyx:Emotion ;
+    onyx:algorithmConfidence 9e-01 ;
+    onyx:hasEmotionCategory emoml:big6_sadness ;
+    onyx:hasEmotionIntensity 7.8e-01 .
+
+ari:emotion_a7c49f08dc23408e8117b6055a7912df a onyx:Emotion ;
+    onyx:algorithmConfidence 9.6e-01 ;
+    onyx:hasEmotionCategory emoml:big6_happiness ;
+    onyx:hasEmotionIntensity 9.8e-01 .
+
+ari:emotion_ac85d29637a8431bb3be22dfd75d9161 a onyx:Emotion ;
+    onyx:algorithmConfidence 9.3e-01 ;
+    onyx:hasEmotionCategory emoml:big6_happiness ;
+    onyx:hasEmotionIntensity 7.4e-01 .
+
+ari:emotion_afe64bc1a06e4f94bef597691241de30 a onyx:Emotion ;
+    onyx:algorithmConfidence 9.2e-01 ;
+    onyx:hasEmotionCategory emoml:big6_sadness ;
+    onyx:hasEmotionIntensity 8.4e-01 .
+
+ari:state_property_battery_level_2984596f89504e70841a442a988bb088 a schema1:PropertyValue ;
+    schema1:propertyID "battery_level" ;
+    schema1:unitCode "PERCENT" ;
+    schema1:value 7.9e+01 .
+
+ari:state_property_battery_level_ea9b6d8a146c4cca8de72e7c745c5f1c a schema1:PropertyValue ;
+    schema1:propertyID "battery_level" ;
+    schema1:unitCode "PERCENT" ;
+    schema1:value 8.2e+01 .
+
+ari:state_property_mission_phase_aad853351a094c8cba1336f06ae9e041 a schema1:PropertyValue ;
+    schema1:propertyID "mission_phase" ;
+    schema1:value "listen" .
+
+ari:state_property_mission_phase_c4a1d7d9b0ea4d738e0fc063f5a2cb28 a schema1:PropertyValue ;
+    schema1:propertyID "mission_phase" ;
+    schema1:value "respond" .
+
+tiago:activity_tiago_human_detection_1 a oro:DetectedHumanEvent,
+        segb:LoggedActivity,
+        prov:Activity ;
+    rdfs:label "TIAGo detects Maria entering the room"@en ;
+    schema1:about shared-event:human_entry_b2203f7b48e7d3baec16 ;
+    segb:producedEntityResult tiago:observation_tiago_human_entry_1 ;
+    segb:wasPerformedBy tiago:robot_tiago1 ;
+    prov:endedAtTime "2026-02-18T17:00:31.240630+00:00"^^xsd:dateTime ;
+    prov:generated tiago:observation_tiago_human_entry_1 ;
+    prov:startedAtTime "2026-02-18T17:00:30.240630+00:00"^^xsd:dateTime ;
+    prov:wasAssociatedWith tiago:robot_tiago1 .
+
+tiago:state_property_battery_level_34dd155d9e3c4cb8bf0accb901522b5a a schema1:PropertyValue ;
+    schema1:propertyID "battery_level" ;
+    schema1:unitCode "PERCENT" ;
+    schema1:value 7.2e+01 .
+
+tiago:state_property_battery_level_bde2e969ebdd40fc92019e76b47ba793 a schema1:PropertyValue ;
+    schema1:propertyID "battery_level" ;
+    schema1:unitCode "PERCENT" ;
+    schema1:value 7.4e+01 .
+
+tiago:state_property_mission_phase_5c02f2e8917b4456990d5bb67f411e60 a schema1:PropertyValue ;
+    schema1:propertyID "mission_phase" ;
+    schema1:value "idle" .
+
+tiago:state_property_mission_phase_e61b7a8baee64eb2b318f90759b823a0 a schema1:PropertyValue ;
+    schema1:propertyID "mission_phase" ;
+    schema1:value "listen" .
+
+ari:activity_emotion_analysis_1 a oro:EmotionRecognitionEvent,
+        onyx:EmotionAnalysis,
+        segb:LoggedActivity,
+        prov:Activity ;
+    rdfs:label "Maria anxiety detected after exam news"@en ;
+    schema1:about shared-event:human_utterance_91672124fe4a770501ad ;
+    onyx:usesEmotionModel emoml:big6 ;
+    segb:producedEntityResult ari:emotion_annotation_211ffeb1bcde4ad880cf008388673204 ;
+    segb:triggeredByEntity ari:observation_ari_face_anxiety_after_exam_1 ;
+    segb:usedMLModel ari:model_emotion_big6_v1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T16:51:35.242812+00:00"^^xsd:dateTime ;
+    prov:generated ari:emotion_annotation_211ffeb1bcde4ad880cf008388673204 ;
+    prov:startedAtTime "2026-02-18T16:51:30.242812+00:00"^^xsd:dateTime ;
+    prov:used ari:model_emotion_big6_v1,
+        ari:observation_ari_face_anxiety_after_exam_1 ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:observation_ari_face_anxiety_after_exam_1 .
+
+ari:dataset_emotion_dataset_v1 a mls:Dataset,
+        prov:Entity ;
+    rdfs:label "EmotionDataset v1"@en .
+
+ari:emotion_annotation_211ffeb1bcde4ad880cf008388673204 a amor:EmotionAnnotation,
+        segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    onyx:hasEmotion ari:emotion_353164ce55424ce3893e191493205259 ;
+    oa:hasTarget ari:human_maria,
+        ari:robot_ari1 .
+
+ari:emotion_annotation_3be1ed9aaed34e01a92583d3a298b085 a amor:EmotionAnnotation,
+        segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    onyx:hasEmotion ari:emotion_ac85d29637a8431bb3be22dfd75d9161 ;
+    oa:hasTarget ari:human_maria .
+
+ari:emotion_annotation_ae1a1940094e46b0bc219d6f9d33a7f3 a amor:EmotionAnnotation,
+        segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    onyx:hasEmotion ari:emotion_afe64bc1a06e4f94bef597691241de30 ;
+    oa:hasTarget ari:human_maria .
+
+ari:emotion_annotation_b902b6d8fb414775aa8a132b59974bbf a amor:EmotionAnnotation,
+        segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    onyx:hasEmotion ari:emotion_a7c49f08dc23408e8117b6055a7912df ;
+    oa:hasTarget ari:human_maria,
+        ari:robot_ari1 .
+
+ari:emotion_annotation_e519f30a19af48049cc7f26f955c60b2 a amor:EmotionAnnotation,
+        segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    onyx:hasEmotion ari:emotion_7541971450f7484b8e6e17bb669dd91c ;
+    oa:hasTarget ari:human_maria .
+
+ari:model_emotion_text_classifier_v1 a segb:Result,
+        mls:Model,
+        prov:Activity,
+        prov:Entity ;
+    rdfs:label "Emotion Text Classifier"@en ;
+    schema1:version "1.0" .
+
+ari:model_vision_human_detector_v1 a segb:Result,
+        mls:Model,
+        prov:Activity,
+        prov:Entity ;
+    rdfs:label "Human Detector"@en ;
+    schema1:version "2.1" .
+
+ari:observation_ari_human_entry_1 a prov:Entity ;
+    rdfs:label "Maria entry observed by ARI"@en ;
+    schema1:confidence 9.5e-01 ;
+    prov:specializationOf shared-event:human_entry_b2203f7b48e7d3baec16 ;
+    prov:wasGeneratedBy ari:activity_ari_human_detection_1 .
+
+tiago:observation_tiago_human_entry_1 a prov:Entity ;
+    rdfs:label "Maria entry observed by TIAGo"@en ;
+    schema1:confidence 9.3e-01 ;
+    prov:specializationOf shared-event:human_entry_b2203f7b48e7d3baec16 ;
+    prov:wasGeneratedBy tiago:activity_tiago_human_detection_1 .
+
+ari:activity_ari_animal_news_response_1 a oro:ResponseAction,
+        segb:LoggedActivity,
+        prov:Activity ;
+    schema1:about shared-event:human_utterance_91672124fe4a770501ad ;
+    segb:producedEntityResult ari:message_ari_animal_news_msg_1 ;
+    segb:triggeredByActivity ari:activity_ari_apology_response_1 ;
+    segb:triggeredByEntity ari:message_ari_apology_msg_1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T16:52:55.242812+00:00"^^xsd:dateTime ;
+    prov:generated ari:message_ari_animal_news_msg_1 ;
+    prov:startedAtTime "2026-02-18T16:52:50.242812+00:00"^^xsd:dateTime ;
+    prov:used ari:message_ari_apology_msg_1 ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:activity_ari_apology_response_1,
+        ari:message_ari_apology_msg_1 .
+
+ari:activity_ari_apology_response_1 a oro:ResponseAction,
+        segb:LoggedActivity,
+        prov:Activity ;
+    schema1:about shared-event:human_utterance_91672124fe4a770501ad ;
+    segb:producedEntityResult ari:message_ari_apology_msg_1 ;
+    segb:triggeredByActivity ari:activity_emotion_analysis_1 ;
+    segb:triggeredByEntity ari:observation_ari_face_anxiety_after_exam_1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T16:52:35.242812+00:00"^^xsd:dateTime ;
+    prov:generated ari:message_ari_apology_msg_1 ;
+    prov:startedAtTime "2026-02-18T16:52:30.242812+00:00"^^xsd:dateTime ;
+    prov:used ari:observation_ari_face_anxiety_after_exam_1 ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:activity_emotion_analysis_1,
+        ari:observation_ari_face_anxiety_after_exam_1 .
+
+ari:activity_ari_decision_1 a oro:DecisionMakingAction,
+        segb:LoggedActivity,
+        prov:Activity ;
+    rdfs:label "ARI decides to provide emotional support"@en ;
+    schema1:about shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    segb:producedEntityResult ari:message_ari_response_1 ;
+    segb:triggeredByActivity ari:activity_ari_listening_1 ;
+    segb:triggeredByEntity ari:message_ari_heard_1 ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T17:00:38.240630+00:00"^^xsd:dateTime ;
+    prov:generated ari:message_ari_response_1 ;
+    prov:startedAtTime "2026-02-18T17:00:37.240630+00:00"^^xsd:dateTime ;
+    prov:used ari:message_ari_heard_1 ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:activity_ari_listening_1,
+        ari:message_ari_heard_1 .
+
+ari:activity_ari_listening_cheer_request_1 a oro:ListeningEvent,
+        segb:LoggedActivity,
+        prov:Activity ;
+    schema1:about shared-event:human_utterance_91672124fe4a770501ad ;
+    segb:producedEntityResult ari:message_ari_heard_cheer_request_1 ;
+    segb:triggeredByActivity ari:activity_ari_listening_1 ;
+    segb:triggeredByEntity ari:message_ari_response_1 ;
+    segb:usedMLModel ari:model_asr_vosk_es ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T16:50:35.242812+00:00"^^xsd:dateTime ;
+    prov:generated ari:message_ari_heard_cheer_request_1 ;
+    prov:startedAtTime "2026-02-18T16:50:30.242812+00:00"^^xsd:dateTime ;
+    prov:used ari:message_ari_response_1,
+        ari:model_asr_vosk_es ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:activity_ari_listening_1,
+        ari:message_ari_response_1 .
+
+ari:activity_ari_listening_gratitude_1 a oro:ListeningEvent,
+        segb:LoggedActivity,
+        prov:Activity ;
+    schema1:about shared-event:human_utterance_91672124fe4a770501ad ;
+    segb:producedEntityResult ari:message_ari_heard_gratitude_1 ;
+    segb:triggeredByActivity ari:activity_ari_animal_news_response_1 ;
+    segb:triggeredByEntity ari:message_ari_animal_news_msg_1 ;
+    segb:usedMLModel ari:model_asr_vosk_es ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T16:53:35.242812+00:00"^^xsd:dateTime ;
+    prov:generated ari:message_ari_heard_gratitude_1 ;
+    prov:startedAtTime "2026-02-18T16:53:30.242812+00:00"^^xsd:dateTime ;
+    prov:used ari:message_ari_animal_news_msg_1,
+        ari:model_asr_vosk_es ;
+    prov:wasAssociatedWith ari:robot_ari1 ;
+    prov:wasInfluencedBy ari:activity_ari_animal_news_response_1,
+        ari:message_ari_animal_news_msg_1 .
+
+ari:message_ari_heard_gratitude_1 a oro:InitialMessage,
+        oro:Message,
+        prov:Entity ;
+    oro:hasText "Thank you, ARI! That animal news made me very happy."@en ;
+    oro:previousMessage ari:message_ari_animal_news_msg_1 ;
+    schema1:confidence 9.7e-01 ;
+    prov:specializationOf shared-event:human_utterance_91672124fe4a770501ad ;
+    prov:wasGeneratedBy ari:activity_ari_listening_gratitude_1 .
+
+ari:model_eval_emotion_accuracy_eval_1 a mls:ModelEvaluation,
+        prov:Entity ;
+    mls:hasValue 8.9e-01 .
+
+ari:observation_ari_face_after_response_1 a prov:Entity ;
+    rdfs:label "Maria face snapshot after ARI response"@en ;
+    schema1:confidence 9.3e-01 ;
+    prov:specializationOf shared-event:human_utterance_7c3fc7e9448fbdd0bdbb .
+
+ari:observation_ari_face_before_response_1 a prov:Entity ;
+    rdfs:label "Maria face snapshot before ARI response"@en ;
+    schema1:confidence 9e-01 ;
+    prov:specializationOf shared-event:human_utterance_7c3fc7e9448fbdd0bdbb .
+
+ari:observation_ari_face_very_happy_1 a segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    rdfs:label "Face snapshot after animal news"@en ;
+    schema1:confidence 9.6e-01 ;
+    prov:specializationOf shared-event:human_utterance_91672124fe4a770501ad .
+
+tiago:activity_tiago_listening_1 a oro:ListeningEvent,
+        segb:LoggedActivity,
+        prov:Activity ;
+    schema1:about shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    segb:producedEntityResult tiago:message_tiago_heard_1 ;
+    segb:wasPerformedBy tiago:robot_tiago1 ;
+    prov:endedAtTime "2026-02-18T17:00:35.240630+00:00"^^xsd:dateTime ;
+    prov:generated tiago:message_tiago_heard_1 ;
+    prov:startedAtTime "2026-02-18T17:00:34.240630+00:00"^^xsd:dateTime ;
+    prov:wasAssociatedWith tiago:robot_tiago1 .
+
+ari:message_ari_exam_news_msg_1 a oro:Message,
+        oro:ResponseMessage,
+        prov:Entity ;
+    oro:hasText "Here is one headline: many students are anxious because an important exam is coming soon."@en ;
+    oro:nextMessage ari:message_ari_apology_msg_1 ;
+    oro:previousMessage ari:message_ari_heard_cheer_request_1 ;
+    prov:wasGeneratedBy ari:activity_ari_exam_news_response_1 .
+
+ari:model_face_emotion_cnn_v1 a segb:Result,
+        mls:Model,
+        prov:Activity,
+        prov:Entity ;
+    rdfs:label "Face Emotion CNN"@en ;
+    schema1:version "1.2" .
+
+shared-event:human_entry_b2203f7b48e7d3baec16 a schema1:Event,
+        prov:Entity ;
+    schema1:about ari:human_maria ;
+    schema1:eventType "human_entry" ;
+    schema1:identifier "human_entry_b2203f7b48e7d3baec16" ;
+    schema1:measurementTechnique "vision" ;
+    prov:generatedAtTime "2026-02-18T17:00:30+00:00"^^xsd:dateTime .
+
+tiago:message_tiago_heard_1 a oro:InitialMessage,
+        oro:Message,
+        prov:Entity ;
+    oro:hasText "ARI, me siento triste porque he recibido una mala noticia."@es ;
+    schema1:confidence 9e-01 ;
+    prov:specializationOf shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    prov:wasGeneratedBy tiago:activity_tiago_listening_1 .
+
+ari:model_asr_vosk_es a segb:Result,
+        mls:Model,
+        prov:Activity,
+        prov:Entity ;
+    rdfs:label "ASR Vosk ES"@en ;
+    schema1:version "0.3" .
+
+ari:observation_ari_face_anxiety_after_exam_1 a segb:Result,
+        prov:Activity,
+        prov:Entity ;
+    rdfs:label "Face snapshot after exam news"@en ;
+    schema1:confidence 9.3e-01 ;
+    prov:specializationOf shared-event:human_utterance_91672124fe4a770501ad .
+
+ari:activity_ari_listening_1 a oro:ListeningEvent,
+        segb:LoggedActivity,
+        prov:Activity ;
+    schema1:about shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    segb:producedEntityResult ari:message_ari_heard_1 ;
+    segb:usedMLModel ari:model_asr_vosk_es ;
+    segb:wasPerformedBy ari:robot_ari1 ;
+    prov:endedAtTime "2026-02-18T17:00:35.240630+00:00"^^xsd:dateTime ;
+    prov:generated ari:message_ari_heard_1 ;
+    prov:startedAtTime "2026-02-18T17:00:34.240630+00:00"^^xsd:dateTime ;
+    prov:used ari:model_asr_vosk_es ;
+    prov:wasAssociatedWith ari:robot_ari1 .
+
+ari:message_ari_animal_news_msg_1 a oro:Message,
+        oro:ResponseMessage,
+        prov:Entity ;
+    oro:hasText "Here is another one: a rescue center found homes for twenty puppies this weekend."@en ;
+    oro:nextMessage ari:message_ari_heard_gratitude_1 ;
+    oro:previousMessage ari:message_ari_apology_msg_1 ;
+    prov:wasGeneratedBy ari:activity_ari_animal_news_response_1 .
+
+ari:message_ari_apology_msg_1 a oro:Message,
+        oro:ResponseMessage,
+        prov:Entity ;
+    oro:hasText "I am sorry, Maria. That exam news was not a good choice right now."@en ;
+    oro:nextMessage ari:message_ari_animal_news_msg_1 ;
+    oro:previousMessage ari:message_ari_exam_news_msg_1 ;
+    prov:wasGeneratedBy ari:activity_ari_apology_response_1 .
+
+ari:message_ari_heard_cheer_request_1 a oro:InitialMessage,
+        oro:Message,
+        prov:Entity ;
+    oro:hasText "ARI, can you show me some news to cheer me up?"@en ;
+    oro:nextMessage ari:message_ari_exam_news_msg_1 ;
+    oro:previousMessage ari:message_ari_response_1 ;
+    schema1:confidence 9.5e-01 ;
+    prov:specializationOf shared-event:human_utterance_91672124fe4a770501ad ;
+    prov:wasGeneratedBy ari:activity_ari_listening_cheer_request_1 .
+
+ari:message_ari_response_1 a oro:Message,
+        oro:ResponseMessage,
+        prov:Entity ;
+    oro:hasText "Maria, siento que estes triste. Estoy contigo y todo va a estar bien."@en ;
+    oro:nextMessage ari:message_ari_heard_cheer_request_1 ;
+    oro:previousMessage ari:message_ari_heard_1 ;
+    prov:wasGeneratedBy ari:activity_ari_decision_1 .
+
+ari:human_maria a oro:Human,
+        prov:Person,
+        foaf:Person ;
+    foaf:firstName "Maria"@en .
+
+tiago:robot_tiago1 a oro:Robot,
+        prov:Agent ;
+    oro:hasName "TIAGo"@en .
+
+ari:message_ari_heard_1 a oro:InitialMessage,
+        oro:Message,
+        prov:Entity ;
+    oro:hasText "ARI, me siento triste porque he recibido una mala noticia."@es ;
+    oro:nextMessage ari:message_ari_response_1 ;
+    schema1:confidence 9.5e-01 ;
+    prov:specializationOf shared-event:human_utterance_7c3fc7e9448fbdd0bdbb ;
+    prov:wasGeneratedBy ari:activity_ari_listening_1 .
+
+ari:model_emotion_big6_v1 a segb:Result,
+        mls:Model,
+        prov:Activity,
+        prov:Entity ;
+    rdfs:label "Emotion Big6 CNN"@en ;
+    schema1:version "1.0" .
+
+shared-event:human_utterance_91672124fe4a770501ad a schema1:Event,
+        prov:Entity ;
+    schema1:about ari:human_maria ;
+    schema1:description "ARI, can you show me a piece of news to cheer me up?"@en ;
+    schema1:eventType "human_utterance" ;
+    schema1:identifier "human_utterance_91672124fe4a770501ad" ;
+    schema1:measurementTechnique "speech" ;
+    prov:generatedAtTime "2026-02-18T16:50:30+00:00"^^xsd:dateTime .
+
+shared-event:human_utterance_7c3fc7e9448fbdd0bdbb a schema1:Event,
+        prov:Entity ;
+    schema1:about ari:human_maria ;
+    schema1:description "ARI, me siento triste porque he recibido una mala noticia."@en ;
+    schema1:eventType "human_utterance" ;
+    schema1:identifier "human_utterance_7c3fc7e9448fbdd0bdbb" ;
+    schema1:measurementTechnique "speech" ;
+    prov:generatedAtTime "2026-02-18T17:00:34+00:00"^^xsd:dateTime .
+
+ari:robot_ari1 a oro:Robot,
+        prov:Agent ;
+    oro:hasName "ARI"@en .
+

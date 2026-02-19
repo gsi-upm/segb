@@ -13,7 +13,7 @@ class TestHTTPSharedContextResolver(unittest.TestCase):
         session = Mock(spec=requests.Session)
         response = Mock()
         response.raise_for_status.return_value = None
-        response.json.return_value = {"shared_context_uri": "https://example.org/shared-context/ctx_1"}
+        response.json.return_value = {"shared_context_uri": "https://example.org/shared-events/ctx_1"}
         session.post.return_value = response
 
         resolver = HTTPSharedContextResolver(
@@ -32,7 +32,7 @@ class TestHTTPSharedContextResolver(unittest.TestCase):
             )
         )
 
-        self.assertEqual(resolved, "https://example.org/shared-context/ctx_1")
+        self.assertEqual(resolved, "https://example.org/shared-events/ctx_1")
         session.post.assert_called_once()
 
     def test_returns_none_on_failure_when_not_raising(self) -> None:

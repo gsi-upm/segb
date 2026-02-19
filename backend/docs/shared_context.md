@@ -99,7 +99,7 @@ Given best candidate score `S_best` and optional second score `S_second`:
 
 ```json
 {
-  "shared_context_uri": "https://gsi.upm.es/segb/shared-context/human_utterance_abcd1234",
+  "shared_context_uri": "https://gsi.upm.es/segb/shared-events/human_utterance_abcd1234",
   "status": "matched",
   "confidence": 0.91,
   "resolver_version": "shared-context-v1-rules",

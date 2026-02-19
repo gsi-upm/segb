@@ -1,0 +1,447 @@
+%% 
+%% Copyright 2007, 2008, 2009 Elsevier Ltd
+%% 
+%% This file is part of the 'Elsarticle Bundle'.
+%% ---------------------------------------------
+%% 
+%% It may be distributed under the conditions of the LaTeX Project Public
+%% License, either version 1.2 of this license or (at your option) any
+%% later version.  The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.2 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%% 
+%% The list of all files belonging to the 'Elsarticle Bundle' is
+%% given in the file `manifest.txt'.
+%% 
+
+%% Template article for Elsevier's document class `elsarticle'
+%% with numbered style bibliographic references
+%% SP 2008/03/01
+
+\documentclass[preprint,12pt, a4paper]{elsarticle}
+
+
+\usepackage{amssymb}
+\usepackage{hyperref}
+\setlength{\parindent}{0pt}
+
+\usepackage{acronym}
+\usepackage{dirtytalk}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{array}
+
+\usepackage{xcolor}
+\usepackage{listings}
+
+% --- Turtle (TTL) pretty-printing ---
+\lstdefinelanguage{turtle}{
+  sensitive=true,
+  morekeywords={@base,@prefix,a,true,false},
+  morecomment=[l]{\#},
+  morestring=[b]",
+}
+
+\lstdefinestyle{ttl}{
+  language=turtle,
+  % Typography
+  basicstyle=\ttfamily\small\linespread{1.10}\selectfont\color{black!88},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=2,
+  identifierstyle=\color{black!82},
+  % Line breaks
+  breaklines=true,
+  breakatwhitespace=false,
+  % Spacing around/inside the box
+  aboveskip=1.0\baselineskip,
+  belowskip=1.0\baselineskip,
+  framesep=7pt,
+  % Give the code a gutter, but keep line numbers further to the left
+  xleftmargin=1.5em,
+  framexleftmargin=0.0em,
+  xrightmargin=1.0em,
+  % Frame & background (less "black and boring")
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{blue!25!black},
+  backgroundcolor=\color{blue!2},
+  % Line numbers
+  numbers=left,
+  numbersep=2em,
+  numberstyle=\ttfamily\tiny\color{blue!60!black},
+  % Syntax highlighting
+  keywordstyle=\bfseries\color{violet!70!black},
+  commentstyle=\itshape\color{black!50},
+  stringstyle=\color{orange!70!black},
+  captionpos=b,
+}
+
+
+
+\setlength {\marginparwidth }{3cm} 
+\usepackage{todonotes}
+
+
+
+\acrodef{AI}[AI]{Artificial Intelligence}
+\acrodef{API}[API]{Application Programming Interface}
+\acrodef{CORA}[CORA]{Core Ontology for Robotics and Automation}
+\acrodef{EBB}[EBB]{Ethical Black Box}
+\acrodef{GDPR}[GDPR]{General Data Protection Regulation}
+\acrodef{GUI}[GUI]{Graphical User Interface}
+\acrodef{HG}[HG]{Historical Graph}
+\acrodef{HMI}[HMI]{Human-Machine Interface}
+\acrodef{KG}[KG]{Knowledge Graph}
+\acrodef{JSON}[JSON]{JavaScript Object Notation}
+\acrodef{LLM}[LLM]{Large Language Models}
+\acrodef{ML}[ML]{Machine Learning}
+\acrodef{MLS}[MLS]{Machine Learning Schema}
+\acrodef{ORA}[ORA]{Ontologies for Robotics and Automation}
+\acrodef{ORO}[ORO]{OpenRobots Ontology}
+\acrodef{RAG}{Retrieval-Augmented Generation}
+\acrodef{RDF}{Resource Description Framework}
+\acrodef{REST}[REST]{Representational State Transfer}
+\acrodef{ROS}[ROS]{Robot Operating System}
+\acrodef{SEGB}[SEGB]{Semantic Ethical Glass Box}
+\acrodef{SOMA}[SOMA]{Socio-physical Model of Activities}
+\acrodef{PROV}[PROV-O]{Provenance Ontology}
+\acrodef{TTL}[TTL]{Terse RDF Triple Language}
+\acrodef{JWT}[JWT]{JSON Web Token}
+
+
+
+
+
+
+
+%% Use the option review to obtain double line spacing
+%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
+
+%% For including figures, graphicx.sty has been loaded in
+%% elsarticle.cls. If you prefer to use the old commands
+%% please give \usepackage{epsfig}
+
+%% The amssymb package provides various useful mathematical symbols
+\usepackage{amssymb}
+\usepackage{hyperref}
+\setlength{\parindent}{0pt}
+%% The amsthm package provides extended theorem environments
+%% \usepackage{amsthm}
+
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+%\usepackage{lineno}
+
+\journal{SoftwareX}
+
+\begin{document}
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}}
+
+\begin{frontmatter}
+
+\title{SEGB: An Ontology-Based Platform for Auditable and Traceable Decision-Making in Autonomous Robots}
+
+\author[label1]{José L. Benítez} % ¿ORCID?
+\author[label2]{Álvaro Carrera}
+
+\address[label1]{Universidad Politécnica de Madrid, Spain, jose.benitez@upm.es}
+\address[label2]{Universidad Politécnica de Madrid, Spain, a.carrera@upm.es}
+
+
+\begin{abstract}
+%% Text of abstract 
+
+
+\textit{Scenarios involving human-robot interactions are becoming increasingly prevalent across multiple domains. In such settings, reconstructing and explaining robots' decisions and actions remains a complex and largely unsolved challenge. The Semantic Ethical Glass Box (SEGB) toolkit addresses this problem by providing an end-to-end software pipeline for the post-hoc analysis and auditing of robot behaviour. SEGB enables robots to generate semantically structured logs that are integrated into a global \ac{KG}, which is later exploited for post-hoc analysis. To this end, SEGB provides software modules that support: (1) semantic log generation on robotic platforms, (2) safe log management and storage within the \ac{KG}, and (3) automated report generation with enriched insights extracted from the \ac{KG}.}
+
+
+\end{abstract}
+
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+semantic \sep ethical \sep glass box \sep autonomous robots \sep post-hoc analysis \sep knowledge graph
+
+%% PACS codes here, in the form: \PACS code \sep code
+
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+
+\end{keyword}
+
+\end{frontmatter}
+
+\section*{Metadata}
+\label{}
+% \textit{The ancillary data table~\ref{codeMetadata} is required for the sub-version of the codebase. Please replace the italicized text in the right column with the correct information about your current code and leave the left column untouched.}
+
+\begin{table}[!h]
+\begin{tabular}{|l|p{6.5cm}|p{6.5cm}|}
+\hline
+\textbf{Nr.} & \textbf{Code metadata description} & \textbf{Metadata} \\
+\hline
+C1 & Current code version & 0.5.0 \\ 
+\hline
+C2 & Permanent link to code/repository used for this code version & \url{https://github.com/gsi-upm/segb} \\
+\hline
+C3  & Permanent link to Reproducible Capsule &  \textit{VIDEO DEMONSTRATION} \\
+\hline
+C4 & Legal Code License   & MIT License \\
+\hline
+C5 & Code versioning system used & git \\
+\hline
+C6 & Software code languages, tools, and services used & \textit{COMPLETAR} \\
+\hline
+C7 & Compilation requirements, operating environments \& dependencies & \\
+\hline
+C8 & If available Link to developer documentation/manual & For example: \url{https://segb.readthedocs.io/en/stable/} \\
+\hline
+C9 & Support email for questions & jose.benitez@upm.es \\
+\hline
+\end{tabular}
+\caption{Code metadata (mandatory)}
+\label{codeMetadata} 
+\end{table}
+
+
+
+\section{Motivation and significance}
+
+
+
+Social autonomous robots are increasingly deployed in environments involving interactions with humans and other robots. In such settings, robot behaviour emerges from the combination of multiple internal modules whose outputs are influenced by dynamic contextual factors. This complexity makes it difficult to reconstruct and explain why a robot exhibits specific behaviours, even though post-hoc analysis and auditing are increasingly required in human–robot interaction scenarios. 
+
+% To the best of our knowledge, no existing tool provides end-to-end support for this process, covering the full pipeline from data generation to the extraction of advanced insights.
+
+The \ac{SEGB} addresses this gap by providing software infrastructure for capturing and integrating semantic logs from robots operating in a shared scenario. The SEGB paradigm is based on constructing a global \ac{KG} by aggregating semantic logs from multiple robots, enabling a unified representation of the scenario’s state and evolution. The SEGB software includes modules covering the entire pipeline: a \textit{Semantic Log Generator} embedded within each robot to produce semantic logs using the \ac{SEGB} ontology during execution; a centralised \textit{Storage Module} responsible for log ingestion and \ac{KG} management; and an \textit{Analysis Module} that queries the stored information and generates reports with enriched insights for auditing and post-hoc analysis.
+
+
+\section{Related Work}
+
+Different studies have proposed solutions to address the lack of explainability and post-hoc analysis in autonomous robotic systems. One of the most influential approaches is the \ac{EBB} for robotics, introduced by Winfield and Jirotka~\cite{Towards_Autonomous_Robotic_Systems}. Inspired by \textit{black box recorders} in aviation, the \ac{EBB} argues that autonomous robots should incorporate mechanisms to support post-hoc analysis and accountability~\cite{Winfield2022} and proposes an initial open standard for structuring recorded information~\cite{winkle2020could}. Subsequent work has expanded the \ac{EBB} concept, including proposals such as White et al.~\cite{white2019black} and Schmidt et al.~\cite{schmidt2022modular} or Fernández-Becerra et al~\cite{fernandez2024enhancing}. However, these approaches primarily focus on reliable data recording, offering limited support for (1) generating high-quality data and (2) interpreting this data and extracting relevant insights while taking contextual factors into account.
+
+In parallel, several well-established ontological resources have been developed to describe \ac{ML} components and robotic systems. The W3C Machine Learning Schema~\cite{publio2020ml} and the IEEE-RAS Ontology for Robotics and Automation (ORA)~\cite{schlenoff2012ieee} define vocabularies for algorithms, datasets, robots, and their capabilities. Additionally, ontologies such as ORO~\cite{olszewska2017ontology}, KnowRob~\cite{beetz2018know}, and SOMA~\cite{bessler2021foundations} provide expressive semantic models for representing robotic knowledge, activities, and social context. While these ontologies enable structured knowledge representation and reasoning, they are not specifically designed to support systematic post-hoc auditing based on operational logs.
+
+\ac{SEGB} is inspired by the concept of the \ac{EBB} proposed by Winfield et al.~\cite{Towards_Autonomous_Robotic_Systems,Winfield2022,winkle2020could}. Instead of an \textit{Ethical Black Box}, we propose an \textit{Ethical Glass Box} to emphasise transparency and add the \textit{Semantic} tag as we use semantic technologies. \ac{SEGB} extends the \ac{EBB} concept in two main aspects: (1) by adopting an ontology-based standard vocabulary to format logs, combining widely used ontologies —such as \textit{ORO}— with the dedicated \ac{SEGB} ontology; and (2) by providing tools that support both the generation of semantic logs and the extraction of enriched insights from the stored data (i.e., the \ac{KG}). In this way, \ac{SEGB} goes beyond log storage by integrating semantic log generation, ingestion, and storage within a global \ac{KG}, and by generating reports with relevant insights. This is integrated within a unified software framework, enabling structured and advanced post-hoc analysis of robot behaviour.
+
+
+\section{Software description}
+
+\ac{SEGB} is a software infrastructure designed to support post-hoc analysis in scenarios where \ac{AI}-based autonomous robots interact with humans. The \ac{SEGB} software offers modules for (1) log generation; (2) validation, processing, and storage of these logs; and (3) the extraction of valuable insights and report generation. These are commented below.
+
+\subsection{Software Architecture}
+
+Three main components form the \ac{SEGB} software, as shown in Fig. \ref{fig:segb_architecture}. These are:
+
+\begin{itemize}
+
+    \item \textbf{Log Generator Module}. A distributed component that executes in every robot and offers an abstraction layer to generate \ac{TTL} logs by calling higher-level functions. It is an extensible module that generates detailed logs, including the robot's perceptions of the environment, interactions, and internal processes. 
+    
+    \item \textbf{Storage Module}. It is a centralised server that receives semantic logs from instances of the \textit{Semantic Log Generator} running in different robots. This module validates and processes these logs, and if they are correct, integrates them into the \ac{KG}. The \ac{KG} is a global semantic \ac{RDF} graph  formed by joining the \ac{RDF} logs of different robots. It represents the evolving state of the scenario and is the source of insights for post-hoc analysis. 
+
+    The \textit{Storage Module} also defines access control to the \ac{KG} through three profiles: 1) \textit{Loggers}, which refer to robots running an instance of the \textit{Log Generator Module} and only have \textit{write access} to submit logs; 2) \textit{Auditors}, which have read-only access to the \ac{KG}-derived insights; and 3) \textit{Admins}, which have read, write and deletion rights over the \ac{KG}. 
+
+    \item \textbf{Auditing Module}. A web-based interface that allows easy interaction with the \ac{KG}. It offers a set of predefined reports, based on reusable semantic queries and filters that extract key, valuable information from the \ac{KG}.
+    
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{img/architecture.png}
+    \caption{SEGB architecture}
+    \label{fig:segb_architecture}
+\end{figure}
+
+
+\subsection{Implementation details}
+
+The \textbf{Semantic Log Generator} is implemented as a Python-based library. The \textbf{Storage Module} is built on FastAPI and provides \ac{JWT}-based authentication while managing the \ac{KG} using \texttt{rdflib}. The \ac{KG} is stored in Virtuoso. \ac{RDF} logs are primarily generated using the \ac{SEGB} ontology~\cite{segbOntology}, in combination with other ontologies such as \ac{ORO}. The web-based interface of the \textit{Auditing Module} is developed using the Vue framework. Both the \textbf{Storage Module} and the \textbf{Auditing Module}, which are the centralized components, are deployed using Docker Compose, enabling automated and reproducible deployment.
+
+
+\subsection{Software functionalities}
+
+\ac{SEGB} provides the following core software functionalities:
+
+\begin{itemize}
+
+\item {\bf Semantic Log Generation in Robots}. Robots (e.g., Tiago and ARI from PAL Robotics) can generate logs containing their actions, expressions, or emotions, as well as the ' recognised emotions or speech of the users. By integrating our Python-based library into the robots (i.e., an instance of the \textit{Log Generator Module}), users can generate the robots' semantic logs simply by calling some higher-level functions, without needing to know specific semantic technologies. Logs are automatically sent to the \textit{Storage Module}.
+
+
+\item {\bf Semantic Log Ingestion and Management}. The \textit{Storage Module} provides a central semantic repository that integrates logs generated by multiple robots into the \ac{KG}. This functionality performs structural validation checks on incoming logs and manages the \ac{KG} to avoid redundancies. As a result, users are relieved of the responsibility of ensuring data consistency and manually handling validation or safety checks.
+
+
+\item {\bf Report Generation and Post-Hoc Analysis}. Through the \textit{Analysis Module}, which is implemented as a web-based interface, a set of reports is generated by executing SPARQL queries over the \ac{KG}. These reports enable users to systematically audit human-robot interactions and analyse robots' behaviour in a post-hoc manner. In particular, the provided reports include enriched insights such as:
+\begin{enumerate}
+    \item Identification of the participants involved in the scenario.
+    \item Analysis of the \ac{ML} algorithms employed during the experiment, including associated datasets, configuration parameters, and the possibility of filtering by functional use (e.g., dialogue or emotion recognition).
+    \item Temporal analysis of detected emotional states throughout the interaction, displaying graphical information about emotional evolution over time.
+    \item Reports highlighting extreme emotional states (e.g., sadness)
+    \item Detection and reporting of unexpected or anomalous responses.
+    \item Assessment of interaction quality, including conversational coherence and response adequacy.
+    \item Engagement analysis, capturing user involvement through sustained interaction and the presence of positive emotional indicators.
+\end{enumerate}
+
+
+\end{itemize}
+
+
+\section{Illustrative examples}
+
+This section shows the usage of \ac{SEGB} through a practical simulation. It includes logging one short interaction, loading it into the \ac{KG}, and inspecting the generated reports in the auditing dashboard.
+
+This simulation scenario involves two robots (ARI and TIAGo) and one human participant (Maria). Maria asks ARI for news to cheer up, both robots register the utterance as shared context, ARI first replies with exam news, and then detects anxiety in Maria. ARI adapts its behaviour by apologising and giving an animal-rescue news item, after which Maria responds positively and ARI logs a very high happiness level.
+
+The resulting \acp{TTL} logs are inserted into the \ac{KG} in the \textit{Storage Module}, and the reports are refreshed in the \textit{Auditing Module}'s interface.
+
+\subsection{Construction of Knowledge Graph}
+
+Below we include three short \ac{TTL} snippets from the generated \ac{KG}. Listing~\ref{lst:ttl-activity-chain} captures the adaptive activity chain. Listing~\ref{lst:ttl-model-usage} records the \ac{ML} model used in emotion analysis. Listing~\ref{lst:ttl-emotion-sample} shows two temporal emotion samples from the same interaction.
+
+\begin{lstlisting}[style=ttl,caption={Activity chain: adaptive response sequence},label={lst:ttl-activity-chain}]
+@prefix segb: <http://www.gsi.upm.es/ontologies/segb/ns#> .
+@prefix ariact: <https://gsi.upm.es/segb/robots/ari/v1/activity/> .
+@prefix arimsg: <https://gsi.upm.es/segb/robots/ari/v1/message/> .
+
+ariact:ari_listening_cheer_request_1 a segb:LoggedActivity ;
+  segb:producedEntityResult arimsg:ari_heard_cheer_request_1 .
+
+ariact:ari_exam_news_response_1 a segb:LoggedActivity ;
+  segb:triggeredByActivity ariact:ari_listening_cheer_request_1 ;
+  segb:producedEntityResult arimsg:ari_exam_news_msg_1 .
+
+ariact:ari_apology_response_1 a segb:LoggedActivity ;
+  segb:triggeredByActivity ariact:emotion_analysis_1 ;
+  segb:producedEntityResult arimsg:ari_apology_msg_1 .
+\end{lstlisting}
+
+Listing~\ref{lst:ttl-model-usage} records which \ac{ML} model was used for emotion analysis in this adaptation process.
+
+\begin{lstlisting}[style=ttl,caption={ML model usage for emotional adaptation},label={lst:ttl-model-usage}]
+@prefix segb: <http://www.gsi.upm.es/ontologies/segb/ns#> .
+@prefix mls: <http://www.w3.org/ns/mls#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix ariact: <https://gsi.upm.es/segb/robots/ari/v1/activity/> .
+@prefix arimodel: <https://gsi.upm.es/segb/robots/ari/v1/model/> .
+
+ariact:emotion_analysis_1 segb:usedMLModel arimodel:emotion_big6_v1 .
+
+arimodel:emotion_big6_v1 a mls:Model ;
+  rdfs:label "Emotion Big6 CNN"@en ;
+  schema:version "1.0" .
+\end{lstlisting}
+
+Listing~\ref{lst:ttl-emotion-sample} shows two temporal emotion samples from the same scenario: anxiety after the exam news and very high happiness after the animal news.
+
+\begin{lstlisting}[style=ttl,caption={Temporal emotion samples: anxiety to very high happiness},label={lst:ttl-emotion-sample}]
+@prefix segb: <http://www.gsi.upm.es/ontologies/segb/ns#> .
+@prefix emoml: <http://www.gsi.upm.es/ontologies/onyx/vocabularies/emotionml/ns#> .
+@prefix onyx: <http://www.gsi.upm.es/ontologies/onyx/ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ariact: <https://gsi.upm.es/segb/robots/ari/v1/activity/> .
+@prefix ariann: <https://gsi.upm.es/segb/robots/ari/v1/emotion-annotation/> .
+@prefix ariemo: <https://gsi.upm.es/segb/robots/ari/v1/emotion/> .
+
+ariact:emotion_analysis_1 segb:producedEntityResult ariann:anxiety_1 .
+ariann:anxiety_1 onyx:hasEmotion ariemo:fear_1 .
+ariemo:fear_1 a onyx:Emotion ;
+  onyx:hasEmotionCategory emoml:big6_fear ;
+  onyx:hasEmotionIntensity "0.90"^^xsd:double .
+
+ariact:emotion_analysis_2 segb:producedEntityResult ariann:happy_1 .
+ariann:happy_1 onyx:hasEmotion ariemo:happy_1 .
+ariemo:happy_1 a onyx:Emotion ;
+  onyx:hasEmotionCategory emoml:big6_happiness ;
+  onyx:hasEmotionIntensity "0.98"^^xsd:double .
+\end{lstlisting}
+
+\subsection{Frontend screenshots to include}
+
+In this example, \ac{TTL} snippets are shown only for demonstration. In real use, \textit{Auditors} and \textit{Admins} are abstracted from \ac{RDF} technologies and consume high-level reports generated from the \ac{KG}. Figure~\ref{fig:front-reports-main} shows the participant-level report, Figure~\ref{fig:front-reports-emotions} shows the temporal evolution with the anxiety-to-happiness transition, and Figure~\ref{fig:front-reports-extreme} highlights extreme emotions.
+These reports make the adaptation strategy auditable end-to-end: initial response, detected negative impact, corrective response, and final emotional recovery.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{img/participants_report.png}
+  \caption{Participants report.}
+  \label{fig:front-reports-main}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{img/temporal_emotions.png}
+  \caption{Temporal emotion evolution report.}
+  \label{fig:front-reports-emotions}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{img/extreme_emotions.png}
+  \caption{Extreme emotions report.}
+  \label{fig:front-reports-extreme}
+\end{figure}
+
+
+\section{Impact}
+
+% 1) Presented software impact in analysis and auditing of Human-Robot interactions
+% 6) Auditing facility and Ethical auditing is ...
+
+
+\ac{SEGB} toolkit enables logging and post-hoc analysis of human-robot interactions. As robots become increasingly present in everyday life, this toolkit supports transparency and traceability by offering tools to audit robots' behaviour, enhancing their ethical operation~\cite{etemad-sajadi2022ethical}. This topic is particularly gaining importance in high-accountability domains such as healthcare~\cite{elendu2023healthcare}.
+
+% 5) = Óscar, Python widely 
+% 2) Provides a semantic approach based on an ontology based on widely used vocabularies, such as ORO
+
+
+\ac{SEGB} The toolkit is entirely portable and containerised using the widely adopted Docker and Docker Compose, making deployment straightforward. In the case of the \texttt{semantic\_log\_generator}, it uses Python to enable the integration of this module into ROS 2-based robots, which is the most widely used robotics framework. The adoption of a standard ontology-based vocabulary —combining the domain-specific \ac{SEGB} ontology with \ac{ORO}, Onyx, or \ac{PROV}— improves log data quality and structure, supporting compatibility and advanced representation of relations. The use of both Python and standard ontologies enhances the easy extension of this library for specific use cases.
+
+% 4) Provides an extensible log generation that has been tested on several PAL social robots, which are widely used in research
+
+ This module has already been integrated across different ROS2-based robots developed by PAL Robotics, including PAL and TIAGo Head, which have been deployed in human–robot interaction scenarios. These robots were intended to mediate user interactions with online information and influence users’ emotional and cognitive responses through ethically grounded behaviour. \ac{SEGB} has been key to enabling advanced auditing of these robots’ behavioural decisions and interactions within this context.
+
+% 3) The framework has been integrated with ROS4HRI ROS widely used....
+
+The \ac{SEGB} software incorporates tools to support the ROS4HRI module developed by PAL Robotics, which was accepted as the REP-155 standard within the \ac{ROS} ecosystem. It standardises human–robot interaction interfaces and defines common data structures for skeleton tracking, face recognition, and speech-related sub-modules. \ac{SEGB} offers facilities to generate logs based on this module's outputs, as well as reports with valuable insights about them. 
+
+
+
+\section{Conclusions}
+
+The toolkit presented in this paper, the \ac{SEGB}, provides a set of software capabilities to support researchers in the post-hoc analysis of the behaviour of ROS-based robots. SEGB covers the entire pipeline, from generating robot logs to extracting meaningful insights from the collected data. The main contributions of the \ac{SEGB} toolkit are as follows:
+
+\begin{itemize}
+\item The adoption of semantic technologies to generate high-quality robot logs based on standardised, well-defined vocabularies that enable the identification of complex relationships and behavioural patterns.
+\item A Python-based library compatible with the widely used ROS2 operating system, which automates semantic log generation and can be easily extended by developers to adapt to specific use cases.
+\item The validation and integration of semantic logs generated by multiple robots into a global \ac{KG} allow robot behaviour to be analysed within its contextual and multi-agent setting.
+\item The automatic generation of reports containing enriched insights about the scenario, derived from queries and analyses over the \ac{KG}.
+\item Ease of deployment and use is achieved through the automation of module integration and the abstraction of users from ontology-specific and semantic technologies.
+\end{itemize}
+
+Overall, \ac{SEGB} lays the foundation for a software toolkit that will continue to evolve with the objective of improving the explainability and traceability of autonomous robots, thereby supporting ethical auditability and accountability. Future work includes: (1) the incorporation of traceability and integrity mechanisms to enhance transparency and trustworthiness at the scenario level; (2) the integration of real-time log analysis to enable the detection of anomalies and unexpected behaviours during execution; and (3) the extension of insight extraction capabilities through techniques based on \acp{LLM} and \ac{RAG}.
+
+
+
+
+\section*{Acknowledgements}\label{acknowledgments}
+The research and development of the \ac{SEGB} software has been funded within the AMOR project(TSI- 063100-2022-0002), supported by the Spanish Ministry of Economic Affairs and Digital Transformation and the European Union - NextGeneration EU, within the UNICO I+D Cloud Programme.
+
+
+%% References:
+%% If you have bibdatabase file and want bibtex to generate the
+%% bibitems, please use
+%%
+%%  \bibliographystyle{elsarticle-num} 
+%%  \bibliography{<your bibdatabase>}
+
+
+
+\bibliographystyle{elsarticle-num} 
+\bibliography{biblio}
+
+\end{document}

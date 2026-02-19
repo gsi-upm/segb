@@ -24,7 +24,6 @@ DEFAULT_PREFIXES = {
     "oa": OA,
     "segb": SEGB,
     "amor": AMOR,
-    "amor-exp": AMOR_EXP,
     "mls": MLS,
     "oro": ORO,
     "onyx": ONYX,

@@ -28,6 +28,7 @@ services:
     environment:
       - LOGGING_LEVEL=DEBUG
       - VERSION=${VERSION:-dev}
+      - CORS_ORIGIN_REGEX=^https?://(localhost|127\\.0\\.0\\.1|172\\.[0-9]+\\.[0-9]+\\.[0-9]+):5173$
       - WATCHFILES_FORCE_POLLING=true
     env_file:
       - .env

@@ -66,6 +66,7 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             message_id="source_message",
             generated_by_activity=source_activity,
             message_types=["oro:InitialMessage"],
+            language="en",
         )
 
         target_activity = self.logger.log_activity(
@@ -123,6 +124,7 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             message_id="msg_1",
             generated_by_activity=emotion_activity,
             message_types=["oro:InitialMessage"],
+            language="en",
         )
         human = self.logger.register_human("maria", first_name="Maria")
 
@@ -181,6 +183,7 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             message_id="msg_1",
             generated_by_activity=listening,
             message_types=["oro:InitialMessage"],
+            language="en",
         )
 
         coordination = tiago.log_activity(
@@ -241,6 +244,7 @@ class TestSemanticSEGBLogger(unittest.TestCase):
             message_id="msg_shared_event",
             generated_by_activity=listening,
             message_types=["oro:InitialMessage"],
+            language="en",
         )
         self.logger.link_observation_to_shared_event(msg, event_uri_1, confidence=0.91)
 

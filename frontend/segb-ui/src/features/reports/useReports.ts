@@ -44,6 +44,72 @@ function mergeParticipantLists(...lists: string[]): string {
   return merged.join('\n')
 }
 
+function firstPipeValue(value: string | null | undefined): string {
+  if (!value) {
+    return ''
+  }
+  const candidate = value
+    .split(' | ')
+    .map((item) => item.trim())
+    .find((item) => item.length > 0)
+  return candidate ?? ''
+}
+
+function resolveEmotionTrigger(row: ReportEmotionSample): string {
+  const sourceActivityLabel = firstPipeValue(row.sourceActivityLabel)
+  const triggerActivityLabel = firstPipeValue(row.triggerActivityLabel)
+  const triggerEntityLabel = firstPipeValue(row.triggerEntityLabel)
+  const triggerMessageText = firstPipeValue(row.triggerMessageText)
+  const sourceActivity = firstPipeValue(row.sourceActivity)
+  const triggerActivity = firstPipeValue(row.triggerActivity)
+  const triggerEntity = firstPipeValue(row.triggerEntity)
+
+  if (triggerMessageText.length > 0) {
+    const context = [
+      triggerActivityLabel,
+      sourceActivityLabel,
+      triggerActivity,
+      sourceActivity,
+      triggerEntityLabel,
+      triggerEntity,
+    ].find((value) => value.length > 0 && value !== triggerMessageText)
+
+    if (context) {
+      return `${context}: "${triggerMessageText}"`
+    }
+    return `Speech input: "${triggerMessageText}"`
+  }
+
+  const candidates = [
+    triggerEntityLabel,
+    triggerActivityLabel,
+    sourceActivityLabel,
+    triggerEntity,
+    triggerActivity,
+    sourceActivity,
+  ]
+  return candidates.find((value) => value.length > 0) ?? ''
+}
+
+function normalizeRatio(raw: string | null | undefined): number | null {
+  const numeric = toNumber(raw)
+  if (numeric === null) {
+    return null
+  }
+  if (numeric > 1 && numeric <= 100) {
+    return numeric / 100
+  }
+  return numeric
+}
+
+function normalizePercent(raw: string | null | undefined): number | null {
+  const ratio = normalizeRatio(raw)
+  if (ratio === null) {
+    return null
+  }
+  return ratio * 100
+}
+
 export function useReports() {
   const loading = ref(false)
   const error = ref('')
@@ -57,11 +123,23 @@ export function useReports() {
   const displacementSummary = ref<ReportDisplacementSummary[]>([])
 
   const emotionTimelineByParticipant = computed(() => {
-    const grouped = new Map<string, Array<{ xLabel: string; y: number; tag: string }>>()
+    const grouped = new Map<
+      string,
+      Array<{
+        xLabel: string
+        y: number
+        tag: string
+        activity: string
+        trigger: string
+        confidence: number | null
+        sortKey: string
+      }>
+    >()
 
     for (const row of emotionTimeline.value) {
       const participant = row.targetLabel || compactUri(row.targetEntity)
-      const intensity = toNumber(row.intensity)
+      const intensity = normalizePercent(row.intensity)
+      const confidence = normalizePercent(row.confidence)
       if (intensity === null) {
         continue
       }
@@ -72,11 +150,15 @@ export function useReports() {
         xLabel: formatUtcTimestamp(row.t).replace(' UTC', ''),
         y: intensity,
         tag: normalizeEmotionLabel(row.category),
+        activity: firstPipeValue(row.sourceActivityLabel) || row.sourceActivity || '',
+        trigger: resolveEmotionTrigger(row),
+        confidence,
+        sortKey: row.t,
       })
     }
 
     for (const [participant, points] of grouped.entries()) {
-      points.sort((a, b) => a.xLabel.localeCompare(b.xLabel))
+      points.sort((a, b) => a.sortKey.localeCompare(b.sortKey))
       grouped.set(participant, points)
     }
 
@@ -86,7 +168,7 @@ export function useReports() {
   const maxEmotionIntensity = computed<number | null>(() => {
     let maxValue: number | null = null
     for (const row of emotionTimeline.value) {
-      const intensity = toNumber(row.intensity)
+      const intensity = normalizeRatio(row.intensity)
       if (intensity === null) {
         continue
       }
@@ -160,6 +242,12 @@ export function useReports() {
       emotionTimeline.value = emotionRows.map((row) => ({
         t: row.t ?? '',
         sourceActivity: compactUri(row.sourceActivity ?? ''),
+        sourceActivityLabel: row.sourceActivityLabel ?? '',
+        triggerActivity: compactUri(row.triggerActivity ?? ''),
+        triggerActivityLabel: row.triggerActivityLabel ?? '',
+        triggerEntity: compactUri(row.triggerEntity ?? ''),
+        triggerEntityLabel: row.triggerEntityLabel ?? '',
+        triggerMessageText: row.triggerMessageText ?? '',
         targetEntity: row.targetEntity ?? '',
         targetType: row.targetType ?? '',
         targetLabel: row.targetLabel ?? compactUri(row.targetEntity ?? ''),
@@ -171,6 +259,12 @@ export function useReports() {
       extremeEmotion.value = extremeRows.map((row) => ({
         t: row.t ?? '',
         sourceActivity: compactUri(row.sourceActivity ?? ''),
+        sourceActivityLabel: '',
+        triggerActivity: '',
+        triggerActivityLabel: '',
+        triggerEntity: '',
+        triggerEntityLabel: '',
+        triggerMessageText: '',
         targetEntity: row.targetEntity ?? '',
         targetType: row.targetType ?? '',
         targetLabel: row.targetLabel ?? compactUri(row.targetEntity ?? ''),

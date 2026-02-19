@@ -58,6 +58,23 @@ class SEGBPublisher:
         except ValueError:
             return {"status_code": response.status_code, "body": response.text}
 
+    def _post_json_endpoint(self, endpoint: str, payload: dict[str, Any]) -> dict[str, Any]:
+        response = requests.post(
+            endpoint,
+            json=payload,
+            headers=self._headers(),
+            timeout=self.timeout_seconds,
+            verify=self.verify_tls,
+        )
+        if response.status_code >= 400:
+            raise RuntimeError(f"SEGB API responded with HTTP {response.status_code}: {response.text}")
+        if not response.content:
+            return {"status_code": response.status_code}
+        try:
+            return response.json()
+        except ValueError:
+            return {"status_code": response.status_code, "body": response.text}
+
     def _enqueue(self, payload: dict[str, Any]) -> None:
         if self.queue_file is None:
             return
@@ -81,6 +98,12 @@ class SEGBPublisher:
         ttl = graph.serialize(format="turtle")
         ttl_text = ttl.decode("utf-8") if isinstance(ttl, bytes) else ttl
         return self.publish_turtle(ttl_text, user=user)
+
+    def delete_all_ttls(self, *, user: str | None = None) -> dict[str, Any]:
+        """Clears backend triples through `/ttl/delete_all`."""
+        payload = {"user": user or self.default_user}
+        endpoint = f"{self.base_url}/ttl/delete_all"
+        return self._post_json_endpoint(endpoint, payload)
 
     def flush_queue(self) -> list[dict[str, Any]]:
         """

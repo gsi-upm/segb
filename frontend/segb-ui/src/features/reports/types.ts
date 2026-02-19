@@ -19,6 +19,12 @@ export type ReportMlUsage = {
 export type ReportEmotionSample = {
   t: string
   sourceActivity: string
+  sourceActivityLabel: string
+  triggerActivity: string
+  triggerActivityLabel: string
+  triggerEntity: string
+  triggerEntityLabel: string
+  triggerMessageText: string
   targetEntity: string
   targetType: string
   targetLabel: string

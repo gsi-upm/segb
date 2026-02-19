@@ -7,13 +7,13 @@ from examples.run_simulation import (
     PublishConfig,
     build_publish_config_from_args,
     publish_simulation_result,
-    run_simulation,
+    run_basic_simulation,
 )
 
 
 class TestROS2MockPublishing(unittest.TestCase):
     def test_publish_simulation_result_uses_segb_publisher(self) -> None:
-        simulation_result = run_simulation()
+        simulation_result = run_basic_simulation()
         config = PublishConfig(
             base_url="http://localhost:8000",
             token="token-123",
@@ -25,6 +25,7 @@ class TestROS2MockPublishing(unittest.TestCase):
 
         with patch("examples.run_simulation.SEGBPublisher") as publisher_cls:
             publisher = publisher_cls.return_value
+            publisher.delete_all_ttls.return_value = {"message": "Graph cleared and deletions logged."}
             publisher.publish_graph.return_value = {"log_id": "abc-123"}
 
             report = publish_simulation_result(simulation_result, config=config)
@@ -37,8 +38,10 @@ class TestROS2MockPublishing(unittest.TestCase):
                 verify_tls=False,
                 queue_file="/tmp/segb_queue.jsonl",
             )
+            publisher.delete_all_ttls.assert_called_once_with(user="ari_logger")
             publisher.publish_graph.assert_called_once_with(simulation_result.graph, user="ari_logger")
             self.assertTrue(report["published"])
+            self.assertEqual(report["cleanup_response"]["message"], "Graph cleared and deletions logged.")
             self.assertEqual(report["publish_response"]["log_id"], "abc-123")
 
     def test_build_publish_config_from_args_env_fallback(self) -> None:

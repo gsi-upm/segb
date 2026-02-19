@@ -103,8 +103,23 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX oa: <http://www.w3.org/ns/oa#>
 PREFIX oro: <http://kb.openrobots.org#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?t ?sourceActivity ?targetEntity ?targetType ?targetLabel ?category ?intensity ?confidence
+SELECT
+  ?t
+  ?sourceActivity
+  ?sourceActivityLabel
+  ?triggerActivity
+  ?triggerActivityLabel
+  ?triggerEntity
+  ?triggerEntityLabel
+  ?triggerMessageText
+  ?targetEntity
+  ?targetType
+  ?targetLabel
+  ?category
+  ?intensity
+  ?confidence
 WHERE {
   ?sourceActivity a onyx:EmotionAnalysis ;
                  prov:startedAtTime ?t ;
@@ -114,6 +129,17 @@ WHERE {
   ?emotion onyx:hasEmotionCategory ?category ;
            onyx:hasEmotionIntensity ?intensity .
   OPTIONAL { ?emotion onyx:algorithmConfidence ?confidence }
+  OPTIONAL { ?sourceActivity rdfs:label ?sourceActivityLabel }
+
+  OPTIONAL {
+    ?sourceActivity segb:triggeredByActivity ?triggerActivity .
+    OPTIONAL { ?triggerActivity rdfs:label ?triggerActivityLabel }
+  }
+  OPTIONAL {
+    ?sourceActivity segb:triggeredByEntity ?triggerEntity .
+    OPTIONAL { ?triggerEntity rdfs:label ?triggerEntityLabel }
+    OPTIONAL { ?triggerEntity oro:hasText ?triggerMessageText }
+  }
 
   OPTIONAL {
     ?targetEntity a oro:Robot .

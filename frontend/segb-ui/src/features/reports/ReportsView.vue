@@ -47,7 +47,7 @@
           :key="chart.title"
           :title="chart.title"
           :points="chart.points"
-          :y-max="1"
+          :y-max="100"
         />
       </div>
     </BaseCard>

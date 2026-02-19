@@ -12,7 +12,7 @@ class TestSharedContextResolver(unittest.TestCase):
     def setUp(self) -> None:
         self.resolver = SharedContextResolver(
             policy=SharedContextPolicy(
-                namespace="https://example.org/shared-context/",
+                namespace="https://example.org/shared-events/",
                 time_window_seconds=3.0,
                 match_threshold=0.85,
                 ambiguous_threshold=0.70,
@@ -73,7 +73,7 @@ class TestSharedContextResolver(unittest.TestCase):
     def test_reconcile_merges_ambiguous_context(self) -> None:
         resolver = SharedContextResolver(
             policy=SharedContextPolicy(
-                namespace="https://example.org/shared-context/",
+                namespace="https://example.org/shared-events/",
                 time_window_seconds=3.0,
                 match_threshold=0.75,
                 ambiguous_threshold=0.60,
