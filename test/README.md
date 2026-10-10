@@ -4,6 +4,13 @@ This section contains all the tests for the SEGB server implemented using pytest
 
 ## Running the Tests
 
+The standalone authentication unit tests need no Docker, MongoDB or `test.env`.
+Run only this file from the repository root:
+
+```bash
+.venv/bin/python -m pytest -q test/test_credentials_unit.py
+```
+
 To run the tests, use the `pytest` command. The tests are designed to utilize the `./test/compose_test.yaml` file to set up the necessary Docker environment. Ensure that Docker is running and the `./test/compose_test.yaml` file is correctly configured before executing the tests.
 
 ```bash
