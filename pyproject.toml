@@ -9,6 +9,6 @@ dependencies = [
     "PyYAML==6.0.2",
     "uvicorn[standard]==0.34.0",
     "mongoengine==0.29.1",
-    "pyjwt==2.10.1",
+    "pyjwt==2.15.1",
     "rdflib==7.1.3",
 ]
