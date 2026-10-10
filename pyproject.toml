@@ -5,9 +5,13 @@ description = "Semantic Ethical Glass Box (SEGB) for AMOR project"
 readme = "README.md"
 requires-python = "==3.12.7"
 dependencies = [
-    "fastapi[standard]==0.115.12",
+    "fastapi[standard-no-fastapi-cloud-cli]==0.133.0",
     "PyYAML==6.0.2",
     "uvicorn[standard]==0.34.0",
+    "starlette==1.3.1",
+    "anyio==4.14.2",
+    "h11==0.16.0",
+    "python-multipart==0.0.31",
     "mongoengine==0.29.1",
     "pyjwt==2.15.1",
     "rdflib==7.1.3",
