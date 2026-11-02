@@ -1,5 +1,56 @@
 # Changelog
 
+## 1.3.1 - 2026-11-02
+
+Maintenance release on top of 1.3.0: frontend development-dependency security fixes, agent guidance for the repository
+and a dependency review note. There are no backend code changes, no API changes and no configuration changes; the
+backend behaves as in 1.3.0 and only announces the new version.
+
+### Security
+
+- The `segb-ui` lockfile no longer contains the two advisories `npm audit` reported against development dependencies:
+  `glob` is pinned to 14.0.2 ([GHSA-3g3m-2fjr-6pw4](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4)) and
+  `minimatch` to 11.0.1 ([GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)) through scoped
+  `overrides`. Both packages were reached only through `@vue/test-utils`; `npm audit --omit=dev` already reported zero
+  vulnerabilities, so the shipped nginx image was not affected by them. No exploit or production assessment was
+  performed (#48).
+
+### Changed
+
+- `@vue/test-utils` is pinned to 2.4.6 (it was `^2.4.6`): 2.5.1 pulls `nopt` and `abbrev` versions that need Node 22 or
+  newer, while the frontend image builder uses Node 20. The overrides cross dependency ranges declared upstream and
+  should be revisited when upstream adopts compatible patched versions (#48).
+- Versions are bumped to 1.3.1 in `pyproject.toml`, `uv.lock`, the backend default (`apps/backend/src/core/settings.py`),
+  `apps/frontend/segb-ui/package.json` and its lockfile, and the environment file example (`VERSION`).
+
+### Documentation
+
+- `AGENTS.md` (imported by `CLAUDE.md`) describes the repository layout, commands, tests, backend architecture and
+  conventions for AI coding agents (#46, #47).
+- `docs/dependency-review-2026-10-31.md` records the dependency security review of 1.3.0 (frontend findings, the
+  remediation above and the verification performed) (#48).
+- The `GET /health` example in `docs/reference/legacy-api.md` shows the current version.
+
+### Upgrading from 1.3.0
+
+- Set `VERSION=1.3.1` in your environment file (or remove the line). Compose passes `VERSION` to the backend
+  explicitly, so a file copied from the 1.3.0 example keeps announcing `1.3.0` in `/health` and OpenAPI even when the
+  1.3.1 image runs.
+- Pull the new images (`SEGB_IMAGE_TAG=1.3.1`, or `latest` once published). No other action is needed: there are no new
+  or changed environment variables, no Virtuoso changes and no reader-policy changes.
+- Staying on the 1.3.0 images is safe: the 1.3.1 images differ only in the announced version and in the frontend build
+  toolchain (development dependencies); the shipped code and runtime dependencies are the same.
+
+### Known limitations
+
+- Unchanged from 1.3.0: uploads of about 5,000 triples or more in one request can still fail in Virtuoso 7.2.16, native
+  SQL with the reader's credentials can read audit rows (keep them inside the backend), and blank nodes are duplicated
+  on re-upload.
+- `overrides` in the frontend lockfile are a workaround for upstream ranges and need a follow-up when upstream releases
+  compatible versions.
+- The dependency review covered the frontend npm lock and the exported Python locks on one platform; other platforms
+  were not audited.
+
 ## 1.3.0 - 2026-10-30
 
 `GET /query` now runs on a read-only Virtuoso account, the Virtuoso SQL port is no longer published by default, and all
