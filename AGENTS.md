@@ -6,7 +6,7 @@ Guidance for AI coding agents (Codex, Claude Code and others) working in this re
 
 Semantic Ethical Glass Box (SEGB): a semantic logging stack for human-robot interaction. Robots or simulators build RDF
 logs, the backend stores them in a Virtuoso triple store, and a web UI offers reports, graph views, SPARQL queries and
-audit workflows. This is a monorepo (version 1.3.0) that unifies what used to be separate repos.
+audit workflows. This is a monorepo (version 1.3.1) that unifies what used to be separate repos.
 
 | Path | Content |
 |---|---|

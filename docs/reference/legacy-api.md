@@ -26,7 +26,7 @@ removed by hand in 2.0, once nothing uses them.
 
 ### `GET /health`
 
-Public, `200`, `text/plain`, with the running version (`SEGB is running. Version 1.2.0.`). The 0.4.x text was different;
+Public, `200`, `text/plain`, with the running version (`SEGB is running. Version 1.3.1.`). The 0.4.x text was different;
 clients that only check the status code are not affected. It is written to the server log only, never to the audit
 trail.
 
