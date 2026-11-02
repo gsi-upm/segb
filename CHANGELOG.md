@@ -2,10 +2,11 @@
 
 ## 1.3.1 - 2026-11-02
 
-Maintenance release on top of 1.3.0: frontend development-dependency security fixes, agent guidance for the repository
-and a dependency review note. There are no backend application-code or API changes and no new or changed runtime
-configuration (environment variables, Compose services, Virtuoso settings); the backend behaves as in 1.3.0 and only
-announces the new version. The frontend dependency configuration (`overrides`, one pinned test utility) did change.
+Maintenance release on top of 1.3.0: frontend development-dependency security fixes, a fix for the `segb-ui` container
+healthcheck, agent guidance for the repository and a dependency review note. There are no backend application-code or
+API changes and no new or changed runtime configuration (environment variables, Virtuoso settings; the only Compose
+change is the `segb-ui` healthcheck command); the backend behaves as in 1.3.0 and only announces the new version. The
+frontend dependency configuration (`overrides`, one pinned test utility) did change.
 
 ### Security
 
@@ -15,6 +16,13 @@ announces the new version. The frontend dependency configuration (`overrides`, o
   `overrides`. Both packages were reached only through `@vue/test-utils`; `npm audit --omit=dev` already reported zero
   vulnerabilities, so the shipped nginx image was not affected by them. No exploit or production assessment was
   performed (#48).
+
+### Fixed
+
+- The `segb-ui` container is no longer reported `unhealthy` while serving correctly: the healthcheck (in
+  `apps/frontend/Dockerfile` and in the `segb-ui` service of `docker-compose.yaml`) now probes `http://127.0.0.1:8080/`
+  instead of `http://localhost:8080/`, because `localhost` resolved to `::1` inside the image while nginx listens on
+  IPv4 only (#50, #51).
 
 ### Changed
 
@@ -37,10 +45,13 @@ announces the new version. The frontend dependency configuration (`overrides`, o
 - Set `VERSION=1.3.1` in your environment file (or remove the line). Compose passes `VERSION` to the backend
   explicitly, so a file copied from the 1.3.0 example keeps announcing `1.3.0` in `/health` and OpenAPI even when the
   1.3.1 image runs.
-- Pull the new images (`SEGB_IMAGE_TAG=1.3.1`, or `latest` once published). No other action is needed: there are no new
-  or changed environment variables, no Virtuoso changes and no reader-policy changes.
+- Pull the new images (`SEGB_IMAGE_TAG=1.3.1`, or `latest` once published) and update your copy of
+  `docker-compose.yaml` if you keep your own: the `segb-ui` healthcheck fix lives in that file as well as in the image.
+  No other action is needed: there are no new or changed environment variables, no Virtuoso changes and no
+  reader-policy changes.
 - Staying on the 1.3.0 images is safe: the 1.3.1 images differ in the announced version (backend default and
-  `package.json`) and in the frontend development-dependency lock; the production dependency set is unchanged
+  `package.json`), in the frontend development-dependency lock and in the image healthcheck command (the 1.3.0 UI image
+  works but is reported `unhealthy`); the production dependency set is unchanged
   (the production entries of the frontend lockfile and the backend lock, apart from the project's own version, are the
   same as in 1.3.0).
 
