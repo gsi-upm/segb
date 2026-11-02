@@ -3,8 +3,9 @@
 ## 1.3.1 - 2026-11-02
 
 Maintenance release on top of 1.3.0: frontend development-dependency security fixes, agent guidance for the repository
-and a dependency review note. There are no backend code changes, no API changes and no configuration changes; the
-backend behaves as in 1.3.0 and only announces the new version.
+and a dependency review note. There are no backend application-code or API changes and no new or changed runtime
+configuration (environment variables, Compose services, Virtuoso settings); the backend behaves as in 1.3.0 and only
+announces the new version. The frontend dependency configuration (`overrides`, one pinned test utility) did change.
 
 ### Security
 
@@ -38,8 +39,10 @@ backend behaves as in 1.3.0 and only announces the new version.
   1.3.1 image runs.
 - Pull the new images (`SEGB_IMAGE_TAG=1.3.1`, or `latest` once published). No other action is needed: there are no new
   or changed environment variables, no Virtuoso changes and no reader-policy changes.
-- Staying on the 1.3.0 images is safe: the 1.3.1 images differ only in the announced version and in the frontend build
-  toolchain (development dependencies); the shipped code and runtime dependencies are the same.
+- Staying on the 1.3.0 images is safe: the 1.3.1 images differ in the announced version (backend default and
+  `package.json`) and in the frontend development-dependency lock; the production dependency set is unchanged
+  (the production entries of the frontend lockfile and the backend lock, apart from the project's own version, are the
+  same as in 1.3.0).
 
 ### Known limitations
 
