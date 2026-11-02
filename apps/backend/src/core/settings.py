@@ -58,7 +58,7 @@ def load_settings() -> BackendSettings:
     return BackendSettings(
         log_level=os.getenv("LOGGING_LEVEL", "INFO").upper(),
         log_file=os.getenv("SERVER_LOG_FILE", "segb.log"),
-        version=os.getenv("VERSION") or "1.3.0",
+        version=os.getenv("VERSION") or "1.3.1",
         api_info_file=api_info_file,
         api_description_file=api_description_file,
         max_startup_retries=int(os.getenv("MAX_STARTUP_RETRIES", "6")),
